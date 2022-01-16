@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 import url from 'url';
-import allConfig from '../config/config.js';
+import allConfig from '../config/config.mjs';
 
 const env = process.env.NODE_ENV || 'development';
 

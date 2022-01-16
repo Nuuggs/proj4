@@ -2,7 +2,10 @@ import cookieParser from 'cookie-parser';
 import express from 'express';
 import methodOverride from 'method-override';
 import bindRoutes from './routes.mjs';
+import dotenv from 'dotenv'; 
 
+// Start dotenv.config to access environmental variales (NOTE! **SET UP YOUR OWN .env FILE!**   &&    REMEMBER TO .gitignore your .env file )
+dotenv.config();
 // Initialise Express instance
 const app = express();
 // Set the Express view engine to expect EJS templates
@@ -52,6 +55,7 @@ if (env === 'development') {
 
 // Bind route definitions to the Express application
 bindRoutes(app);
+
 
 // Set Express to listen on the given port
 const PORT = process.env.PORT || 3004;

@@ -4,5 +4,8 @@
 # Dependency directories
 node_modules/
 
+# Ignore env data
+.env
+
 # Do not commit the distribution folder compiled by Webpack
 dist
