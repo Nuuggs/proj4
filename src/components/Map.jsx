@@ -6,6 +6,8 @@ import {
   Autocomplete,
 } from '@react-google-maps/api';
 
+const axios = require('axios');
+
 const libraries = ['places'];
 const mapContainerStyle = {
   width: '50vw',
@@ -13,6 +15,7 @@ const mapContainerStyle = {
 };
 
 const Map = ({ coordinates, setCoordinates }) => {
+  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     libraries,
@@ -26,6 +29,19 @@ const Map = ({ coordinates, setCoordinates }) => {
     // Sets Coordinates on the map
     setCoordinates({ lat, lng });
     // Axios call here?
+    const fetchPlaceConfig = {
+      method: 'get',
+      url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=2000&type=restaurant&keyword=chinese`,
+      headers: { },
+    };
+    axios(fetchPlaceConfig).then((response) => {
+      console.log(JSON.stringify(response.data));
+    })
+      .catch((error) => {
+        console.log(error);
+      });
+    // const fetchPlace = axios.get(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=2000&type=restaurant&keyword=western`).then((res) => { console.log(res);
+
     console.log(coordinates);
   };
 
