@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { PartnerChoice, RestaurantParameters } from './components/Form.jsx';
+import { Map } from './components/Map.jsx';
 
 export default function App() {
+  const [coordinates, setCoordinates] = useState({
+    // Singapore's coordinates
+    lat: 1.3521,
+    lng: 103.8198,
+  });
   return (
     <div>
-      This is App.jsx
+      {/* <AutocompleteHeader coordinates={coordinates} setCoordinates={setCoordinates} /> */}
+      <Map coordinates={coordinates} setCoordinates={setCoordinates} />
     </div>
+
   );
 }

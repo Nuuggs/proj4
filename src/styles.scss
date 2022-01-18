@@ -1,3 +1,16 @@
 body {
-  background-color: pink;
+  background-color: rgb(223, 195, 195);
+}
+
+.map {
+  width: 100px;
+  height: 100px;
+}
+.mapContainer {
+  height: "85vh";
+  width: "100%";
+}
+
+.autocomplete-bar {
+  width: 200px;
 }
