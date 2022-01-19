@@ -1,3 +1,6 @@
+const dotenv = require(`dotenv`);
+dotenv.config();
+
 const config = {
   development: {
     username: process.env.PG_USER || '<YOUR_UNIX_USERNAME_HERE>',
@@ -19,4 +22,4 @@ const config = {
   },
 };
 
-export default config;
+module.exports = config;

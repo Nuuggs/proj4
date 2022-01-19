@@ -7,8 +7,8 @@ const router = express.Router();
 // Initialize Controller
 const userCtrl = new UserCtrl('main', db.User, db);
 
-router.get('/', userCtrl.getMain.bind(userCtrl));
-// router.post('/register', mainCtrl.postRegister);
-// router.post('/login', mainCtrl.postLogin);
+// router.post('/logout', userCtrl.getMain.bind(userCtrl));
+router.post('/register', userCtrl.postRegister.bind(userCtrl));
+router.post('/login', userCtrl.postLogin.bind(userCtrl));
 
 export default router;
