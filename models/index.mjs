@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize';
 import url from 'url';
-import allConfig from '../config/config.mjs';
+import allConfig from '../config/config.js';
+import initUserModel from './user.mjs';
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -32,5 +33,7 @@ if (env === 'production') {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
+db.User = initUserModel(sequelize, Sequelize.DataTypes);
 
 export default db;
