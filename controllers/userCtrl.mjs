@@ -38,9 +38,9 @@ class UserCtrl {
   async postLogin (req, res) {
     console.log(`POST Request: /user/login`);
     console.log(req.body);
-    const { username, password } = req.body;
-    if (!username || !password) { return res.status(500).json({ msg: `login error` }) }
-    const user = await this.model.findOne({where: {username}});
+    const { email, name, password } = req.body;
+    if (!email || !name || !password) { return res.status(500).json({ msg: `login error` }) }
+    const user = await this.model.findOne({where: {email}});
     if(!user){ return res.status(404).json({ msg: `user not found` })}
     const compare = await bcrypt.compare(password, user.password);
     if(compare){
@@ -50,6 +50,16 @@ class UserCtrl {
     }
     return res.status(401).json({ msg: `error: wrong password!` });
   };
+
+  async postEmail (req, res) {
+    console.log(`POST Request: /user/email`);
+    console.log(req.body);
+    const { email } = req.body;
+    console.log(email);
+    if (!email) return res.status(500).json({ msg: `login error` });
+    const user = await this.model.findOne({where: {email}}); // user is the entire row in the DB
+    return res.status(200).json({success: true, name: user.name});
+  }
 
 }
 
