@@ -1,3 +1,5 @@
+import { Sequelize } from 'sequelize';
+
 export default function initMatchModel(sequelize, DataTypes) {
   return sequelize.define('match', {
     id: {
@@ -23,6 +25,7 @@ export default function initMatchModel(sequelize, DataTypes) {
     },
     time_expiry: {
       type: DataTypes.DATE,
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP + INTERVAL \'1d\''),
     },
     likes_list: {
       type: DataTypes.JSON,

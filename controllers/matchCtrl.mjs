@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { resolve } from 'path';
 import axios from 'axios';
 import { Sequelize } from 'sequelize';
+
 // Initialize dotenv to pull secrets for salting process
 dotenv.config();
 
@@ -42,7 +43,7 @@ class MatchCtrl {
       p2_id: p2_Id,
       parameters: url,
       search_results: searchResult,
-      time_expiry: this.db.sequelize.literal('CURRENT_TIMESTAMP'),
+      // time_expiry: this.db.sequelize.literal('NOW() + INTERVAL 'Number(1) DAY''),
       likes_list: initLikesList,
     });
 

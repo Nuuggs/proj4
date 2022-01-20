@@ -24,6 +24,7 @@ module.exports = {
       },
       time_expiry: {
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP + INTERVAL \'1d\''),
       },
       likes_list: {
         type: Sequelize.JSON,
