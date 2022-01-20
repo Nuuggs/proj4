@@ -8,12 +8,10 @@ export default function initMatchModel(sequelize, DataTypes) {
     },
     p1_id: {
       allowNull: false,
-      unique: true,
       type: DataTypes.INTEGER,
     },
     p2_id: {
       allowNull: false,
-      unique: true,
       type: DataTypes.INTEGER,
     },
     parameters: {

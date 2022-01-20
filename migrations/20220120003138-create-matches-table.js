@@ -9,12 +9,10 @@ module.exports = {
       },
       p1_id: {
         allowNull: false,
-        unique: true,
         type: Sequelize.INTEGER,
       },
       p2_id: {
         allowNull: false,
-        unique: true,
         type: Sequelize.INTEGER,
       },
       parameters: {
