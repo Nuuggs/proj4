@@ -15,42 +15,41 @@ class UserCtrl {
     this.db = db;
   }
 
-  getMain (req, res) {
-    console.log(`GET Request: /home`);
+  getMain(req, res) {
+    console.log('GET Request: /home');
     console.log(`Running ${this.name} controller`);
     res.status(200).sendFile(resolve('dist', 'main.html'));
-  };
+  }
 
-  async postRegister (req, res) {
-    console.log(`POST Request: /user/register`);
+  async postRegister(req, res) {
+    console.log('POST Request: /user/register');
     console.log(req.body);
     const { email, name, password } = req.body;
-    if ( !email || !name || !password ) {
-      return res.status(500).json({ msg: `registration error`});
+    if (!email || !name || !password) {
+      return res.status(500).json({ msg: 'registration error' });
     }
     const hash = await bcrypt.hash(password, Number(PW_SALT_ROUNDS));
     const newUser = await this.model.create({ email, name, password: hash });
-    const payload = {id: newUser.id, email: newUser.email};
-    const token = jwt.sign(payload, JWT_SALT, {expiresIn:'1h'});
-    return res.status(200).json({newUser, token});
-  };
+    const payload = { id: newUser.id, email: newUser.email };
+    const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1h' });
+    return res.status(200).json({ newUser, token });
+  }
 
-  async postLogin (req, res) {
-    console.log(`POST Request: /user/login`);
+  async postLogin(req, res) {
+    console.log('POST Request: /user/login');
     console.log(req.body);
     const { username, password } = req.body;
-    if (!username || !password) { return res.status(500).json({ msg: `login error` }) }
-    const user = await this.model.findOne({where: {username}});
-    if(!user){ return res.status(404).json({ msg: `user not found` })}
+    if (!username || !password) { return res.status(500).json({ msg: 'login error' }); }
+    const user = await this.model.findOne({ where: { username } });
+    if (!user) { return res.status(404).json({ msg: 'user not found' }); }
     const compare = await bcrypt.compare(password, user.password);
-    if(compare){
-      const payload = {id: user.id, username: user.username};
-      const token = jwt.sign(payload, JWT_SALT, {expiresIn:'1h'});
-      return res.status(200).json({success: true, token, id: user.id});
+    if (compare) {
+      const payload = { id: user.id, username: user.username };
+      const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1h' });
+      return res.status(200).json({ success: true, token, id: user.id });
     }
-    return res.status(401).json({ msg: `error: wrong password!` });
-  };
-
+    return res.status(401).json({ msg: 'error: wrong password!' });
+  }
 }
 
 export default UserCtrl;

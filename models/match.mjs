@@ -1,25 +1,32 @@
-export default function initUserModel(sequelize, DataTypes) {
-  return sequelize.define('user', {
+export default function initMatchModel(sequelize, DataTypes) {
+  return sequelize.define('match', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: DataTypes.INTEGER,
     },
-    email: {
+    p1_id: {
       allowNull: false,
       unique: true,
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
     },
-    name: {
+    p2_id: {
       allowNull: false,
-      type: DataTypes.STRING,
+      unique: true,
+      type: DataTypes.INTEGER,
     },
-    password: {
+    parameters: {
       allowNull: false,
-      type: DataTypes.STRING,
+      type: DataTypes.JSON,
     },
-    friendsUid: {
+    search_results: {
+      type: DataTypes.JSON,
+    },
+    time_expiry: {
+      type: DataTypes.DATE,
+    },
+    likes_list: {
       type: DataTypes.JSON,
     },
     createdAt: {

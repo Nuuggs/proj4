@@ -1,26 +1,33 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable('matches', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      email: {
+      p1_id: {
         allowNull: false,
         unique: true,
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
       },
-      name: {
+      p2_id: {
         allowNull: false,
-        type: Sequelize.STRING,
+        unique: true,
+        type: Sequelize.INTEGER,
       },
-      password: {
+      parameters: {
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.JSON,
       },
-      friends_uid: {
+      search_results: {
+        type: Sequelize.JSON,
+      },
+      time_expiry: {
+        type: Sequelize.DATE,
+      },
+      likes_list: {
         type: Sequelize.JSON,
       },
       created_at: {
@@ -31,11 +38,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
-
     });
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('users');
+    await queryInterface.dropTable('matches');
   },
 };
