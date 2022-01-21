@@ -9,12 +9,10 @@ module.exports = {
       },
       p1_id: {
         allowNull: false,
-        unique: true,
         type: Sequelize.INTEGER,
       },
       p2_id: {
         allowNull: false,
-        unique: true,
         type: Sequelize.INTEGER,
       },
       parameters: {
@@ -26,6 +24,7 @@ module.exports = {
       },
       time_expiry: {
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP + INTERVAL \'1d\''),
       },
       likes_list: {
         type: Sequelize.JSON,

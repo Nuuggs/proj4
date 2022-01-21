@@ -1,3 +1,5 @@
+import { Sequelize } from 'sequelize';
+
 export default function initMatchModel(sequelize, DataTypes) {
   return sequelize.define('match', {
     id: {
@@ -8,12 +10,10 @@ export default function initMatchModel(sequelize, DataTypes) {
     },
     p1_id: {
       allowNull: false,
-      unique: true,
       type: DataTypes.INTEGER,
     },
     p2_id: {
       allowNull: false,
-      unique: true,
       type: DataTypes.INTEGER,
     },
     parameters: {
@@ -25,6 +25,7 @@ export default function initMatchModel(sequelize, DataTypes) {
     },
     time_expiry: {
       type: DataTypes.DATE,
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP + INTERVAL \'1d\''),
     },
     likes_list: {
       type: DataTypes.JSON,
