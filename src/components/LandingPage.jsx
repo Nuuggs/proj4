@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+<<<<<<< HEAD
 
 const LoginPage = ({ setLandingState }) => {
   const [email, setEmail] = useState('');
@@ -84,12 +85,29 @@ const MainPage = ({ setLandingState }) => (
     </div>
     <div className="lost-password">Trouble Loggin In?</div>
   </>
+=======
+import RegisterPage from './RegisterPage.jsx';
+import LoginPage from './LoginPage.jsx';
+
+const MainPage = ({ setLandingState }) => ( 
+    <>
+      <div className="main-buttons">
+        <button onClick={()=>setLandingState('login')}>Log In</button>
+        <button onClick={()=>setLandingState('register')}>Register</button>
+      </div>
+      <div className="lost-password">Trouble Loggin In?</div>
+    </> 
+
+>>>>>>> 4c6199390f6a767e399ad6e066d1450557a0ee07
 );
 
 const LandingPage = () => {
   const [landingState, setLandingState] = useState('main');
+<<<<<<< HEAD
 
   const [loginObj, setLoginObj] = useState({});
+=======
+>>>>>>> 4c6199390f6a767e399ad6e066d1450557a0ee07
 
   return (
     <div className="landing-container">
