@@ -2,19 +2,6 @@ body {
   background-color: rgb(223, 195, 195);
 }
 
-.map {
-  width: 100px;
-  height: 100px;
-}
-.mapContainer {
-  height: "85vh";
-  width: "100%";
-}
-
-.autocomplete-bar {
-  width: 200px;
-}
-
 // Restaurant Cards CSS
 .resCard {
   position: absolute;
@@ -38,6 +25,6 @@ body {
   margin-top: 5vh;
 }
 
-.resCard swipe {
+.swipe {
   position: absolute;
 }
