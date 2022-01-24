@@ -86,27 +86,15 @@ class UserCtrl {
 
     const friendData = { id, email, name };
 
-    let updatedUser;
-
     // BUG!!!
-    if (!currentUser.friendsUid) {
-      const friendList = [];
-      friendList.push(friendData);
-      updatedUser = await currentUser.update({ friendsUid: { friendList } });
-      console.log(currentUser.friendsUid);
-    } else if (currentUser.friendsUid) {
-      const { friendList } = currentUser.friendsUid;
-      console.log('pre-update friend list', friendList);
-      friendList.push(friendData);
-      console.log('post-update friend list', friendList);
 
-      updatedUser = await currentUser.update({
-        friendsUid: {
-          friendList,
-        },
-      });
-      console.log(updatedUser.friendsUid);
-    }
+    const { friendList } = currentUser.friendsUid;
+    console.log('pre-update friend list', friendList);
+    friendList.push(friendData);
+    console.log('post-update friend list', friendList);
+    currentUser.friendsUid = { friendList };
+    await currentUser.save();
+    console.log(currentUser.friendsUid);
 
     if (!chosenFriend) {
       // Bug: not sure how to handle error
@@ -114,7 +102,7 @@ class UserCtrl {
     }
 
     // chosenFriend.update({ friendsUid: { chosenFriend.id } });
-    return res.status(200).send({ isValid: true, updatedUser });
+    return res.status(200).send({ isValid: true, currentUser });
   }
 }
 

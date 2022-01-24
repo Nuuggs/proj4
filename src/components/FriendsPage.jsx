@@ -66,10 +66,10 @@ const AddFriends = () => {
       .then((result) => {
         console.log(result.data);
         setValidity(result.data.isValid);
-        const friendsArray = result.data.updatedUser.friendsUid.friendList;
+        const friendsArray = result.data.currentUser.friendsUid.friendList;
 
         setFriendsList(friendsArray);
-        console.log(result.data.updatedUser);
+        console.log(result.data.currentUser);
         console.log('friends list', friendsList);
       });
   };
@@ -120,7 +120,7 @@ const AddFriends = () => {
         </form>
 
       </Card>
-      {isValid === true && <FriendsList friendsList={friendsList} />}
+      <FriendsList friendsList={friendsList} />
     </>
   ); };
 
