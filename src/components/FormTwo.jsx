@@ -11,8 +11,6 @@ const FormTwo = (
   },
 ) => {
   // value of price, rating change when select input changes, value of select input is {Params}
-  console.log('initial form 2 params', formTwoParams);
-  console.log(setFormTwoParams);
   const [dateTime, setDateTime] = useState(new Date());
   const [price, setPrice] = useState('');
   const [cuisine, setCuisine] = useState('');
@@ -29,13 +27,6 @@ const FormTwo = (
 
   const handleClick = (e) => {
     e.preventDefault();
-    // console.log('handle click running');
-    // console.log('dateTime', dateTime);
-    // console.log('price', price);
-    // console.log('rating', rating);
-    // console.log('cuisine', cuisine);
-
-    // post object somewhere here
     const data = {
       dateTime,
       price,
@@ -43,11 +34,6 @@ const FormTwo = (
       cuisine,
     };
     setFormTwoParams(data);
-    // console.log(setFormTwoParams());
-    // console.log('data form two', data);
-    // console.log('FormOneParams', formOneParams);
-    // console.log('FormTwoParams', formTwoParams);
-
     setFormState(3);
   };
 
