@@ -47,11 +47,11 @@ class MatchCtrl {
     const createSession = await this.model.create({
       p1_id: p1_Id,
       p2_id: p2_Id,
+      // eslint-disable-next-line quote-props
       parameters: {
-        URL: url, Cuisine: cuisine, dateTime, partner, price, rating,
+        URL: url, Cuisine: cuisine, DateTime: dateTime, Partner: partner, Price: price, Rating: rating,
       },
       search_results: searchResult,
-      // time_expiry: this.db.sequelize.literal('NOW() + INTERVAL 'Number(1) DAY''),
       likes_list: initLikesList,
     });
 
