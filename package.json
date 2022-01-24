@@ -69,6 +69,7 @@
     "jsonwebtoken": "^8.5.1",
     "method-override": "^3.0.0",
     "pg": "^8.5.1",
+    "react-tinder-card": "^1.4.5",
     "sequelize": "^6.3.5"
   }
 }

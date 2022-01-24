@@ -49,6 +49,12 @@ class MatchCtrl {
 
     res.status(200).send({ createdDB: createSession });
   }
+
+  async getCard(req, res) {
+    console.log('GET Request: /card');
+    console.log(`Running ${this.name} controller`);
+    res.status(200).sendFile(resolve('dist', 'main.html'));
+  }
 }
 
 export default MatchCtrl;
