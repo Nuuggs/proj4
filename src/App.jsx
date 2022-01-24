@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import LandingPage from './components/LandingPage.jsx';
 import { AddFriends } from './components/FriendsPage.jsx';
-import { PartnerChoice, RestaurantParameters } from './components/Form.jsx';
-import { Map } from './components/Map.jsx';
+import MainForm from './components/MainForm.jsx';
 
 export default function App() {
   return (
@@ -10,5 +9,4 @@ export default function App() {
     <>
       <AddFriends />
     </>
-  );
-}
+  ); }
