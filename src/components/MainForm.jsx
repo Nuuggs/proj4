@@ -14,7 +14,7 @@ const FormComplete = ({ formTwoParams, formOneParams }) => {
     const allParams = { ...formOneParams, ...formTwoParams };
     console.log('all params', allParams);
     // AJAX request
-    axios.post('/restaurants/search', allParams).then(
+    axios.post('/match', allParams).then(
       (result) => { console.log(result); },
     );
   }, []);

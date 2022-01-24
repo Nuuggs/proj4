@@ -20,7 +20,13 @@ class MatchCtrl {
 
     console.log('to get lat & lng and insert into DB ');
     // Destructure params from front end
-    const { coordinates, p1_Id, p2_Id } = req.body;
+
+    // To include p1_Id & p2_Id into destructuring later. Placeholder for creation first
+    const p1_Id = 3;
+    const p2_Id = 5;
+    const {
+      coordinates, cuisine, dateTime, partner, price, rating,
+    } = req.body;
     const { lat } = coordinates;
     const { lng } = coordinates;
     console.log('coordinates', coordinates);
@@ -41,9 +47,11 @@ class MatchCtrl {
     const createSession = await this.model.create({
       p1_id: p1_Id,
       p2_id: p2_Id,
-      parameters: url,
+      // eslint-disable-next-line quote-props
+      parameters: {
+        URL: url, Cuisine: cuisine, DateTime: dateTime, Partner: partner, Price: price, Rating: rating,
+      },
       search_results: searchResult,
-      // time_expiry: this.db.sequelize.literal('NOW() + INTERVAL 'Number(1) DAY''),
       likes_list: initLikesList,
     });
 
