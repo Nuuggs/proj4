@@ -63,7 +63,7 @@ class UserCtrl {
     return res.status(200).json({ success: true, name: user.name });
   }
 
-  async getUsers(req, res) {
+  async addFriends(req, res) {
     console.log('POST Request: /user/friends');
     console.log(req.body);
     // Find current user
@@ -74,35 +74,67 @@ class UserCtrl {
       },
     });
 
-    // Find friend
-    const chosenFriend = await this.model.findOne({ where: { email } });
-    // console.log('chosen friend', chosenFriend);
-    // console.log('chosen friend id', chosenFriend.id);
-    // console.log('chosen friend name', chosenFriend.name);
-    // console.log('current user', currentUser);
-    const { id, name } = chosenFriend;
+    console.log('current user', currentUser);
+    // try: query friend's email in db, if no such user,
+    // catch: throws error, front end will catch error to render error box
 
-    console.log(currentUser.friendsUid);
+    try {
+      // Find friend
+      const chosenFriend = await this.model.findOne({ where: { email } });
+      console.log('chosen friend', chosenFriend);
+      const { id, name } = chosenFriend;
+      const friendData = { id, email, name };
 
-    const friendData = { id, email, name };
+      let updatedUser;
+      // if user currently has no friends
+      if (!currentUser.friendsUid) {
+        const friendsList = [];
+        friendsList.push(friendData);
+        updatedUser = await currentUser.update({ friendsUid: { friendsList } },
+          {
+            where: {
+              id: currentUserId,
+            },
+          });
 
-    // BUG!!!
-
-    const { friendList } = currentUser.friendsUid;
-    console.log('pre-update friend list', friendList);
-    friendList.push(friendData);
-    console.log('post-update friend list', friendList);
-    currentUser.friendsUid = { friendList };
-    await currentUser.save();
-    console.log(currentUser.friendsUid);
-
-    if (!chosenFriend) {
-      // Bug: not sure how to handle error
-      return res.status(200).send({ isValid: false });
+        console.log(updatedUser.friendsUid);
+      }
+      // if user has friends
+      else if (currentUser.friendsUid) {
+        const { friendsList } = currentUser.friendsUid;
+        const updatedFriendsList = [...friendsList, friendData];
+        updatedUser = await currentUser.update({ friendsUid: { friendsList: updatedFriendsList } },
+          {
+            where: {
+              id: currentUserId,
+            },
+          });
+      }
+      return res.status(200).send(
+        { isValid: true, updatedUser },
+      );
+    } catch (error) {
+      return res.status(400).send({ isValid: false });
     }
+  }
 
-    // chosenFriend.update({ friendsUid: { chosenFriend.id } });
-    return res.status(200).send({ isValid: true, currentUser });
+  async getFriends(req, res) {
+    // current user id sent via req.params
+    const { id } = req.params;
+    const currentUser = await this.model.findOne({
+      where: {
+        id,
+      },
+    });
+
+    // if user has no friends, front end will render no friends message
+    if (!currentUser.friendsUid) {
+      console.log('no friends');
+      return res.status(200).send(null);
+    }
+    // if user has friends, front end will render friends
+    const { friendsList } = currentUser.friendsUid;
+    return res.status(200).send(friendsList);
   }
 }
 
