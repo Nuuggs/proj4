@@ -5,7 +5,7 @@ import db from '../models/index.mjs';
 // Initialize express router
 const router = express.Router();
 // Initialize Controller
-const userCtrl = new UserCtrl('main', db.User, db);
+const userCtrl = new UserCtrl('user', db.User, db);
 
 router.get('/', userCtrl.getMain.bind(userCtrl));
 // router.post('/register', mainCtrl.postRegister);
