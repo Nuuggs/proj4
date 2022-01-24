@@ -29,7 +29,7 @@ class UserCtrl {
       return res.status(500).json({ msg: 'registration error' });
     }
     const hash = await bcrypt.hash(password, Number(PW_SALT_ROUNDS));
-    const newUser = await this.model.create({ email, name, password: hash });
+    const newUser = await this.model.create({ email, name, password: hash }); 
     const payload = { id: newUser.id, email: newUser.email };
     const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1h' });
     return res.status(200).json({ newUser, token });
