@@ -4,32 +4,42 @@ import {
   TextField, Card, CardContent, CardActions, Button, Autocomplete, Box, Typography,
 } from '@mui/material';
 
-const FriendsList = ({ chosenFriend }) => (
-  <div>
-    <Card
-      sx={{
-        width: 280,
-        backgroundColor: 'primary',
-        pt: 1,
-        px: 1,
-        my: 2,
-        mx: 'auto',
-      }}
-    >
-      <CardContent>
-        <p>
-          Friend's List
-        </p>
-        <p>
-          {chosenFriend}
-        </p>
-      </CardContent>
-    </Card>
-  </div>
-);
+const FriendsList = ({ friendsList }) => {
+  console.log('friends list in component FriendsList', friendsList);
+  return (
+    <div>
+      <Card
+        sx={{
+          width: 280,
+          backgroundColor: 'primary',
+          pt: 1,
+          px: 1,
+          my: 2,
+          mx: 'auto',
+        }}
+      >
+        <CardContent>
+          <p>
+            Friend's List
+          </p>
+
+          {friendsList.map((friend) => (
+            <p>{friend.name}</p>
+          ))}
+
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
 const AddFriends = () => {
   const [chosenFriend, setChosenFriend] = useState('');
-  // const [friendsList, setFriendsList] = useState(null);
+  const [friendsList, setFriendsList] = useState([]);
+
+  // get user id from local storage
+  localStorage.setItem('userId', '2');
+  const currentUserId = localStorage.getItem('userId');
 
   const [isValid, setValidity] = useState(null);
 
@@ -51,13 +61,17 @@ const AddFriends = () => {
 
   const handleClick = (e) => {
     e.preventDefault();
-    axios.post('/user/friends', { email: chosenFriend })
+    // AJAX request: send both friend email and current user id to backend
+    axios.post('/user/friends', { email: chosenFriend, currentUserId })
       .then((result) => {
-        setValidity(result.data);
         console.log(result.data);
+        setValidity(result.data.isValid);
+        const friendsArray = result.data.updatedUser.friendsUid.friendList;
+
+        setFriendsList(friendsArray);
+        console.log(result.data.updatedUser);
+        console.log('friends list', friendsList);
       });
-    console.log('validity', isValid);
-    console.log('chosen friend', chosenFriend);
   };
 
   // if (!friendsList) return null;
@@ -106,7 +120,7 @@ const AddFriends = () => {
         </form>
 
       </Card>
-      {isValid === true && <FriendsList chosenFriend={chosenFriend} />}
+      {isValid === true && <FriendsList friendsList={friendsList} />}
     </>
   ); };
 

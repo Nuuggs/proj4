@@ -66,21 +66,55 @@ class UserCtrl {
   async getUsers(req, res) {
     console.log('POST Request: /user/friends');
     console.log(req.body);
-    const { email } = req.body;
-    const chosenFriend = await this.model.findOne({ where: { email } });
-    console.log('chosen friend', chosenFriend);
+    // Find current user
+    const { email, currentUserId } = req.body;
+    const currentUser = await this.model.findOne({
+      where: {
+        id: currentUserId,
+      },
+    });
 
-    // if (!chosenFriend.friendsUid) {
-    //   friendsArray = [];
-    // }
+    // Find friend
+    const chosenFriend = await this.model.findOne({ where: { email } });
+    // console.log('chosen friend', chosenFriend);
+    // console.log('chosen friend id', chosenFriend.id);
+    // console.log('chosen friend name', chosenFriend.name);
+    // console.log('current user', currentUser);
+    const { id, name } = chosenFriend;
+
+    console.log(currentUser.friendsUid);
+
+    const friendData = { id, email, name };
+
+    let updatedUser;
+
+    // BUG!!!
+    if (!currentUser.friendsUid) {
+      const friendList = [];
+      friendList.push(friendData);
+      updatedUser = await currentUser.update({ friendsUid: { friendList } });
+      console.log(currentUser.friendsUid);
+    } else if (currentUser.friendsUid) {
+      const { friendList } = currentUser.friendsUid;
+      console.log('pre-update friend list', friendList);
+      friendList.push(friendData);
+      console.log('post-update friend list', friendList);
+
+      updatedUser = await currentUser.update({
+        friendsUid: {
+          friendList,
+        },
+      });
+      console.log(updatedUser.friendsUid);
+    }
 
     if (!chosenFriend) {
       // Bug: not sure how to handle error
-      return res.status(200).send(false);
+      return res.status(200).send({ isValid: false });
     }
 
     // chosenFriend.update({ friendsUid: { chosenFriend.id } });
-    return res.status(200).send(true);
+    return res.status(200).send({ isValid: true, updatedUser });
   }
 }
 
