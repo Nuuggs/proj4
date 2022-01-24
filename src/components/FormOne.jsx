@@ -43,12 +43,12 @@ const PartnerChoice = ({ partner, setPartner }) => {
     console.log(value);
     setPartner(value);
   };
-  const handleClick = (e) => {
-    e.preventDefault();
-    console.log('partner click running');
-    // post object somewhere here
-    console.log(partner);
-  };
+  // const handleClick = (e) => {
+  //   e.preventDefault();
+  //   console.log('partner click running');
+  //   // post object somewhere here
+  //   console.log(partner);
+  // };
 
   return (
     <>
@@ -73,9 +73,9 @@ const PartnerChoice = ({ partner, setPartner }) => {
 
           />
         </CardContent>
-        <CardActions>
+        {/* <CardActions>
           <Button size="small" onClick={handleClick}>Confirm</Button>
-        </CardActions>
+        </CardActions> */}
 
       </Card>
     </>
@@ -154,15 +154,8 @@ const FormOne = ({ setFormOneParams, setFormState }) => {
     };
     console.log('coordinates', coordinates);
     console.log('partner', partner);
-    // Bug: unable to setFormOneParams
-    setFormOneParams(data);
-    // Route data to backend
-    // data = {
-    //   coordinates: { lat: 26.0805803, lng: -80.2518216 },
-    //   partner: 'Dorami',
-    // };
 
-    console.log(data);
+    setFormOneParams(data);
     setFormState(2);
   };
 
