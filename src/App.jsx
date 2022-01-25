@@ -14,9 +14,12 @@ export default function App() {
   */
   const [appState, setAppState] = useState('landing');
   return (
-    // <LandingPage />
-    // <AddFriends />
-    <MainForm />
-    // <SessionPage />
+    <>
+    { appState === 'landing' && <LandingPage /> }
+    { appState === 'session' && <SessionPage /> }
+    { appState === 'friends' && <AddFriends /> }
+    { appState === 'form' && <MainForm /> }
+    </>
+
   );
 }
