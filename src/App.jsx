@@ -52,7 +52,7 @@ export default function App() {
   */
   const [appState, setAppState] = useState('landing');
   return (
-    <MainForm />
-    // <SessionPage />
+    // <MainForm />
+    <SessionPage />
   );
 }
