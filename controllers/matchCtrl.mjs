@@ -2,7 +2,7 @@
 import dotenv from 'dotenv';
 import { resolve } from 'path';
 import axios from 'axios';
-import { Sequelize } from 'sequelize';
+import { Sequelize, Op } from 'sequelize';
 
 // Initialize dotenv to pull secrets for salting process
 dotenv.config();
@@ -62,6 +62,16 @@ class MatchCtrl {
     const { restaurant_ID, player_Identity } = req.body;
     console.log(restaurant_ID);
     console.log(player_Identity);
+
+    const findData = await this.db.Matches.findAll({
+      where: {
+        likes_list: {
+          restaurant_id: {
+            [Op.eq]: restaurant_ID,
+          },
+        },
+      },
+    });
 
     res.status(200).send({ restaurantID: restaurant_ID });
   }

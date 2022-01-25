@@ -17,17 +17,17 @@ module.exports = {
       },
       parameters: {
         allowNull: false,
-        type: Sequelize.JSON,
+        type: Sequelize.JSONB,
       },
       search_results: {
-        type: Sequelize.JSON,
+        type: Sequelize.JSONB,
       },
       time_expiry: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP + INTERVAL \'1d\''),
       },
       likes_list: {
-        type: Sequelize.JSON,
+        type: Sequelize.JSONB,
       },
       created_at: {
         allowNull: false,

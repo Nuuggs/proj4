@@ -20,7 +20,7 @@ export default function initUserModel(sequelize, DataTypes) {
       type: DataTypes.STRING,
     },
     friendsUid: {
-      type: DataTypes.JSON,
+      type: DataTypes.JSONB,
     },
     createdAt: {
       allowNull: false,
