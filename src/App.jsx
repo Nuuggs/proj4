@@ -5,9 +5,6 @@ import { AddFriends } from './components/FriendsPage.jsx';
 import MainForm from './components/MainForm.jsx';
 import SessionPage from './components/SessionPage.jsx';
 
-
-
-
 export default function App() {
   // Global states
   /*
@@ -22,4 +19,4 @@ export default function App() {
     // <MainForm />
     <SessionPage />
   );
-};
+}
