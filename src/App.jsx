@@ -9,7 +9,7 @@ export default function App() {
   // Global states
 
   return (
-    // <MainForm />
+  // <MainForm />
     <div>
       <RestaurantPage />
       <CardsButtons />

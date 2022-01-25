@@ -15,7 +15,7 @@ const RestaurantPage = () => {
       console.log('This is running');
       // Placeholder for hardcoded test
       const allParams = {
-        coordinates: { lat: 1.2902, lng: 103.8515 },
+        coordinates: { lat: 1.2940, lng: 103.8531 },
         p1_Id: 3,
         p2_Id: 5,
       };
@@ -31,9 +31,18 @@ const RestaurantPage = () => {
     fetchData();
   }, []);
 
-  const swiped = (direction, nameToDelete) => {
-    console.log('removing:', nameToDelete);
+  const swiped = (direction, restaurantID, restaurantName) => {
+    console.log('removing:', restaurantName);
     // setLastDirection(direction);
+    console.log('swiped direction =', direction);
+    console.log('restaurantID:', restaurantID);
+
+    if (direction === 'right') {
+      console.log('its right');
+      // If swiped direction is right - do a axios.post to DB to store data
+
+      // After that move to matchCtrl and create new function - do a .create if no existing restaurant ID in place - else do a .update on existing data
+    }
   };
 
   const outOfFrame = (name) => {
@@ -41,18 +50,22 @@ const RestaurantPage = () => {
   };
 
   return (
-    <div>
-      <div className="restaurantcontainer">
-        {restaurantCard.map((restaurant) => (
-          <TinderCard classname="swipe" key={restaurant.name} preventSwipe={['up', 'down']} onSwipe={(direction) => swiped(direction, restaurant.name)} onCardLeftScreen={() => outOfFrame(restaurant.name)}>
-            <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
-              <h3>{restaurant.name}</h3>
-              {/* <h3>{restaurant.rating}</h3>
+    <div className="restaurantcontainer">
+      {restaurantCard.map((restaurant) => (
+        <TinderCard
+          className="swipe"
+          key={restaurant.place_id}
+          preventSwipe={['up', 'down']}
+          onSwipe={(direction) => swiped(direction, restaurant.place_id, restaurant.name)}
+          onCardLeftScreen={() => outOfFrame(restaurant.name)}
+        >
+          <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
+            <h3>{restaurant.name}</h3>
+            {/* <h3>{restaurant.rating}</h3>
               <p>{restaurant.vicnity}</p> */}
-            </div>
-          </TinderCard>
-        ))}
-      </div>
+          </div>
+        </TinderCard>
+      ))}
     </div>
   );
 };
