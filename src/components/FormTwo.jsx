@@ -3,6 +3,7 @@ import {
   TextField, Card, CardContent, CardActions, Button, Autocomplete, FormControl, InputLabel, Select, MenuItem, Box,
 } from '@mui/material';
 import { MobileDateTimePicker, LocalizationProvider } from '@mui/lab';
+import ArrowLeftOutlinedIcon from '@mui/icons-material/ArrowLeftOutlined';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 
 const FormTwo = (
@@ -37,20 +38,25 @@ const FormTwo = (
     setFormState(3);
   };
 
+  const handleGoBack = (e) => {
+    e.preventDefault();
+    setFormState(1);
+  };
+
   return (
     <Box>
       <Card
-        sx={{
-          width: 230,
-          backgroundColor: 'primary',
-          pt: 1,
-          px: 1,
-          my: 2,
-          mx: 'auto',
-        }}
+        className="frosted-card"
       >
 
         <CardContent>
+          <CardActions>
+            <Button size="small" onClick={handleGoBack}>
+              <ArrowLeftOutlinedIcon fontSize="small" />
+
+              Previous
+            </Button>
+          </CardActions>
           {/* Date Time Picker */}
           <FormControl fullWidth sx={{ my: 1 }}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -106,11 +112,11 @@ const FormTwo = (
             />
           </FormControl>
         </CardContent>
-        <CardActions>
-          <Button size="small" onClick={handleClick}>Confirm</Button>
-        </CardActions>
 
       </Card>
+      <Box className="center-box">
+        <Button sx={{ width: '280px' }} variant="contained" onClick={handleClick}>Confirm</Button>
+      </Box>
     </Box>
   );
 };

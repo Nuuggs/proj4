@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
   Box,
 } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
+import mainTheme from '../theme.jsx';
 import { FormOne } from './FormOne.jsx';
 import { FormTwo } from './FormTwo.jsx';
 
@@ -33,12 +35,26 @@ const MainForm = () => {
   const [formTwoParams, setFormTwoParams] = useState('');
 
   return (
+
     <div className="form-container">
-      {formState === 1 && <FormOne setFormOneParams={setFormOneParams} setFormState={setFormState} />}
+      <div className="header-box">
+        <h1>
+          Tell us
+          {' '}
+          <br />
+          what you
+          <br />
+          {' '}
+          want
+        </h1>
+      </div>
+      <ThemeProvider theme={mainTheme}>
+        {formState === 1 && <FormOne setFormOneParams={setFormOneParams} setFormState={setFormState} />}
 
-      {formState === 2 && <FormTwo setFormTwoParams={setFormTwoParams} setFormState={setFormState} />}
+        {formState === 2 && <FormTwo setFormTwoParams={setFormTwoParams} setFormState={setFormState} />}
 
-      {formState === 3 && <FormComplete formTwoParams={formTwoParams} formOneParams={formOneParams} />}
+        {formState === 3 && <FormComplete formTwoParams={formTwoParams} formOneParams={formOneParams} />}
+      </ThemeProvider>
     </div>
   );
 };
