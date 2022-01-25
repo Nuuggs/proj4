@@ -1,5 +1,58 @@
 body {
-  background-color: rgb(223, 195, 195);
+  background-color: var(--grey-color);
+}
+
+:root {
+  --primary-color: #e29426;
+  --light-color: #e7cdb6;
+  --plain-color: white;
+  --dark-color: #51682b;
+  --grey-color: #f3f1ec;
+  --frosted: rgba(255, 255, 255, 0.466);
+  --light-frosted: #e7cdb6c0;
+}
+
+.plain-card {
+  width: 280px;
+  padding: 10px 10px 0 10px;
+  margin: 20px auto 20px auto;
+  background-color: var(--plain-color) !important;
+}
+
+.primary-card {
+  width: 280px;
+  padding: 10px 10px 0 10px;
+  margin: 20px auto 0 auto;
+  background-color: var(--primary-color) !important;
+}
+
+.light-card {
+  width: 280px;
+  padding: 10px 10px 0 10px;
+  margin: 20px auto 20px auto;
+  background-color: var(--light-color) !important;
+}
+
+.frosted-card {
+  width: 280px;
+  padding: 10px 10px 0 10px;
+  margin: 20px auto 20px auto;
+  background-color: var(--light-frosted) !important;
+  backdrop-filter: blur(10px);
+}
+
+.center-box {
+  display: flex;
+  justify-content: center;
+}
+
+h2 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  text-transform: uppercase;
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: var(--dark-color);
 }
 
 .map {

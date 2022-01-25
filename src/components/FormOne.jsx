@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   TextField, Card, CardContent, CardActions, Button, Autocomplete, Box,
 } from '@mui/material';
+
 import {
   GoogleMap,
   useLoadScript,
@@ -52,16 +53,7 @@ const PartnerChoice = ({ partner, setPartner }) => {
 
   return (
     <>
-      <Card
-        sx={{
-          width: 280,
-          backgroundColor: 'primary',
-          pt: 1,
-          px: 1,
-          my: 2,
-          mx: 'auto',
-        }}
-      >
+      <Card className="frosted-card">
         <CardContent>
           <Autocomplete
             id="free-solo-demo"
@@ -107,28 +99,25 @@ const Map = ({ coordinates, setCoordinates }) => {
   };
   return (
     <div>
-      <Card
-        sx={{
-          width: 280,
-          backgroundColor: 'primary',
-          pt: 1,
-          px: 1,
-          my: 2,
-          mx: 'auto',
-        }}
-      >
-        <GoogleAutocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
-          <TextField sx={{ mt: 2, mb: 1, width: '264px' }} id="standard-basic" label="Search" variant="standard" />
-        </GoogleAutocomplete>
+      <Card className="frosted-card">
+        <CardContent>
+
+          <GoogleAutocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
+            <TextField
+              sx={{
+                width: '228px',
+              }}
+              label="Search"
+              variant="outlined"
+            />
+          </GoogleAutocomplete>
+        </CardContent>
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
           zoom={14}
           center={coordinates}
           options={options}
         />
-        {/* <CardActions>
-          <Button size="small" onClick={handleClick}>Confirm</Button>
-        </CardActions> */}
       </Card>
 
     </div>
@@ -161,9 +150,15 @@ const FormOne = ({ setFormOneParams, setFormState }) => {
 
   return (
     <div>
+      <div className="center-box">
+        <h2>Who are you eating with?</h2>
+      </div>
       <PartnerChoice partner={partner} setPartner={setPartner} />
+      <div className="center-box">
+        <h2>Where are you eating at?</h2>
+      </div>
       <Map coordinates={coordinates} setCoordinates={setCoordinates} />
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Box className="center-box">
         <Button sx={{ width: '280px' }} variant="contained" onClick={handleClick}>Next</Button>
       </Box>
 

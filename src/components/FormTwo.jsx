@@ -40,14 +40,7 @@ const FormTwo = (
   return (
     <Box>
       <Card
-        sx={{
-          width: 230,
-          backgroundColor: 'primary',
-          pt: 1,
-          px: 1,
-          my: 2,
-          mx: 'auto',
-        }}
+        className="light-card"
       >
 
         <CardContent>
@@ -106,11 +99,11 @@ const FormTwo = (
             />
           </FormControl>
         </CardContent>
-        <CardActions>
-          <Button size="small" onClick={handleClick}>Confirm</Button>
-        </CardActions>
 
       </Card>
+      <Box className="center-box">
+        <Button sx={{ width: '280px' }} variant="contained" onClick={handleClick}>Confirm</Button>
+      </Box>
     </Box>
   );
 };
