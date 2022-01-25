@@ -19,7 +19,7 @@ class UserCtrl {
     console.log('GET Request: /home');
     console.log(`Running ${this.name} controller`);
     res.status(200).sendFile(resolve('dist', 'main.html'));
-  }
+  };
 
   async postRegister(req, res) {
     console.log('POST Request: /user/register');
@@ -33,7 +33,7 @@ class UserCtrl {
     const payload = { id: newUser.id, email: newUser.email };
     const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1h' });
     return res.status(200).json({ newUser, token });
-  }
+  };
 
   async postLogin(req, res) {
     console.log('POST Request: /user/login');
@@ -51,7 +51,7 @@ class UserCtrl {
       return res.status(200).json({ success: true, token, id: user.id });
     }
     return res.status(401).json({ msg: 'error: wrong password!' });
-  }
+  };
 
   async postEmail(req, res) {
     console.log('POST Request: /user/email');
@@ -61,7 +61,82 @@ class UserCtrl {
     if (!email) return res.status(500).json({ msg: 'login error' });
     const user = await this.model.findOne({ where: { email } }); // user is the entire row in the DB
     return res.status(200).json({ success: true, name: user.name });
-  }
+  };
+  
+  async addFriends(req, res) {
+    console.log('POST Request: /user/friends');
+    console.log(req.body);
+    // Find current user
+    const { email, currentUserId } = req.body;
+    const currentUser = await this.model.findOne({
+      where: {
+        id: currentUserId,
+      },
+    });
+
+    console.log('current user', currentUser);
+    // try: query friend's email in db, if no such user,
+    // catch: throws error, front end will catch error to render error box
+
+    try {
+      // Find friend
+      const chosenFriend = await this.model.findOne({ where: { email } });
+      console.log('chosen friend', chosenFriend);
+      const { id, name } = chosenFriend;
+      const friendData = { id, email, name };
+
+      let updatedUser;
+      // if user currently has no friends
+      if (!currentUser.friendsUid) {
+        const friendsList = [];
+        friendsList.push(friendData);
+        updatedUser = await currentUser.update({ friendsUid: { friendsList } },
+          {
+            where: {
+              id: currentUserId,
+            },
+          });
+
+        console.log(updatedUser.friendsUid);
+      }
+      // if user has friends
+      else if (currentUser.friendsUid) {
+        const { friendsList } = currentUser.friendsUid;
+        const updatedFriendsList = [...friendsList, friendData];
+        updatedUser = await currentUser.update({ friendsUid: { friendsList: updatedFriendsList } },
+          {
+            where: {
+              id: currentUserId,
+            },
+          });
+      }
+      return res.status(200).send(
+        { isValid: true, updatedUser },
+      );
+    } catch (error) {
+      return res.status(400).send({ isValid: false });
+    }
+  };
+
+  async getFriends(req, res) {
+    // current user id sent via req.params
+    const { id } = req.params;
+    const currentUser = await this.model.findOne({
+      where: {
+        id,
+      },
+    });
+
+    // if user has no friends, front end will render no friends message
+    if (!currentUser.friendsUid) {
+      console.log('no friends');
+      return res.status(200).send(null);
+    }
+    // if user has friends, front end will render friends
+    const { friendsList } = currentUser.friendsUid;
+    return res.status(200).send(friendsList);
+  };
+
 
   async getSession(req, res) {
     console.log('GET Request: /user/session');
@@ -85,7 +160,8 @@ class UserCtrl {
       const result = await this.db.Match.create({ p1_id: userId, p2_id: matchId, parameters });
       console.log(result);
     } catch (err) {console.log(err)};
-  }
-}
+  };
+
+};
 
 export default UserCtrl;
