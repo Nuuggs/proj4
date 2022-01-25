@@ -59,17 +59,54 @@ class MatchCtrl {
   }
 
   async swipeUpdate(req, res) {
+    // Request.body = {restaurant_ID: integer, playerID, player1/player2 }
     const { restaurant_ID, player_Identity } = req.body;
     console.log(restaurant_ID);
-    console.log(player_Identity);
+    console.log(player_Identity); // must show whether p1 or p2 and with userID
+    const newData = {
+      restaurant_id: restaurant_ID,
+      p1_like: null,
+      p2_like: null,
+    };
 
-    const findData = await this.db.Matches.findAll({
+    // Placeholder for player_identity
+    if (player_Identity == 1) {
+      newData.p1_like = true;
+    } else {
+      newData.p2_like = true;
+    }
+    console.log('newdata', newData);
+    const findData = await this.db.Match.findAll({
       where: {
-        likes_list: {
-          restaurant_id: {
-            [Op.eq]: restaurant_ID,
-          },
-        },
+        p1_id: 3,
+      },
+    });
+
+    //     likes_list: {
+    //       restaurant_id: {
+    //         [Op.eq]: restaurant_ID,
+    //       },
+    //     },
+    //   },
+    // });
+    // if (!findData) {
+    //   const createSwipe = await this.db.Match.update({
+
+    //   });
+    // }
+    console.log('findData.match', findData[0]);
+    const resultSearch = findData[0].match;
+    console.log('resultSearc', resultSearch);
+    // const likeList = findData.match.likes_list;
+    // const updatedList = [...likeList, newData];
+    // console.log('UpdatedLIST', updatedList);
+    // console.log('likeList', likeList);
+    await this.db.Match.update({
+      likes_list: newData,
+    },
+    {
+      where: {
+        id: findData.match.id,
       },
     });
 
