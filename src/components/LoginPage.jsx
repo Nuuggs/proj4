@@ -22,8 +22,9 @@ const LoginPage = ({ setLandingState }) => {
     const loginObj = { email: email, name: name, password: password };
     axios.post('/user/login', loginObj)
       .then((res) => {
-        console.log(res.data);
+        console.log(res.data); // res.data.loginSuccess
         // setLandingState('login');
+        // if(res.data.loginSuccess) setAppState ...
       })
       .catch((err)=>console.log(err));
   }
