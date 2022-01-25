@@ -62,6 +62,30 @@ class UserCtrl {
     const user = await this.model.findOne({ where: { email } }); // user is the entire row in the DB
     return res.status(200).json({ success: true, name: user.name });
   }
+
+  async getSession(req, res) {
+    console.log('GET Request: /user/session');
+    // need to find a way to pass data into get request... if not use post
+
+    try {
+      const result = await this.db.Match.findOne({ where: { p2_id: 2 }})
+      if(!result)return res.json({sessionFound: false}); // return works... think of what to do with this return...
+      console.log(result);
+      console.log(result.id);
+      console.log(result.p1_id);
+      return res.json({sessionFound: true});
+    } catch (err) {console.log(err)};
+  }
+
+  async postSession(req, res) {
+    console.log('POST Request: /user/session/new');
+    console.log(req.body);
+    const {userId, matchId, parameters} = req.body;
+    try {
+      const result = await this.db.Match.create({ p1_id: userId, p2_id: matchId, parameters });
+      console.log(result);
+    } catch (err) {console.log(err)};
+  }
 }
 
 export default UserCtrl;

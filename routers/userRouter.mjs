@@ -11,5 +11,7 @@ const userCtrl = new UserCtrl('main', db.User, db);
 router.post('/register', userCtrl.postRegister.bind(userCtrl));
 router.post('/login', userCtrl.postLogin.bind(userCtrl));
 router.post('/email', userCtrl.postEmail.bind(userCtrl));
+router.get('/session', userCtrl.getSession.bind(userCtrl));
+router.post('/session/new', userCtrl.postSession.bind(userCtrl));
 
 export default router;
