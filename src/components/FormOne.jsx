@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  TextField, Card, CardContent, CardActions, Button, Autocomplete, Box,
+  TextField, Card, CardContent, Button, Autocomplete, Box,
 } from '@mui/material';
 
 import {
@@ -9,7 +9,9 @@ import {
   Autocomplete as GoogleAutocomplete,
 } from '@react-google-maps/api';
 
+import axios from 'axios';
 import mapStyles from '../mapStyles.js';
+import ErrorBoundary from './ErrorBoundaries.jsx';
 
 const libraries = ['places'];
 const mapContainerStyle = {
@@ -19,30 +21,21 @@ const mapContainerStyle = {
 };
 
 const PartnerChoice = ({ partner, setPartner }) => {
-  // Dummy users
-  const users = [
-    {
-      name: 'Doraemon',
-      email: 'doraemon@future.com',
-      password: 'doradora',
-    },
-    {
-      name: 'Nobita',
-      email: 'nobita@future.com',
-      password: 'nobinobi',
-    },
-    {
-      name: 'Shizuka',
-      email: 'shizuka@future.com',
-      password: 'shizushizu',
-    },
-    {
-      name: 'Dorami',
-      email: 'dorami@future.com',
-      password: 'doradora',
-    },
-  ];
+  const [friends, setFriends] = useState([]);
 
+  // Hardcoded local storage
+  localStorage.clear();
+  localStorage.setItem('userId', '2');
+  const currentUserId = localStorage.getItem('userId');
+  // AJAX Call: get friends of user from db
+  useEffect(() => {
+    axios.get(`/user/allFriends/${currentUserId}`)
+      .then((result) => {
+        setFriends(result.data);
+        console.log('axios get friends', result.data);
+      });
+  }, []);
+  console.log('friends', friends);
   const handleChange = (e, value) => {
     console.log(value);
     setPartner(value);
@@ -51,14 +44,20 @@ const PartnerChoice = ({ partner, setPartner }) => {
   return (
 
     <CardContent>
-      <Autocomplete
-        id="free-solo-demo"
-        onChange={handleChange}
+      {friends ? (
+        <Autocomplete
+          onChange={handleChange}
             // users array is mapped into options and rendered
-        options={users.map((option) => option.name)}
+          options={friends.map((option) => option.name)}
             // What does this line do?
-        renderInput={(params) => <TextField {...params} label="Pick a partner" />}
-      />
+          renderInput={(params) => <TextField {...params} label="Pick a partner" />}
+        />
+      )
+        : (
+          <div>
+            <h2>It seems like you don't have any friends yet. Make some friends!</h2>
+          </div>
+        )}
     </CardContent>
 
   );
@@ -137,7 +136,9 @@ const FormOne = ({ setFormOneParams, setFormState }) => {
   return (
     <div>
       <Card className="frosted-card">
-        <PartnerChoice partner={partner} setPartner={setPartner} />
+        <ErrorBoundary>
+          <PartnerChoice partner={partner} setPartner={setPartner} />
+        </ErrorBoundary>
         <Map coordinates={coordinates} setCoordinates={setCoordinates} />
       </Card>
       <Box className="center-box">
