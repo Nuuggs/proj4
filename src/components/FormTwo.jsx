@@ -3,6 +3,7 @@ import {
   TextField, Card, CardContent, CardActions, Button, Autocomplete, FormControl, InputLabel, Select, MenuItem, Box,
 } from '@mui/material';
 import { MobileDateTimePicker, LocalizationProvider } from '@mui/lab';
+import ArrowLeftOutlinedIcon from '@mui/icons-material/ArrowLeftOutlined';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 
 const FormTwo = (
@@ -37,6 +38,11 @@ const FormTwo = (
     setFormState(3);
   };
 
+  const handleGoBack = (e) => {
+    e.preventDefault();
+    setFormState(1);
+  };
+
   return (
     <Box>
       <Card
@@ -44,6 +50,13 @@ const FormTwo = (
       >
 
         <CardContent>
+          <CardActions>
+            <Button size="small" onClick={handleGoBack}>
+              <ArrowLeftOutlinedIcon fontSize="small" />
+
+              Previous
+            </Button>
+          </CardActions>
           {/* Date Time Picker */}
           <FormControl fullWidth sx={{ my: 1 }}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>

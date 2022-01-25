@@ -9,6 +9,8 @@ import {
   Autocomplete as GoogleAutocomplete,
 } from '@react-google-maps/api';
 
+import mapStyles from '../mapStyles.js';
+
 const libraries = ['places'];
 const mapContainerStyle = {
   marginTop: '10px',
@@ -83,6 +85,7 @@ const Map = ({ coordinates, setCoordinates }) => {
 
   // Google Map options, all UI disabled
   const options = {
+    styles: mapStyles,
     disableDefaultUI: true,
   };
   return (
