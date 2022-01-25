@@ -19,7 +19,7 @@ class UserCtrl {
     console.log('GET Request: /home');
     console.log(`Running ${this.name} controller`);
     res.status(200).sendFile(resolve('dist', 'main.html'));
-  };
+  }
 
   async postRegister(req, res) {
     console.log('POST Request: /user/register');
@@ -29,11 +29,11 @@ class UserCtrl {
       return res.status(500).json({ msg: 'registration error' });
     }
     const hash = await bcrypt.hash(password, Number(PW_SALT_ROUNDS));
-    const newUser = await this.model.create({ email, name, password: hash }); 
+    const newUser = await this.model.create({ email, name, password: hash });
     const payload = { id: newUser.id, email: newUser.email };
     const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1h' });
     return res.status(200).json({ newUser, token });
-  };
+  }
 
   async postLogin(req, res) {
     console.log('POST Request: /user/login');
@@ -46,12 +46,13 @@ class UserCtrl {
 
     const compare = await bcrypt.compare(password, user.password);
     if (compare) {
+      console.log('bcrypt compare is running ~~~~~~~');
       const payload = { id: user.id, username: user.username };
       const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1h' });
       return res.status(200).json({ success: true, token, id: user.id });
     }
     return res.status(401).json({ msg: 'error: wrong password!' });
-  };
+  }
 
   async postEmail(req, res) {
     console.log('POST Request: /user/email');
@@ -61,8 +62,8 @@ class UserCtrl {
     if (!email) return res.status(500).json({ msg: 'login error' });
     const user = await this.model.findOne({ where: { email } }); // user is the entire row in the DB
     return res.status(200).json({ success: true, name: user.name });
-  };
-  
+  }
+
   async addFriends(req, res) {
     console.log('POST Request: /user/friends');
     console.log(req.body);
@@ -116,9 +117,10 @@ class UserCtrl {
     } catch (error) {
       return res.status(400).send({ isValid: false });
     }
-  };
+  }
 
   async getFriends(req, res) {
+    console.log('GET Request: /user/allFriends/:id');
     // current user id sent via req.params
     const { id } = req.params;
     const currentUser = await this.model.findOne({
@@ -135,33 +137,31 @@ class UserCtrl {
     // if user has friends, front end will render friends
     const { friendsList } = currentUser.friendsUid;
     return res.status(200).send(friendsList);
-  };
-
+  }
 
   async getSession(req, res) {
     console.log('GET Request: /user/session');
     // need to find a way to pass data into get request... if not use post
 
     try {
-      const result = await this.db.Match.findOne({ where: { p2_id: 2 }})
-      if(!result)return res.json({sessionFound: false}); // return works... think of what to do with this return...
+      const result = await this.db.Match.findOne({ where: { p2_id: 2 } });
+      if (!result) return res.json({ sessionFound: false }); // return works... think of what to do with this return...
       console.log(result);
       console.log(result.id);
       console.log(result.p1_id);
-      return res.json({sessionFound: true});
-    } catch (err) {console.log(err)};
+      return res.json({ sessionFound: true });
+    } catch (err) { console.log(err); }
   }
 
   async postSession(req, res) {
     console.log('POST Request: /user/session/new');
     console.log(req.body);
-    const {userId, matchId, parameters} = req.body;
+    const { userId, matchId, parameters } = req.body;
     try {
       const result = await this.db.Match.create({ p1_id: userId, p2_id: matchId, parameters });
       console.log(result);
-    } catch (err) {console.log(err)};
-  };
-
-};
+    } catch (err) { console.log(err); }
+  }
+}
 
 export default UserCtrl;

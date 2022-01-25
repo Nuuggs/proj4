@@ -14,7 +14,7 @@ const MainPage = ({ setLandingState }) => (
 
 );
 
-const LandingPage = () => {
+const LandingPage = ({ setAppState }) => {
   const [landingState, setLandingState] = useState('main');
 
   return (
@@ -23,7 +23,7 @@ const LandingPage = () => {
       <div className="main-container">
         { landingState === 'main' && <MainPage setLandingState={setLandingState} /> }
         { landingState === 'register' && <RegisterPage setLandingState={setLandingState} /> }
-        { landingState === 'login' && <LoginPage setLandingState={setLandingState} /> }
+        { landingState === 'login' && <LoginPage setLandingState={setLandingState} setAppState={setAppState} /> }
       </div>
     </div>
 

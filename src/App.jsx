@@ -15,10 +15,10 @@ export default function App() {
   const [appState, setAppState] = useState('landing');
   return (
     <>
-    { appState === 'landing' && <LandingPage /> }
-    { appState === 'session' && <SessionPage /> }
-    { appState === 'friends' && <AddFriends /> }
-    { appState === 'form' && <MainForm /> }
+      { appState === 'landing' && <LandingPage appState={appState} setAppState={setAppState} /> }
+      { appState === 'session' && <SessionPage appState={appState} setAppState={setAppState} /> }
+      { appState === 'friends' && <AddFriends appState={appState} setAppState={setAppState} /> }
+      { appState === 'form' && <MainForm appState={appState} setAppState={setAppState} /> }
     </>
 
   );
