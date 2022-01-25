@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import LandingPage from './components/LandingPage.jsx';
+import { AddFriends } from './components/FriendsPage.jsx';
 import MainForm from './components/MainForm.jsx';
 import axios from 'axios';
+
 
 const SessionPage = () => {
   const [sessionState, setSessionState] = useState(false);
@@ -22,9 +24,6 @@ const SessionPage = () => {
   };
 
   return (
-<<<<<<< HEAD
-    <LandingPage />
-=======
     <div className="session-page">
       <div className="session-display">
         {sessionState
@@ -39,7 +38,7 @@ const SessionPage = () => {
     </div>
   );
 };
->>>>>>> 3a5ddde77a1daffadff0dc7c30dc879bba3a8418
+
 
 export default function App() {
   // Global states
@@ -50,7 +49,9 @@ export default function App() {
   */
   const [appState, setAppState] = useState('landing');
   return (
+    // <LandingPage />
+    // <AddFriends />
     // <MainForm />
     <SessionPage />
   );
-}
+};
