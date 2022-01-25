@@ -40,7 +40,7 @@ const FormTwo = (
   return (
     <Box>
       <Card
-        className="light-card"
+        className="frosted-card"
       >
 
         <CardContent>

@@ -11,7 +11,8 @@ import {
 
 const libraries = ['places'];
 const mapContainerStyle = {
-  width: '264px',
+  marginTop: '10px',
+  width: '228px',
   height: '280px',
 };
 
@@ -44,33 +45,20 @@ const PartnerChoice = ({ partner, setPartner }) => {
     console.log(value);
     setPartner(value);
   };
-  // const handleClick = (e) => {
-  //   e.preventDefault();
-  //   console.log('partner click running');
-  //   // post object somewhere here
-  //   console.log(partner);
-  // };
 
   return (
-    <>
-      <Card className="frosted-card">
-        <CardContent>
-          <Autocomplete
-            id="free-solo-demo"
-            onChange={handleChange}
+
+    <CardContent>
+      <Autocomplete
+        id="free-solo-demo"
+        onChange={handleChange}
             // users array is mapped into options and rendered
-            options={users.map((option) => option.name)}
+        options={users.map((option) => option.name)}
             // What does this line do?
-            renderInput={(params) => <TextField {...params} label="Partner" />}
+        renderInput={(params) => <TextField {...params} label="Pick a partner" />}
+      />
+    </CardContent>
 
-          />
-        </CardContent>
-        {/* <CardActions>
-          <Button size="small" onClick={handleClick}>Confirm</Button>
-        </CardActions> */}
-
-      </Card>
-    </>
   );
 };
 
@@ -98,29 +86,24 @@ const Map = ({ coordinates, setCoordinates }) => {
     disableDefaultUI: true,
   };
   return (
-    <div>
-      <Card className="frosted-card">
-        <CardContent>
 
-          <GoogleAutocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
-            <TextField
-              sx={{
-                width: '228px',
-              }}
-              label="Search"
-              variant="outlined"
-            />
-          </GoogleAutocomplete>
-        </CardContent>
-        <GoogleMap
-          mapContainerStyle={mapContainerStyle}
-          zoom={14}
-          center={coordinates}
-          options={options}
+    <CardContent>
+      <GoogleAutocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
+        <TextField
+          sx={{
+            width: '228px',
+          }}
+          label="Search"
+          variant="outlined"
         />
-      </Card>
-
-    </div>
+      </GoogleAutocomplete>
+      <GoogleMap
+        mapContainerStyle={mapContainerStyle}
+        zoom={14}
+        center={coordinates}
+        options={options}
+      />
+    </CardContent>
 
   );
 };
@@ -150,16 +133,12 @@ const FormOne = ({ setFormOneParams, setFormState }) => {
 
   return (
     <div>
-      <div className="center-box">
-        <h2>Who are you eating with?</h2>
-      </div>
-      <PartnerChoice partner={partner} setPartner={setPartner} />
-      <div className="center-box">
-        <h2>Where are you eating at?</h2>
-      </div>
-      <Map coordinates={coordinates} setCoordinates={setCoordinates} />
+      <Card className="frosted-card">
+        <PartnerChoice partner={partner} setPartner={setPartner} />
+        <Map coordinates={coordinates} setCoordinates={setCoordinates} />
+      </Card>
       <Box className="center-box">
-        <Button sx={{ width: '280px' }} variant="contained" onClick={handleClick}>Next</Button>
+        <Button className="wide-button" variant="contained" onClick={handleClick}>Next</Button>
       </Box>
 
     </div>
