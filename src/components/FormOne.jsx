@@ -20,12 +20,10 @@ const mapContainerStyle = {
   height: '280px',
 };
 
-const PartnerChoice = ({ partner, setPartner }) => {
+const PartnerChoice = ({ partner, setPartner, setAppState }) => {
   const [friends, setFriends] = useState([]);
 
-  // Hardcoded local storage
-  localStorage.clear();
-  localStorage.setItem('userId', '2');
+  // Get curren user id from local storage
   const currentUserId = localStorage.getItem('userId');
   // AJAX Call: get friends of user from db
   useEffect(() => {
@@ -41,21 +39,32 @@ const PartnerChoice = ({ partner, setPartner }) => {
     setPartner(value);
   };
 
+  const addFriendsClick = (e) => {
+    e.preventDefault();
+    setAppState('friends');
+  };
+
   return (
 
     <CardContent>
       {friends ? (
-        <Autocomplete
-          onChange={handleChange}
+        <div>
+          <Autocomplete
+            onChange={handleChange}
             // users array is mapped into options and rendered
-          options={friends.map((option) => option.name)}
+            options={friends.map((option) => option.name)}
             // What does this line do?
-          renderInput={(params) => <TextField {...params} label="Pick a partner" />}
-        />
+            renderInput={(params) => <TextField {...params} label="Pick a partner" />}
+          />
+          <Button size="small" onClick={addFriendsClick}>
+            Add Friend
+          </Button>
+        </div>
       )
         : (
           <div>
-            <h2>It seems like you don't have any friends yet. Make some friends!</h2>
+            <h2>It seems like you don't have any friends yet.</h2>
+            <Button size="small" onClick={addFriendsClick}>Add friends</Button>
           </div>
         )}
     </CardContent>
@@ -110,7 +119,7 @@ const Map = ({ coordinates, setCoordinates }) => {
   );
 };
 
-const FormOne = ({ setFormOneParams, setFormState }) => {
+const FormOne = ({ setFormOneParams, setFormState, setAppState }) => {
   const [partner, setPartner] = useState('');
   const [coordinates, setCoordinates] = useState({
     // Singapore's coordinates
@@ -137,7 +146,7 @@ const FormOne = ({ setFormOneParams, setFormState }) => {
     <div>
       <Card className="frosted-card">
         <ErrorBoundary>
-          <PartnerChoice partner={partner} setPartner={setPartner} />
+          <PartnerChoice partner={partner} setPartner={setPartner} setAppState={setAppState} />
         </ErrorBoundary>
         <Map coordinates={coordinates} setCoordinates={setCoordinates} />
       </Card>

@@ -1,22 +1,27 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const SessionPage = () => {
+const SessionPage = ({ setAppState }) => {
   const [sessionState, setSessionState] = useState(false);
-
+  // retrieve current user id from local storage
+  const userId = localStorage.getItem('userId');
+  console.log('current user id', userId);
   // On load, make a get request to see if there are
   useEffect(() => {
-    axios.get('/user/session')
+    axios.get(`/user/session/${userId}`)
       .then((res) => {
         console.log(res);
-        if (!res) return console.log('no current session');
+        const { sessionFound } = res.data;
+        if (!sessionFound) return console.log('no current session');
         setSessionState(true);
       })
       .catch((err) => console.log(err));
   }, []);
 
   const createNewSession = () => {
-    axios.post('/user/session/new', { userId: 1, matchId: 2, parameters: 'pseudo-data' });
+    // HP: I think the AJAX call should be made when we submit the form
+    // axios.post('/user/session/new', { userId: 1, matchId: 2, parameters: 'pseudo-data' });
+    setAppState('form');
   };
 
   return (

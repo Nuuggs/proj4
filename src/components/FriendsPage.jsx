@@ -52,7 +52,6 @@ const AddFriends = () => {
   const [friendsList, setFriendsList] = useState(null);
 
   // get user id from local storage
-  localStorage.setItem('userId', '2');
   const currentUserId = localStorage.getItem('userId');
 
   const [isValid, setValidity] = useState(null);

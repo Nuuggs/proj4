@@ -29,7 +29,7 @@ const FormComplete = ({ formTwoParams, formOneParams }) => {
   );
 };
 
-const MainForm = () => {
+const MainForm = ({ setAppState }) => {
   const [formState, setFormState] = useState(1);
   const [formOneParams, setFormOneParams] = useState('');
   const [formTwoParams, setFormTwoParams] = useState('');
@@ -49,7 +49,7 @@ const MainForm = () => {
         </h1>
       </div>
       <ThemeProvider theme={mainTheme}>
-        {formState === 1 && <FormOne setFormOneParams={setFormOneParams} setFormState={setFormState} />}
+        {formState === 1 && <FormOne setFormOneParams={setFormOneParams} setFormState={setFormState} setAppState={setAppState} />}
 
         {formState === 2 && <FormTwo setFormTwoParams={setFormTwoParams} setFormState={setFormState} />}
 
