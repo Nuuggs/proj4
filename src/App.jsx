@@ -12,7 +12,7 @@ export default function App() {
   // <MainForm />
     <div>
       <RestaurantPage />
-      <CardsButtons />
+
     </div>
   );
 }

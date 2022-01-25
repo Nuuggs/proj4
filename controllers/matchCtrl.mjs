@@ -58,6 +58,14 @@ class MatchCtrl {
     res.status(200).send({ createdDB: createSession });
   }
 
+  async swipeUpdate(req, res) {
+    const { restaurant_ID, player_Identity } = req.body;
+    console.log(restaurant_ID);
+    console.log(player_Identity);
+
+    res.status(200).send({ restaurantID: restaurant_ID });
+  }
+
   async getCard(req, res) {
     console.log('GET Request: /card');
     console.log(`Running ${this.name} controller`);
