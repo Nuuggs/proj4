@@ -94,8 +94,11 @@ class MatchCtrl {
 
     //   });
     // }
+    console.log('id test', findData[0].id);
+    // console.log(typeof findData[0]);
+    // console.log(JSON.stringify(findData[0]));
     console.log('findData.match', findData[0]);
-    const resultSearch = findData[0].match;
+    const resultSearch = findData[0];
     console.log('resultSearc', resultSearch);
     // const likeList = findData.match.likes_list;
     // const updatedList = [...likeList, newData];
@@ -106,7 +109,7 @@ class MatchCtrl {
     },
     {
       where: {
-        id: findData.match.id,
+        id: findData[0].id,
       },
     });
 
