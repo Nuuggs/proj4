@@ -1,6 +1,4 @@
-import React, {
-  useState, useEffect, useMemo, useRef,
-} from 'react';
+import React, {useState, useEffect, useMemo, useRef,} from 'react';
 import TinderCard from 'react-tinder-card';
 import '../styles.scss';
 import axios from 'axios';
@@ -22,7 +20,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 //     this.textInput.current.focus();
 //   }
 
-const RestaurantPage = () => {
+const RestaurantPage = ({ appState, setAppState, appParams }) => {
   const [restaurantCard, setRestaurantCard] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(restaurantCard.length - 1);
   const [testIndex, setTestIndex] = useState();
@@ -31,6 +29,10 @@ const RestaurantPage = () => {
   useEffect(() => {
     async function fetchData() {
       console.log('This is running');
+      
+      // THIS IS PARAMS FROM FORM
+      console.log('App Params: ',appParams);
+
       // Placeholder for hardcoded test
       const allParams = {
         coordinates: { lat: 1.2940, lng: 103.8531 },

@@ -17,16 +17,17 @@ export default function App() {
 
   */
   const [appState, setAppState] = useState('landing');
+  const [appParams, setAppParams] = useState({});
   return (
     <>
       <ThemeProvider theme={mainTheme}>
         { appState === 'landing' && <LandingPage appState={appState} setAppState={setAppState} /> }
         { appState === 'session' && <SessionPage appState={appState} setAppState={setAppState} /> }
         { appState === 'friends' && <AddFriends appState={appState} setAppState={setAppState} /> }
-        { appState === 'form' && <MainForm appState={appState} setAppState={setAppState} /> }
+        { appState === 'form' && <MainForm appState={appState} setAppState={setAppState} setAppParams={setAppParams} /> }
         {appState !== 'landing' && <Navigation appState={appState} setAppState={setAppState} />}
+        { appState === 'restaurant' && <RestaurantPage appState={appState} setAppState={setAppState} appParams={appParams} /> }
       </ThemeProvider>
-      {/* <RestaurantPage /> */}
     </>
 
   );

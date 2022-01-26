@@ -27,7 +27,6 @@ class MatchCtrl {
     const { lat } = coordinates;
     const { lng } = coordinates;
     console.log('coordinates', coordinates);
-
     console.log('lat', lat);
     console.log('lng', lng);
 
@@ -37,7 +36,7 @@ class MatchCtrl {
     const response = await axios.get(url);
     // console.log('response to gAPI', response);
     const searchResult = response.data;
-    console.log(searchResult);
+    console.log('search result: ', searchResult);
 
     const initLikesList = [{ restaurant_id: 'null', likes: { p1_like: 'null', p2_like: 'null' } }];
 
@@ -56,6 +55,7 @@ class MatchCtrl {
   }
 
   async swipeUpdate(req, res) {
+    console.log('POST Request: /swipe');
     // Request.body = {restaurant_ID: integer, playerID, player1/player2 }
     const { restaurant_ID, player_Identity } = req.body;
     console.log(restaurant_ID);
