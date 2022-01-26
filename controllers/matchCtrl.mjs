@@ -97,7 +97,7 @@ class MatchCtrl {
     console.log('id test', findData[0].id);
     // console.log(typeof findData[0]);
     // console.log(JSON.stringify(findData[0]));
-    console.log('findData.match', findData[0]);
+    console.log('findData[0] :', findData[0]);
     const resultSearch = findData[0];
     console.log('resultSearc', resultSearch);
     // const likeList = findData.match.likes_list;
