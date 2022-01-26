@@ -87,10 +87,10 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
       // If swiped direction is right - do a axios.post to DB to store data
 
       // dummy player identity (either p1 or p2) post to backend - to work on further with team
-      const getUserID = window.localStorage.getItem('userId');
-      console.log('userId local', getUserID);
-
-      const playerIdentity = 'p1';
+      const getUser1Id = window.localStorage.getItem('userId');
+      const getUser2Id = localStorage.getItem('p2Id');
+      console.log('userId local', getUser1Id);
+      console.log('user2d local', getUser2Id);
 
       // // dummy placeholder to check if player is p1 or p2
       // if (playerIdentity == p1) {
@@ -101,7 +101,8 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
 
       const data = {
         restaurant_ID: restaurantID,
-        player_Identity: playerIdentity,
+        player1_Identity: getUser1Id,
+        player2_Identity: getUser2Id,
       };
 
       await axios.post('/swipe', data);

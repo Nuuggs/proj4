@@ -6,7 +6,9 @@ import mainTheme from '../theme.jsx';
 import { FormOne } from './FormOne.jsx';
 import { FormTwo } from './FormTwo.jsx';
 
-const FormComplete = ({ formTwoParams, formOneParams, setAppState, setAppParams }) => {
+const FormComplete = ({
+  formTwoParams, formOneParams, setAppState, setAppParams,
+}) => {
   const message = 'Fetching Data';
   const currentUserId = { currentUserId: localStorage.getItem('userId') };
 
@@ -21,12 +23,11 @@ const FormComplete = ({ formTwoParams, formOneParams, setAppState, setAppParams 
     // testing
 
     console.log('all params', allParams);
+    localStorage.setItem('p2Id', allParams.partner);
     // AJAX request
     // axios.post('/user/session/new', { userId: 1, matchId: 2, parameters: 'pseudo-data' });
     setAppParams(allParams);
     setAppState('restaurant');
-
-
   }, []);
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>

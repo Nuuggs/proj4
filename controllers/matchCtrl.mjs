@@ -27,15 +27,14 @@ class MatchCtrl {
     const { lat } = coordinates;
     const { lng } = coordinates;
     const userId = Number(currentUserId);
-    const partnerUserId = Number(partner)
+    const partnerUserId = Number(partner);
     console.log('coordinates', coordinates);
     console.log('partner user ID', partnerUserId);
 
     console.log('lat', lat);
     console.log('lng', lng);
-    console.log('currentUserId', currentUserId)
-    console.log('partner:', partner)
-
+    console.log('currentUserId', currentUserId);
+    console.log('partner:', partner);
 
     // Get URL request to google for nearby places Data
     const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=2000&type=restaurant&keyword=${cuisine}`;
@@ -63,25 +62,45 @@ class MatchCtrl {
 
   async swipeUpdate(req, res) {
     // Request.body = {restaurant_ID: integer, playerID, player1/player2 }
-    const { restaurant_ID, player_Identity } = req.body;
+    const { restaurant_ID, player1_Identity, player2_Identity } = req.body;
     console.log(restaurant_ID);
-    console.log(player_Identity); // must show whether p1 or p2 and with userID
+
+    const p1Id = Number(player1_Identity);
+    const p2Id = Number(player2_Identity);
+
+    console.log('p1Id:', p1Id);
+    console.log('p2Id:', p2Id);
+
     const newData = {
       restaurant_id: restaurant_ID,
       p1_like: null,
       p2_like: null,
     };
 
-    // Placeholder for player_identity
-    if (player_Identity == 'p1') {
+    // We match based on session ID - entire row
+    // based on result we identify current user as p1 or p2
+    // Update like list accordingly
+
+    // /*****
+    //  *****
+    //  ***** 
+    //  * 
+    //  * Placeholder for how to check player_identity
+    //  * 
+    //  ****** 
+    //  *******/
+    if (player1_Identity == 'p1') {
       newData.p1_like = true;
     } else {
       newData.p2_like = true;
     }
+
+
     console.log('newdata', newData);
     const findData = await this.db.Match.findAll({
       where: {
-        p1Id: 7,
+        p1Id: p1Id,
+        p2Id: p2Id,
       },
     });
 
@@ -97,10 +116,8 @@ class MatchCtrl {
 
     //   });
     // }
-    console.log('id test', findData[0].id);
-    // console.log(typeof findData[0]);
-    // console.log(JSON.stringify(findData[0]));
-    console.log('findData[0] :', findData[0]);
+    // console.log('id test', findData[0].id);
+    // console.log('findData[0] :', findData[0]);
     const resultSearch = findData[0];
     console.log('resultSearc', resultSearch);
     // const likeList = findData.match.likes_list;
