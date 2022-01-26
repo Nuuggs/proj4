@@ -1,34 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {
+  TextField, Card, CardContent, Button, Autocomplete, Box,
+} from '@mui/material';
 
-const SessionPage = ({ setAppState }) => {
-  const [sessionState, setSessionState] = useState(false);
+const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
   // retrieve current user id from local storage
   const userId = localStorage.getItem('userId');
   console.log('current user id', userId);
+
   // On load, make a get request to see if there are
   useEffect(() => {
     axios.get(`/user/session/${userId}`)
       .then((res) => {
         console.log(res);
-        const { sessionFound } = res.data;
+        if (sessionFound) {
+          const { id } = res.data;
+          setSessionId(id);
+        }
         if (!sessionFound) return console.log('no current session');
-        setSessionState(true);
       })
       .catch((err) => console.log(err));
   }, []);
 
   const createNewSession = () => {
-    // HP: I think the AJAX call should be made when we submit the form
-
     setAppState('form');
+  };
+
+  const joinSession = () => {
+    console.log('need to join some session');
+  };
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    // Packaging same page info into object
   };
 
   return (
 
-    <div className="session-page">
-      <div className="session-display">
-        {sessionState
+    <div>
+      <Card className="frosted-card">
+        {sessionId
           ? (
             <p>
               SOMEONE... has invited you to join a session...
@@ -37,11 +49,16 @@ const SessionPage = ({ setAppState }) => {
             </p>
           )
           : <p>You have no existing sessions open, create a new session!</p>}
-      </div>
-      <div className="session-buttons">
-        {sessionState ? <button>Join Session</button> : <button disabled>Join Session</button>}
-        <button onClick={createNewSession}>Create Session</button>
-      </div>
+      </Card>
+      <Box className="center-box">
+        <Button className="wide-button" variant="contained" onClick={createNewSession}>Create New Session</Button>
+      </Box>
+      <Box className="center-box">
+        {sessionId
+          ? <Button className="wide-button" variant="contained" onClick={joinSession}>Join Session</Button>
+          : <Button disabled className="wide-button" variant="contained" onClick={joinSession}>Join Session</Button>}
+      </Box>
+
     </div>
   );
 };

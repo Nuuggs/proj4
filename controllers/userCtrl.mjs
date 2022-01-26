@@ -163,11 +163,13 @@ class UserCtrl {
 
     try {
       const result = await this.db.Match.findOne({ where: { p2_id: id } });
-      if (!result) return res.json({ sessionFound: false }); // return works... think of what to do with this return...
-      console.log(result);
-      console.log(result.id);
-      console.log(result.p1_id);
-      return res.json({ sessionFound: true });
+      if (!result) return res.json({ sessionFound: false });
+
+      console.log('result from session query', result);
+      // pass session id if session found
+      const { id } = result;
+
+      return res.status(200).json({ sessionFound: true, id });
     } catch (err) { console.log(err); }
   }
 
