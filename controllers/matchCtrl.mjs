@@ -40,9 +40,9 @@ class MatchCtrl {
     const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=2000&type=restaurant&keyword=${cuisine}`;
 
     const response = await axios.get(url);
-    // console.log('response to gAPI', response);
+    
     const searchResult = response.data;
-    // console.log(searchResult);
+    
 
     const initLikesList = [{ restaurant_id: 'null', likes: { p1_like: 'null', p2_like: 'null' } }];
 
@@ -77,18 +77,7 @@ class MatchCtrl {
       p2_like: null,
     };
 
-    // We match based on session ID - entire row
-    // based on result we identify current user as p1 or p2
-    // Update like list accordingly
 
-    // /*****
-    //  *****
-    //  ***** 
-    //  * 
-    //  * Placeholder for how to check player_identity
-    //  * 
-    //  ****** 
-    //  *******/
     if (player1_Identity == 'p1') {
       newData.p1_like = true;
     } else {
@@ -104,26 +93,10 @@ class MatchCtrl {
       },
     });
 
-    //     likes_list: {
-    //       restaurant_id: {
-    //         [Op.eq]: restaurant_ID,
-    //       },
-    //     },
-    //   },
-    // });
-    // if (!findData) {
-    //   const createSwipe = await this.db.Match.update({
-
-    //   });
-    // }
-    // console.log('id test', findData[0].id);
-    // console.log('findData[0] :', findData[0]);
+  
     const resultSearch = findData[0];
     console.log('resultSearc', resultSearch);
-    // const likeList = findData.match.likes_list;
-    // const updatedList = [...likeList, newData];
-    // console.log('UpdatedLIST', updatedList);
-    // console.log('likeList', likeList);
+ 
     await this.db.Match.update({
       likes_list: newData,
     },
