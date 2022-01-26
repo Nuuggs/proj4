@@ -7,6 +7,7 @@ import MainForm from './components/FormPage.jsx';
 import SessionPage from './components/SessionPage.jsx';
 import Navigation from './components/NavBar.jsx';
 import mainTheme from './theme.jsx';
+import RestaurantPage from './components/RestaurantCard.jsx';
 
 export default function App() {
   // Global states
@@ -25,6 +26,7 @@ export default function App() {
         { appState === 'form' && <MainForm appState={appState} setAppState={setAppState} /> }
         {appState !== 'landing' && <Navigation appState={appState} setAppState={setAppState} />}
       </ThemeProvider>
+      {/* <RestaurantPage /> */}
     </>
 
   );

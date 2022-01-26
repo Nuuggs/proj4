@@ -21,7 +21,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       friends_uid: {
-        type: Sequelize.JSON,
+        type: Sequelize.JSONB,
       },
       created_at: {
         allowNull: false,

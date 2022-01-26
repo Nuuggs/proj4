@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 dotenv.config();
 
 const { PW_SALT_ROUNDS, JWT_SALT } = process.env;
-
+console.log('processenv', process.env)
 class UserCtrl {
   constructor(name, model, db) {
     this.name = name;
@@ -32,6 +32,7 @@ class UserCtrl {
     const newUser = await this.model.create({ email, name, password: hash });
     const payload = { id: newUser.id, email: newUser.email };
     const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1h' });
+    console.log(hash, newUser, token, payload)
     return res.status(200).json({ newUser, token });
   }
 
