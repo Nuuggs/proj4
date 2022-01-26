@@ -20,6 +20,7 @@ router.get('/allFriends/:id', userCtrl.getFriends.bind(userCtrl));
 
 // routes for session functionality
 router.get('/session/:id', userCtrl.getSession.bind(userCtrl));
-router.post('/session/new', userCtrl.postSession.bind(userCtrl));
+// To be deleted, route moved to /match
+// router.post('/session/new', userCtrl.postSession.bind(userCtrl));
 
 export default router;

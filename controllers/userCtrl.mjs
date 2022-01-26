@@ -155,15 +155,16 @@ class UserCtrl {
     } catch (err) { console.log(err); }
   }
 
-  async postSession(req, res) {
-    console.log('POST Request: /user/session/new');
-    console.log(req.body);
-    const { userId, matchId, parameters } = req.body;
-    try {
-      const result = await this.db.Match.create({ p1_id: userId, p2_id: matchId, parameters });
-      console.log(result);
-    } catch (err) { console.log(err); }
-  }
+  // To be deleted: this has been moved to /match
+  // async postSession(req, res) {
+  //   console.log('POST Request: /user/session/new');
+  //   console.log(req.body);
+  //   const { userId, matchId, parameters } = req.body;
+  //   try {
+  //     const result = await this.db.Match.create({ p1_id: userId, p2_id: matchId, parameters });
+  //     console.log(result);
+  //   } catch (err) { console.log(err); }
+  // }
 }
 
 export default UserCtrl;
