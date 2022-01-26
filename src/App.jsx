@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ThemeProvider } from '@mui/material/styles';
-import LandingPage from './components/LandingPage.jsx';
+import UserAuth from './components/NewLoginPage.jsx';
 import { AddFriends } from './components/FriendsPage.jsx';
 import MainForm from './components/FormPage.jsx';
 import SessionPage from './components/SessionPage.jsx';
@@ -19,7 +19,7 @@ export default function App() {
   return (
     <>
       <ThemeProvider theme={mainTheme}>
-        { appState === 'landing' && <LandingPage appState={appState} setAppState={setAppState} /> }
+        { appState === 'landing' && <UserAuth appState={appState} setAppState={setAppState} /> }
         { appState === 'session' && <SessionPage appState={appState} setAppState={setAppState} /> }
         { appState === 'friends' && <AddFriends appState={appState} setAppState={setAppState} /> }
         { appState === 'form' && <MainForm appState={appState} setAppState={setAppState} /> }
