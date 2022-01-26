@@ -1,18 +1,88 @@
 body {
-  background-color: rgb(223, 195, 195);
+  background-color: var(--grey-color);
 }
 
-.map {
-  width: 100px;
-  height: 100px;
-}
-.mapContainer {
-  height: "85vh";
-  width: "100%";
+:root {
+  --primary-color: #e29426;
+  --light-color: #e7cdb6;
+  --plain-color: white;
+  --dark-color: #51682b;
+  --grey-color: #f3f1ec;
+  --frosted: rgba(255, 255, 255, 0.466);
+  --light-frosted: #e7cdb6c0;
 }
 
-.autocomplete-bar {
-  width: 200px;
+// cards with different colors
+.plain-card {
+  width: 280px;
+  padding: 10px 10px 0 10px;
+  margin: 20px auto 20px auto;
+  background-color: var(--plain-color) !important;
+}
+
+.primary-card {
+  width: 280px;
+  padding: 10px 10px 0 10px;
+  margin: 20px auto 0 auto;
+  background-color: var(--primary-color) !important;
+}
+
+.light-card {
+  width: 280px;
+  padding: 10px 10px 0 10px;
+  margin: 20px auto 20px auto;
+  background-color: var(--light-color) !important;
+}
+
+.frosted-card {
+  width: 280px;
+  padding: 10px 10px 0 10px;
+  margin: 20px auto 20px auto;
+  background-color: var(--light-frosted) !important;
+  backdrop-filter: blur(10px);
+}
+
+// buttons at bottom of form, same width as card, place in div className center-box to center
+.center-box {
+  display: flex;
+  justify-content: center;
+}
+
+.wide-button {
+  width: 280px;
+  letter-spacing: 1px;
+}
+
+// wrap header text in h1, and place in div with className header-box
+.header-box {
+  display: flex;
+  justify-content: right;
+  width: 320px;
+  margin-top: 10px;
+}
+
+h1 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  text-transform: uppercase;
+  font-size: 30px;
+  letter-spacing: 1px;
+  line-height: 80%;
+  text-align: right;
+  color: var(--dark-color);
+  margin: 20px 20px 0 20px;
+}
+
+h2 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  text-transform: uppercase;
+  font-size: 16px;
+  letter-spacing: 1px;
+  line-height: 85%;
+  text-align: center;
+  color: var(--dark-color);
+  margin: 20px 20px 0 20px;
 }
 
 // // Restaurant Cards CSS

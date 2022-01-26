@@ -1,84 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  TextField, Card, CardContent, CardActions, Button, Autocomplete, Box,
+  TextField, Card, CardContent, Button, Autocomplete, Box,
 } from '@mui/material';
+
 import {
   GoogleMap,
   useLoadScript,
   Autocomplete as GoogleAutocomplete,
 } from '@react-google-maps/api';
 
+import axios from 'axios';
+import mapStyles from '../mapStyles.js';
+import ErrorBoundary from './ErrorBoundaries.jsx';
+
 const libraries = ['places'];
 const mapContainerStyle = {
-  width: '264px',
+  marginTop: '10px',
+  width: '228px',
   height: '280px',
 };
 
-const PartnerChoice = ({ partner, setPartner }) => {
-  // Dummy users
-  const users = [
-    {
-      name: 'Doraemon',
-      email: 'doraemon@future.com',
-      password: 'doradora',
-    },
-    {
-      name: 'Nobita',
-      email: 'nobita@future.com',
-      password: 'nobinobi',
-    },
-    {
-      name: 'Shizuka',
-      email: 'shizuka@future.com',
-      password: 'shizushizu',
-    },
-    {
-      name: 'Dorami',
-      email: 'dorami@future.com',
-      password: 'doradora',
-    },
-  ];
+const PartnerChoice = ({ partner, setPartner, setAppState }) => {
+  const [friends, setFriends] = useState([]);
 
+  // Get curren user id from local storage
+  const currentUserId = localStorage.getItem('userId');
+  // AJAX Call: get friends of user from db
+  useEffect(() => {
+    axios.get(`/user/allFriends/${currentUserId}`)
+      .then((result) => {
+        setFriends(result.data);
+        console.log('axios get friends', result.data);
+      });
+  }, []);
+  console.log('friends', friends);
   const handleChange = (e, value) => {
-    console.log(value);
-    setPartner(value);
+    // sets chosen partner's uid
+    console.log('partner value', value.id);
+    setPartner(`${value.id}`);
   };
-  // const handleClick = (e) => {
-  //   e.preventDefault();
-  //   console.log('partner click running');
-  //   // post object somewhere here
-  //   console.log(partner);
-  // };
+
+  const addFriendsClick = (e) => {
+    e.preventDefault();
+    setAppState('friends');
+  };
 
   return (
-    <>
-      <Card
-        sx={{
-          width: 280,
-          backgroundColor: 'primary',
-          pt: 1,
-          px: 1,
-          my: 2,
-          mx: 'auto',
-        }}
-      >
-        <CardContent>
+
+    <CardContent>
+      {friends ? (
+        <div>
           <Autocomplete
-            id="free-solo-demo"
             onChange={handleChange}
-            // users array is mapped into options and rendered
-            options={users.map((option) => option.name)}
+            // sets options as friends array
+            options={friends}
+            // renders name of each element of friends
+            getOptionLabel={(option) => option.name}
             // What does this line do?
-            renderInput={(params) => <TextField {...params} label="Partner" />}
-
+            renderInput={(params) => <TextField {...params} label="Pick a partner" />}
           />
-        </CardContent>
-        {/* <CardActions>
-          <Button size="small" onClick={handleClick}>Confirm</Button>
-        </CardActions> */}
+          <Button size="small" onClick={addFriendsClick}>
+            Add Friend
+          </Button>
+        </div>
+      )
+        : (
+          <div>
+            <h2>It seems like you don't have any friends yet.</h2>
+            <Button size="small" onClick={addFriendsClick}>Add friends</Button>
+          </div>
+        )}
+    </CardContent>
 
-      </Card>
-    </>
   );
 };
 
@@ -103,40 +96,33 @@ const Map = ({ coordinates, setCoordinates }) => {
 
   // Google Map options, all UI disabled
   const options = {
+    styles: mapStyles,
     disableDefaultUI: true,
   };
   return (
-    <div>
-      <Card
-        sx={{
-          width: 280,
-          backgroundColor: 'primary',
-          pt: 1,
-          px: 1,
-          my: 2,
-          mx: 'auto',
-        }}
-      >
-        <GoogleAutocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
-          <TextField sx={{ mt: 2, mb: 1, width: '264px' }} id="standard-basic" label="Search" variant="standard" />
-        </GoogleAutocomplete>
-        <GoogleMap
-          mapContainerStyle={mapContainerStyle}
-          zoom={14}
-          center={coordinates}
-          options={options}
-        />
-        {/* <CardActions>
-          <Button size="small" onClick={handleClick}>Confirm</Button>
-        </CardActions> */}
-      </Card>
 
-    </div>
+    <CardContent>
+      <GoogleAutocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
+        <TextField
+          sx={{
+            width: '228px',
+          }}
+          label="Search"
+          variant="outlined"
+        />
+      </GoogleAutocomplete>
+      <GoogleMap
+        mapContainerStyle={mapContainerStyle}
+        zoom={14}
+        center={coordinates}
+        options={options}
+      />
+    </CardContent>
 
   );
 };
 
-const FormOne = ({ setFormOneParams, setFormState }) => {
+const FormOne = ({ setFormOneParams, setFormState, setAppState }) => {
   const [partner, setPartner] = useState('');
   const [coordinates, setCoordinates] = useState({
     // Singapore's coordinates
@@ -161,10 +147,14 @@ const FormOne = ({ setFormOneParams, setFormState }) => {
 
   return (
     <div>
-      <PartnerChoice partner={partner} setPartner={setPartner} />
-      <Map coordinates={coordinates} setCoordinates={setCoordinates} />
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Button sx={{ width: '280px' }} variant="contained" onClick={handleClick}>Next</Button>
+      <Card className="frosted-card">
+        <ErrorBoundary>
+          <PartnerChoice partner={partner} setPartner={setPartner} setAppState={setAppState} />
+        </ErrorBoundary>
+        <Map coordinates={coordinates} setCoordinates={setCoordinates} />
+      </Card>
+      <Box className="center-box">
+        <Button className="wide-button" variant="contained" onClick={handleClick}>Next</Button>
       </Box>
 
     </div>
