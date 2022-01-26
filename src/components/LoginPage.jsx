@@ -23,8 +23,10 @@ const LoginPage = ({ setLandingState, setAppState }) => {
     axios.post('/user/login', loginObj)
       .then((res) => {
         console.log(res.data);
-        // setLandingState('login');
-        if (res.data.success) setAppState('session');
+        if (res.data.success) {
+          setAppState('session');
+          const { id } = res.data;
+          localStorage.setItem('userId', id); }
       })
       .catch((err) => console.log(err));
   };

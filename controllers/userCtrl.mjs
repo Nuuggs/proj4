@@ -140,11 +140,13 @@ class UserCtrl {
   }
 
   async getSession(req, res) {
-    console.log('GET Request: /user/session');
-    // need to find a way to pass data into get request... if not use post
+    console.log('GET Request: /user/session/:id');
+    console.log('req params', req.params);
+    // id of current user
+    const { id } = req.params;
 
     try {
-      const result = await this.db.Match.findOne({ where: { p2_id: 2 } });
+      const result = await this.db.Match.findOne({ where: { p2_id: id } });
       if (!result) return res.json({ sessionFound: false }); // return works... think of what to do with this return...
       console.log(result);
       console.log(result.id);

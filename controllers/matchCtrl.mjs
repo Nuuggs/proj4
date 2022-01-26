@@ -15,6 +15,7 @@ class MatchCtrl {
   }
 
   async createSession(req, res) {
+    console.log('POST Request: /match');
     console.log('req.body', req.body);
     const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
@@ -45,6 +46,7 @@ class MatchCtrl {
     const initLikesList = { restaurant_id: 'null', likes: { p1_like: 'null', p2_like: 'null' } };
 
     const createSession = await this.model.create({
+
       p1_id: p1_Id,
       p2_id: p2_Id,
       // eslint-disable-next-line quote-props
