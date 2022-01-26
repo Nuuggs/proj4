@@ -35,8 +35,9 @@ const PartnerChoice = ({ partner, setPartner, setAppState }) => {
   }, []);
   console.log('friends', friends);
   const handleChange = (e, value) => {
-    console.log(value);
-    setPartner(value);
+    // sets chosen partner's uid
+    console.log('partner value', value.id);
+    setPartner(`${value.id}`);
   };
 
   const addFriendsClick = (e) => {
@@ -51,8 +52,10 @@ const PartnerChoice = ({ partner, setPartner, setAppState }) => {
         <div>
           <Autocomplete
             onChange={handleChange}
-            // users array is mapped into options and rendered
-            options={friends.map((option) => option.name)}
+            // sets options as friends array
+            options={friends}
+            // renders name of each element of friends
+            getOptionLabel={(option) => option.name}
             // What does this line do?
             renderInput={(params) => <TextField {...params} label="Pick a partner" />}
           />

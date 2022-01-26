@@ -20,7 +20,7 @@ const SessionPage = ({ setAppState }) => {
 
   const createNewSession = () => {
     // HP: I think the AJAX call should be made when we submit the form
-    // axios.post('/user/session/new', { userId: 1, matchId: 2, parameters: 'pseudo-data' });
+
     setAppState('form');
   };
 

@@ -10,12 +10,14 @@ import { FormTwo } from './FormTwo.jsx';
 
 const FormComplete = ({ formTwoParams, formOneParams }) => {
   const message = 'Fetching Data';
+  const currentUserId = { currentUserId: localStorage.getItem('userId') };
   useEffect(() => {
     console.log('FormTwoParams', formTwoParams);
     console.log('FormOneParams', formOneParams);
-    const allParams = { ...formOneParams, ...formTwoParams };
+    const allParams = { ...currentUserId, ...formOneParams, ...formTwoParams };
     console.log('all params', allParams);
     // AJAX request
+    // axios.post('/user/session/new', { userId: 1, matchId: 2, parameters: 'pseudo-data' });
     axios.post('/match', allParams).then(
       (result) => { console.log(result); },
     );
