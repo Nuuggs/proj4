@@ -22,30 +22,37 @@ class MatchCtrl {
     console.log('to get lat & lng and insert into DB ');
     // Destructure params from front end
     const {
-      currentUserId, coordinates, cuisine, dateTime, partner, price, rating,
+      currentUserId, partner, coordinates, cuisine, dateTime, price, rating,
     } = req.body;
     const { lat } = coordinates;
     const { lng } = coordinates;
+    const userId = Number(currentUserId);
+    const partnerUserId = Number(partner)
     console.log('coordinates', coordinates);
+    console.log('partner user ID', partnerUserId);
+
     console.log('lat', lat);
     console.log('lng', lng);
+    console.log('currentUserId', currentUserId)
+    console.log('partner:', partner)
 
-    // placeHolder to perform a get request store it and save in a const
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=2000&type=restaurant&keyword=chinese`;
+
+    // Get URL request to google for nearby places Data
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=2000&type=restaurant&keyword=${cuisine}`;
 
     const response = await axios.get(url);
     // console.log('response to gAPI', response);
     const searchResult = response.data;
-    console.log('search result: ', searchResult);
+    // console.log(searchResult);
 
     const initLikesList = [{ restaurant_id: 'null', likes: { p1_like: 'null', p2_like: 'null' } }];
 
     const createSession = await this.model.create({
-      p1Id: currentUserId,
-      p2Id: partner,
+      p1Id: userId,
+      p2Id: partnerUserId,
       // eslint-disable-next-line quote-props
       parameters: {
-        url, cuisine, dateTime, partner, price, rating,
+        url, cuisine, dateTime, price, rating,
       },
       searchResults: searchResult,
       likesList: initLikesList,
@@ -55,7 +62,6 @@ class MatchCtrl {
   }
 
   async swipeUpdate(req, res) {
-    console.log('POST Request: /swipe');
     // Request.body = {restaurant_ID: integer, playerID, player1/player2 }
     const { restaurant_ID, player_Identity } = req.body;
     console.log(restaurant_ID);

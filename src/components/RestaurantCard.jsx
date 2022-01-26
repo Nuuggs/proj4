@@ -1,4 +1,6 @@
-import React, {useState, useEffect, useMemo, useRef,} from 'react';
+import React, {
+  useState, useEffect, useMemo, useRef,
+} from 'react';
 import TinderCard from 'react-tinder-card';
 import '../styles.scss';
 import axios from 'axios';
@@ -29,28 +31,29 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
   useEffect(() => {
     async function fetchData() {
       console.log('This is running');
-      
-      // THIS IS PARAMS FROM FORM
-      console.log('App Params: ',appParams);
 
-      // Placeholder for hardcoded test
-      const allParams = {
-        coordinates: { lat: 1.2940, lng: 103.8531 },
-        p1_Id: 3,
-        p2_Id: 5,
-      };
-      await axios.post('/match', allParams).then((result) => {
-        console.log(result);
-        const restaurantData = result.data.createdDB.search_results.results;
+      // THIS IS PARAMS FROM FORM
+      console.log('App Params: ', appParams);
+
+      await axios.post('/match', appParams).then((result) => {
+        console.log('THIS IS RETURN RESULT AFTER AXIOS POST', result);
+        const restaurantData = result.data.createdDB.searchResults.results;
         console.log(restaurantData);
+
+        console.log('restaurantData[0]', restaurantData[0]);
+        console.log('restaurantData[0].photos', restaurantData[0].photos);
+        console.log('restaurant[0].photos.reference', restaurantData[0].photos.reference);
+        console.log('restaurant[0].photos[0]', restaurantData[0].photos[0]);
+        console.log('restaurant[0].photos[0].photo_reference', restaurantData[0].photos[0].photo_reference);
         // const restaurantPicID = restaurantData.photos[0].photo_reference;
         // console.log(restaurantPicID);
         setRestaurantCard(restaurantData);
-        setCurrentIndex(restaurantData.length - 1);
+        // setCurrentIndex(restaurantData.length - 1);
       });
     }
     fetchData();
   }, []);
+
   // To build a function onclickRight & onclickleft and attach same principle
   const swiped = async (direction, restaurantID, restaurantName) => {
     console.log('removing:', restaurantName);
@@ -129,8 +132,7 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
   //   console.log([currentIndex]);
   //   await childRefs[currentIndex].current.swipe(direction);
   // };
-
-  return (
+  const TinderCards = () => (
     <>
       <div className="restaurantcontainer">
         {restaurantCard.map((restaurant) => (
@@ -150,24 +152,25 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
           </TinderCard>
         ))}
       </div>
-      <>
-        <div className="cardsButtons">
-          <IconButton className="clickButtons__left">
-            <CloseIcon fontSize="large" />
-          </IconButton>
+      <div className="cardsButtons">
+        <IconButton className="clickButtons__left">
+          <CloseIcon fontSize="large" />
+        </IconButton>
+        <IconButton className="clickButtons__right" onClick={() => swipe(right, restaurant.place_id, restaurant.name)}>
+          <FavoriteIcon fontSize="large" />
+        </IconButton>
+      </div>
+    </>
+  );
 
-          <IconButton className="clickButtons__right" onClick={() => swipe(right, restaurant.place_id, restaurant.name)}>
-            <FavoriteIcon fontSize="large" />
-          </IconButton>
-        </div>
-      </>
+  return (
+    <>
+      {restaurantCard.length > 0 && <TinderCards />}
     </>
   );
 };
 
 export default RestaurantPage;
-
-// have a child component: make API call in parent component and get data - pass it in as props to child component.
 
 // Hard code useState in restaurantcard for test
 // [
