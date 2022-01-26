@@ -59,7 +59,22 @@ class UserCtrl {
     console.log(req.body);
     const { email } = req.body;
     console.log(email);
+
+    // Function to validate email
+    const validateEmail = (input) => {
+      const mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+      if (input.match(mailformat)) return true;
+      return false;
+    };
+
+    // Error Handling: No email or invalid email
+    let isEmail = true;
+    isEmail = validateEmail(email);
+    if (isEmail === false) {
+      return res.status(500).json({ error: 'invalid email' });
+    }
     if (!email) return res.status(500).json({ error: 'login error' });
+
     const user = await this.model.findOne({ where: { email } }); // user is the entire row in the DB
     if (user) return res.status(200).json({ found: true, name: user.name });
     return res.status(200).json({ found: false });
