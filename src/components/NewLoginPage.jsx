@@ -57,7 +57,7 @@ const EmailField = ({
 };
 
 const LoginFunction = ({
-  email, setPassword, name, password,
+  email, setPassword, name, password, setAppState,
 }) => {
   const [error, setError] = useState(null);
   const handlePasswordChange = (e) => {

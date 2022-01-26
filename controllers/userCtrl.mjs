@@ -40,7 +40,7 @@ class UserCtrl {
     console.log(req.body);
 
     const { email, name, password } = req.body;
-    if (!email || !name || !password) { return res.status(500).json({ msg: 'login error' }); }
+    if (!email || !name || !password) { return res.status(500).json({ error: 'login error' }); }
     const user = await this.model.findOne({ where: { email } });
     if (!user) { return res.status(404).json({ error: 'user not found' }); }
 
@@ -51,7 +51,7 @@ class UserCtrl {
       const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1h' });
       return res.status(200).json({ success: true, token, id: user.id });
     }
-    return res.status(401).json({ error: 'error: wrong password!' });
+    return res.status(401).json({ error: 'wrong password!' });
   }
 
   async postEmail(req, res) {
