@@ -80,14 +80,7 @@ const AddFriends = () => {
   return (
     <>
       <Card
-        sx={{
-          width: 280,
-          backgroundColor: 'primary',
-          pt: 1,
-          px: 1,
-          my: 2,
-          mx: 'auto',
-        }}
+        className="frosted-card"
       >
         <form>
           <CardContent>

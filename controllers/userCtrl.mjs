@@ -26,13 +26,13 @@ class UserCtrl {
     console.log(req.body);
     const { email, name, password } = req.body;
     if (!email || !name || !password) {
-      return res.status(500).json({ msg: 'registration error' });
+      return res.status(500).json({ error: 'registration error' });
     }
     const hash = await bcrypt.hash(password, Number(PW_SALT_ROUNDS));
     const newUser = await this.model.create({ email, name, password: hash });
     const payload = { id: newUser.id, email: newUser.email };
     const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1h' });
-    return res.status(200).json({ newUser, token });
+    return res.status(200).json({ success: true, token, id: newUser.id });
   }
 
   async postLogin(req, res) {
@@ -42,7 +42,7 @@ class UserCtrl {
     const { email, name, password } = req.body;
     if (!email || !name || !password) { return res.status(500).json({ msg: 'login error' }); }
     const user = await this.model.findOne({ where: { email } });
-    if (!user) { return res.status(404).json({ msg: 'user not found' }); }
+    if (!user) { return res.status(404).json({ error: 'user not found' }); }
 
     const compare = await bcrypt.compare(password, user.password);
     if (compare) {
@@ -51,7 +51,7 @@ class UserCtrl {
       const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1h' });
       return res.status(200).json({ success: true, token, id: user.id });
     }
-    return res.status(401).json({ msg: 'error: wrong password!' });
+    return res.status(401).json({ error: 'error: wrong password!' });
   }
 
   async postEmail(req, res) {
@@ -59,9 +59,10 @@ class UserCtrl {
     console.log(req.body);
     const { email } = req.body;
     console.log(email);
-    if (!email) return res.status(500).json({ msg: 'login error' });
+    if (!email) return res.status(500).json({ error: 'login error' });
     const user = await this.model.findOne({ where: { email } }); // user is the entire row in the DB
-    return res.status(200).json({ success: true, name: user.name });
+    if (user) return res.status(200).json({ found: true, name: user.name });
+    return res.status(200).json({ found: false });
   }
 
   async addFriends(req, res) {
