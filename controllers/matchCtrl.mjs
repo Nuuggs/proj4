@@ -73,7 +73,7 @@ class MatchCtrl {
     };
 
     // Placeholder for player_identity
-    if (player_Identity == 1) {
+    if (player_Identity == 'p1') {
       newData.p1_like = true;
     } else {
       newData.p2_like = true;
@@ -81,7 +81,7 @@ class MatchCtrl {
     console.log('newdata', newData);
     const findData = await this.db.Match.findAll({
       where: {
-        p1_id: 3,
+        p1Id: 7,
       },
     });
 
