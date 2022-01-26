@@ -17,7 +17,7 @@ const libraries = ['places'];
 const mapContainerStyle = {
   marginTop: '10px',
   width: '228px',
-  height: '280px',
+  height: '228px',
 };
 
 const PartnerChoice = ({ partner, setPartner, setAppState }) => {
@@ -101,7 +101,7 @@ const Map = ({ coordinates, setCoordinates }) => {
   };
   return (
 
-    <CardContent>
+    <CardContent sx={{ mt: '-28px' }}>
       <GoogleAutocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
         <TextField
           sx={{
