@@ -8,11 +8,11 @@ export default function initMatchModel(sequelize, DataTypes) {
       primaryKey: true,
       type: DataTypes.INTEGER,
     },
-    p1_id: {
+    p1Id: {
       allowNull: false,
       type: DataTypes.INTEGER,
     },
-    p2_id: {
+    p2Id: {
       allowNull: false,
       type: DataTypes.INTEGER,
     },
@@ -20,14 +20,14 @@ export default function initMatchModel(sequelize, DataTypes) {
       allowNull: false,
       type: DataTypes.JSON,
     },
-    search_results: {
+    searchResults: {
       type: DataTypes.JSON,
     },
-    time_expiry: {
+    timeExpiry: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP + INTERVAL \'1d\''),
     },
-    likes_list: {
+    likesList: {
       type: DataTypes.JSON,
     },
     createdAt: {

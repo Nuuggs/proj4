@@ -21,12 +21,8 @@ class MatchCtrl {
 
     console.log('to get lat & lng and insert into DB ');
     // Destructure params from front end
-
-    // To include p1_Id & p2_Id into destructuring later. Placeholder for creation first
-    const p1_Id = 3;
-    const p2_Id = 5;
     const {
-      coordinates, cuisine, dateTime, partner, price, rating,
+      currentUserId, coordinates, cuisine, dateTime, partner, price, rating,
     } = req.body;
     const { lat } = coordinates;
     const { lng } = coordinates;
@@ -46,15 +42,14 @@ class MatchCtrl {
     const initLikesList = { restaurant_id: 'null', likes: { p1_like: 'null', p2_like: 'null' } };
 
     const createSession = await this.model.create({
-
-      p1_id: p1_Id,
-      p2_id: p2_Id,
+      p1Id: currentUserId,
+      p2Id: partner,
       // eslint-disable-next-line quote-props
       parameters: {
-        URL: url, Cuisine: cuisine, DateTime: dateTime, Partner: partner, Price: price, Rating: rating,
+        url, cuisine, dateTime, partner, price, rating,
       },
-      search_results: searchResult,
-      likes_list: initLikesList,
+      searchResults: searchResult,
+      likesList: initLikesList,
     });
 
     res.status(200).send({ createdDB: createSession });
