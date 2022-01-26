@@ -39,7 +39,7 @@ class MatchCtrl {
     const searchResult = response.data;
     console.log(searchResult);
 
-    const initLikesList = { restaurant_id: 'null', likes: { p1_like: 'null', p2_like: 'null' } };
+    const initLikesList = [{ restaurant_id: 'null', likes: { p1_like: 'null', p2_like: 'null' } }];
 
     const createSession = await this.model.create({
       p1Id: currentUserId,
