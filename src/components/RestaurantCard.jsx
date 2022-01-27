@@ -11,9 +11,12 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 const RestaurantPage = ({ appState, setAppState, appParams }) => {
   const [isLoading, setLoading] = useState(true);
   const [restaurantCard, setRestaurantCard] = useState([]);
+  const [sessionId, setSessionId] = useState();
   const [currentIndex, setCurrentIndex] = useState(restaurantCard.length - 1);
   const [testIndex, setTestIndex] = useState();
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+
+  
 
   useEffect(async () => {
     console.log('This is running');
@@ -21,27 +24,30 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
     console.log('App Params: ', appParams);
     const result = await axios.post('/match', appParams);
     console.log('THIS IS RETURN RESULT AFTER AXIOS POST', result);
+    console.log(result.data.createdDB);
+    console.log(result.data.createdDB.id);
+    setSessionId(result.data.createdDB.id);
     const restaurantData = result.data.createdDB.searchResults.results;
-    console.log(restaurantData);
-    console.log('restaurantData[0]', restaurantData[0]);
-    console.log('restaurantData[0].photos', restaurantData[0].photos); // works
-    console.log('restaurant[0].photos[0]', restaurantData[0].photos[0]); // works
-    console.log('restaurant[0].photos[0].photo_reference', restaurantData[0].photos[0].photo_reference); // works
+    // console.log(restaurantData);
+    // console.log('restaurantData[0]', restaurantData[0]);
+    // console.log('restaurantData[0].photos', restaurantData[0].photos); // works
+    // console.log('restaurant[0].photos[0]', restaurantData[0].photos[0]); // works
+    // console.log('restaurant[0].photos[0].photo_reference', restaurantData[0].photos[0].photo_reference); // works
     // const restaurantPicID = restaurantData.photos[0].photo_reference;
     // console.log(restaurantPicID);
     setRestaurantCard([...restaurantData]);
     setLoading(false);
     // setCurrentIndex(restaurantData.length - 1);
   }, []);
-  console.log('restaurantCard: ', restaurantCard);
+  // console.log('restaurantCard: ', restaurantCard);
 
   const TinderCards = () => {
     console.log('this is tinder cards component');
-    console.log('restaurantCard: ', restaurantCard);
-    console.log(restaurantCard[0]);
-    console.log(restaurantCard[0].photos);
-    console.log(restaurantCard[0].photos[0]);
-    console.log(restaurantCard[0].photos[0].photo_reference);
+    // console.log('restaurantCard: ', restaurantCard);
+    // console.log(restaurantCard[0]);
+    // console.log(restaurantCard[0].photos);
+    // console.log(restaurantCard[0].photos[0]);
+    // console.log(restaurantCard[0].photos[0].photo_reference);
     return (
       <>
         <div className="restaurantcontainer">
@@ -75,11 +81,11 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
   };
 
   // To build a function onclickRight & onclickleft and attach same principle
-  const swiped = async (direction, restaurantID, restaurantName) => {
+  const swiped = async (direction, restaurantId, restaurantName) => {
     console.log('removing:', restaurantName);
     // setLastDirection(direction);
     console.log('swiped direction =', direction);
-    console.log('restaurantID:', restaurantID);
+    console.log('restaurantId:', restaurantId);
     console.log('restaurant Card', restaurantCard);
     console.log('set restaurant Card', setRestaurantCard);
     if (direction === 'right') {
@@ -98,13 +104,14 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
       // } else {
       //   console.log(playerIdentity);
       // }
-
+      console.log('session id: ', sessionId);
       const data = {
-        restaurant_ID: restaurantID,
+        restaurant_id: restaurantId,
         player1_Identity: getUser1Id,
         player2_Identity: getUser2Id,
+        session_id: sessionId,
       };
-
+      console.log('data: ', data);
       await axios.post('/swipe', data);
 
       // After that move to matchCtrl and create new function - do a .create if no existing restaurant ID in place - else do a .update on existing data

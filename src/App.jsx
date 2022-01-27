@@ -16,7 +16,6 @@ export default function App() {
     Landing -> Match Area -> (create session)Search Params -> Restaurant Details
 
   */
-
   const [appState, setAppState] = useState('landing');
   const [appParams, setAppParams] = useState({});
   const [sessionId, setSessionId] = useState(null);
