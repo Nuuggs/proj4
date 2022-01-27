@@ -7,7 +7,7 @@ import {
 const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
   const [host, setHost] = useState('');
 
-  // On load, make a get request to see if there are
+  // On load, make a get request to see if there are any existing sessions
   useEffect(() => {
     const id = localStorage.userId;
     console.log('current user id', id);
