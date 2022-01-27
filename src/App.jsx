@@ -27,7 +27,7 @@ export default function App() {
         { appState === 'session' && <SessionPage appState={appState} setAppState={setAppState} setSessionId={setSessionId} sessionId={sessionId} /> }
         { appState === 'friends' && <AddFriends appState={appState} setAppState={setAppState} /> }
         { appState === 'form' && <MainForm appState={appState} setAppState={setAppState} setAppParams={setAppParams} /> }
-        {appState !== 'landing' && <Navigation appState={appState} setAppState={setAppState} />}
+        {appState !== 'landing' && <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />}
         {/* { appState === 'restaurant' && <RestaurantPage appState={appState} setAppState={setAppState} appParams={appParams} sessionId={sessionId} /> } */}
       </ThemeProvider>
     </>

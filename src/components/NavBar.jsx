@@ -10,9 +10,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import GroupIcon from '@mui/icons-material/Group';
 import KebabDiningIcon from '@mui/icons-material/KebabDining';
 
-export default function Navigation({ setAppState, appState }) {
+export default function Navigation({ setAppState, appState, setSessionId }) {
   const logoutClick = () => {
     localStorage.clear();
+    setSessionId(null);
     console.log('user logged out');
   };
   return (
