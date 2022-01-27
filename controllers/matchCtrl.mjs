@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import { resolve } from 'path';
 import axios from 'axios';
 
-
 // Initialize dotenv to pull secrets for salting process
 dotenv.config();
 
@@ -39,10 +38,10 @@ class MatchCtrl {
     // Get URL request to google for nearby places Data
     const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=2000&type=restaurant&keyword=${cuisine}`;
 
+    // response from google api
     const response = await axios.get(url);
-    
-    const searchResult = response.data;
-    
+
+    const searchResults = response.data;
 
     const initLikesList = [];
 
@@ -53,7 +52,7 @@ class MatchCtrl {
       parameters: {
         url, cuisine, dateTime, price, rating,
       },
-      searchResults: searchResult,
+      searchResults,
       likesList: initLikesList,
     });
 
@@ -63,7 +62,9 @@ class MatchCtrl {
   async swipeUpdate(req, res) {
     console.log('<------swipe update------>');
     // Request.body = {restaurant_ID: integer, playerID, player1/player2 }
-    const { restaurant_id, player1_Identity, player2_Identity, session_id } = req.body;
+    const {
+      restaurant_id, player1_Identity, player2_Identity, session_id,
+    } = req.body;
     console.log(restaurant_id); // works
 
     const p1Id = Number(player1_Identity);
@@ -95,17 +96,17 @@ class MatchCtrl {
     const updatedLikesList = [...dbLikesList, newData];
     // dbLikesList.push(newData);
     console.log('updated likes list: ', updatedLikesList);
- 
-    console.log('UPDATING ')
+
+    console.log('UPDATING ');
     await this.db.Match.update(
       {
-      likesList: updatedLikesList,
+        likesList: updatedLikesList,
       },
       {
         where: {
           id: findData.id,
         },
-      }
+      },
     );
 
     res.status(200).send({ restaurantId: restaurant_id });

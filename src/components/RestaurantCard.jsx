@@ -4,19 +4,16 @@ import React, {
 import TinderCard from 'react-tinder-card';
 import '../styles.scss';
 import axios from 'axios';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Rating } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-const RestaurantPage = ({ appState, setAppState, appParams }) => {
+const RestaurantPage = ({
+  appState, setAppState, appParams, sessionId,
+}) => {
   const [isLoading, setLoading] = useState(true);
   const [restaurantCard, setRestaurantCard] = useState([]);
-  const [sessionId, setSessionId] = useState();
   const [currentIndex, setCurrentIndex] = useState(restaurantCard.length - 1);
-  const [testIndex, setTestIndex] = useState();
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
   useEffect(async () => {
@@ -27,15 +24,7 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
     console.log('THIS IS RETURN RESULT AFTER AXIOS POST', result);
     console.log(result.data.createdDB);
     console.log(result.data.createdDB.id);
-    setSessionId(result.data.createdDB.id);
     const restaurantData = result.data.createdDB.searchResults.results;
-    // console.log(restaurantData);
-    // console.log('restaurantData[0]', restaurantData[0]);
-    // console.log('restaurantData[0].photos', restaurantData[0].photos); // works
-    // console.log('restaurant[0].photos[0]', restaurantData[0].photos[0]); // works
-    // console.log('restaurant[0].photos[0].photo_reference', restaurantData[0].photos[0].photo_reference); // works
-    // const restaurantPicID = restaurantData.photos[0].photo_reference;
-    // console.log(restaurantPicID);
     setRestaurantCard([...restaurantData]);
     setLoading(false);
     // setCurrentIndex(restaurantData.length - 1);
@@ -122,7 +111,7 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
 
       console.log('session id: ', sessionId);
       const data = {
-        restaurant_id: restaurantId,
+        restaurantId,
         player1_Identity: getUser1Id,
         player2_Identity: getUser2Id,
         session_id: sessionId,
