@@ -18,7 +18,8 @@ const LoginPage = ({ setLandingState, setAppState }) => {
     setLoginState('password');
   };
 
-  const submitPassword = (event) => {
+  const submitPassword = (e) => {
+    e.preventDefault();
     const loginObj = { email, name, password };
     axios.post('/user/login', loginObj)
       .then((res) => {

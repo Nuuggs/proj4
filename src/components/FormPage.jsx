@@ -29,6 +29,7 @@ const FormComplete = ({
     setAppParams(allParams);
     setAppState('restaurant');
   }, []);
+
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
       <h1>
