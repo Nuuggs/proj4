@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import {
+  TextField, Card, CardContent, CardActions, Button, Autocomplete, FormControl, InputLabel, Select, MenuItem, Box,
+} from '@mui/material';
 import RegisterPage from './RegisterPage.jsx';
 import LoginPage from './LoginPage.jsx';
 
@@ -11,7 +14,6 @@ const MainPage = ({ setLandingState }) => (
     </div>
     <div className="lost-password">Trouble Loggin In?</div>
   </>
-
 );
 
 const LandingPage = ({ setAppState }) => {

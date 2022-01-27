@@ -20,14 +20,14 @@ export default function initMatchModel(sequelize, DataTypes) {
       allowNull: false,
       type: DataTypes.JSONB,
     },
-    search_results: {
+    searchResults: {
       type: DataTypes.JSONB,
     },
     timeExpiry: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP + INTERVAL \'1d\''),
     },
-    likes_list: {
+    likesList: {
       type: DataTypes.JSONB,
     },
     createdAt: {

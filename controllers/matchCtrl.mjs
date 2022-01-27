@@ -22,31 +22,36 @@ class MatchCtrl {
     console.log('to get lat & lng and insert into DB ');
     // Destructure params from front end
     const {
-      currentUserId, coordinates, cuisine, dateTime, partner, price, rating,
+      currentUserId, partner, coordinates, cuisine, dateTime, price, rating,
     } = req.body;
     const { lat } = coordinates;
     const { lng } = coordinates;
-    console.log('coordinates', coordinates);
+    const userId = Number(currentUserId);
+    const partnerUserId = Number(partner);
+    // console.log('coordinates', coordinates);
+    // console.log('partner user ID', partnerUserId);
 
-    console.log('lat', lat);
-    console.log('lng', lng);
+    // console.log('lat', lat);
+    // console.log('lng', lng);
+    // console.log('currentUserId', currentUserId);
+    // console.log('partner:', partner);
 
-    // placeHolder to perform a get request store it and save in a const
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=2000&type=restaurant&keyword=chinese`;
+    // Get URL request to google for nearby places Data
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=2000&type=restaurant&keyword=${cuisine}`;
 
     const response = await axios.get(url);
-    // console.log('response to gAPI', response);
+    
     const searchResult = response.data;
-    console.log(searchResult);
+    
 
-    const initLikesList = [{ restaurant_id: 'null', likes: { p1_like: 'null', p2_like: 'null' } }];
+    const initLikesList = [];
 
     const createSession = await this.model.create({
-      p1Id: currentUserId,
-      p2Id: partner,
+      p1Id: userId,
+      p2Id: partnerUserId,
       // eslint-disable-next-line quote-props
       parameters: {
-        url, cuisine, dateTime, partner, price, rating,
+        url, cuisine, dateTime, price, rating,
       },
       searchResults: searchResult,
       likesList: initLikesList,
@@ -56,67 +61,54 @@ class MatchCtrl {
   }
 
   async swipeUpdate(req, res) {
+    console.log('<------swipe update------>');
     // Request.body = {restaurant_ID: integer, playerID, player1/player2 }
-    const { restaurant_ID, player_Identity } = req.body;
-    console.log(restaurant_ID);
-    console.log(player_Identity); // must show whether p1 or p2 and with userID
+    const { restaurant_id, player1_Identity, player2_Identity, session_id } = req.body;
+    console.log(restaurant_id); // works
+
+    const p1Id = Number(player1_Identity);
+    const p2Id = Number(player2_Identity);
+
+    console.log('p1Id:', p1Id); // what are these for??
+    console.log('p2Id:', p2Id);
+
     const newData = {
-      restaurant_id: restaurant_ID,
+      restaurantId: restaurant_id,
       p1_like: null,
       p2_like: null,
     };
 
-    // Placeholder for player_identity
-    if (player_Identity == 1) {
+    if (player1_Identity == 'p1') {
       newData.p1_like = true;
     } else {
       newData.p2_like = true;
     }
+
     console.log('newdata', newData);
-    const findData = await this.db.Match.findAll({
-      where: {
-        p1_id: 3,
+    console.log('session id: ', session_id);
+
+    console.log('FINDING BY PK');
+    const findData = await this.db.Match.findByPk(session_id);
+    console.log('findData', findData);
+    console.log(findData.likesList);
+    const dbLikesList = findData.likesList;
+    const updatedLikesList = [...dbLikesList, newData];
+    // dbLikesList.push(newData);
+    console.log('updated likes list: ', updatedLikesList);
+ 
+    console.log('UPDATING ')
+    await this.db.Match.update(
+      {
+      likesList: updatedLikesList,
       },
-    });
+      {
+        where: {
+          id: findData.id,
+        },
+      }
+    );
 
-    //     likes_list: {
-    //       restaurant_id: {
-    //         [Op.eq]: restaurant_ID,
-    //       },
-    //     },
-    //   },
-    // });
-    // if (!findData) {
-    //   const createSwipe = await this.db.Match.update({
-
-    //   });
-    // }
-    console.log('id test', findData[0].id);
-    // console.log(typeof findData[0]);
-    // console.log(JSON.stringify(findData[0]));
-    console.log('findData[0] :', findData[0]);
-    const resultSearch = findData[0];
-    console.log('resultSearc', resultSearch);
-    // const likeList = findData.match.likes_list;
-    // const updatedList = [...likeList, newData];
-    // console.log('UpdatedLIST', updatedList);
-    // console.log('likeList', likeList);
-    await this.db.Match.update({
-      likes_list: newData,
-    },
-    {
-      where: {
-        id: findData[0].id,
-      },
-    });
-
-    res.status(200).send({ restaurantID: restaurant_ID });
-  }
-
-  async getCard(req, res) {
-    console.log('GET Request: /card');
-    console.log(`Running ${this.name} controller`);
-    res.status(200).sendFile(resolve('dist', 'main.html'));
+    res.status(200).send({ restaurantId: restaurant_id });
   }
 }
 
