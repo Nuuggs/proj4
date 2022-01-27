@@ -60,6 +60,11 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
     setSessionId(null);
     setUserRole(null);
     setPartner(null);
+
+    // clear partner id from local storage
+    localStorage.removeItem('p2Id');
+
+    // return to form
     setAppState('form');
   };
 

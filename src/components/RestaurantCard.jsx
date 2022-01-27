@@ -7,6 +7,9 @@ import axios from 'axios';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import { Rating } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const RestaurantPage = ({ appState, setAppState, appParams }) => {
   const [isLoading, setLoading] = useState(true);
@@ -59,21 +62,41 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
               onCardLeftScreen={() => outOfFrame(restaurant.name)}
             >
               <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
-                <h3>{restaurant.name}</h3>
-                {/* <h3>{restaurant.rating}</h3>
-              <p>{restaurant.vicnity}</p> */}
+                <div className="caption-div">
+                  <h2>{restaurant.name}</h2>
+                  <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
+                  <h2>
+                    out of
+                    {' '}
+                    {restaurant.user_ratings_total}
+                    {' '}
+                    reviews
+                  </h2>
+
+                </div>
+
               </div>
             </TinderCard>
           ))}
         </div>
-        <div className="cardsButtons">
+        <div className="arrow-div">
+          <div className="left-arrow">
+            <ArrowBackIcon />
+            <h2>This way to like</h2>
+          </div>
+          <div className="right-arrow">
+            <h2>This way to dislike </h2>
+            <ArrowForwardIcon />
+          </div>
+        </div>
+        {/* <div className="cardsButtons">
           <IconButton className="clickButtons__left">
             <CloseIcon fontSize="large" />
           </IconButton>
           <IconButton className="clickButtons__right" onClick={() => swiped(right, restaurant.place_id, restaurant.name)}>
             <FavoriteIcon fontSize="large" />
           </IconButton>
-        </div>
+        </div> */}
       </>
     );
   };
