@@ -8,5 +8,6 @@ const router = express.Router();
 const matchCtrl = new MatchCtrl('main', db.Match, db);
 
 router.post('/match', matchCtrl.createSession.bind(matchCtrl));
+router.post('/swipe', matchCtrl.swipeUpdate.bind(matchCtrl));
 
 export default router;
