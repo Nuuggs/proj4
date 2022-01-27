@@ -16,7 +16,6 @@ export default function App() {
     Landing -> Match Area -> (create session)Search Params -> Restaurant Details
 
   */
-
   const [appState, setAppState] = useState('landing');
   const [appParams, setAppParams] = useState({});
   const [sessionId, setSessionId] = useState(null);
@@ -37,6 +36,5 @@ export default function App() {
 >>>>>>> 9ed385853ddb0e36224c4b35a965e2e58f06a843
       </ThemeProvider>
     </>
-
   );
 }
