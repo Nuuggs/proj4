@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
@@ -11,6 +12,8 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
 
   // GET Request on mount: Queries db for any existing session for current user
   useEffect(() => {
+    // Reset session type on page load
+    setSessionType('');
     const id = localStorage.userId;
     console.log('current user id', id);
     axios.get(`/user/session/${id}`)

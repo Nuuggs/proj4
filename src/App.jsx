@@ -19,13 +19,16 @@ export default function App() {
 
   const [appState, setAppState] = useState('landing');
   const [appParams, setAppParams] = useState({});
+  // sessionId for tracking active session in SessionPage
   const [sessionId, setSessionId] = useState(null);
+  // sessionType for RestaurantCards functionality
+  const [sessionType, setSessionType] = useState();
 
   return (
     <>
       <ThemeProvider theme={mainTheme}>
         { appState === 'landing' && <UserAuth appState={appState} setAppState={setAppState} /> }
-        { appState === 'session' && <SessionPage appState={appState} setAppState={setAppState} setSessionId={setSessionId} sessionId={sessionId} /> }
+        { appState === 'session' && <SessionPage appState={appState} setAppState={setAppState} setSessionId={setSessionId} sessionId={sessionId} setSessionType={setSessionType} /> }
         { appState === 'friends' && <AddFriends appState={appState} setAppState={setAppState} /> }
         { appState === 'form' && <MainForm appState={appState} setAppState={setAppState} setAppParams={setAppParams} /> }
         {appState !== 'landing' && <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />}
