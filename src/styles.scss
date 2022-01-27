@@ -12,28 +12,6 @@ body {
   --light-frosted: #e7cdb6c0;
 }
 
-// cards with different colors
-.plain-card {
-  width: 280px;
-  padding: 10px 10px 0 10px;
-  margin: 20px auto 20px auto;
-  background-color: var(--plain-color) !important;
-}
-
-.primary-card {
-  width: 280px;
-  padding: 10px 10px 0 10px;
-  margin: 20px auto 0 auto;
-  background-color: var(--primary-color) !important;
-}
-
-.light-card {
-  width: 280px;
-  padding: 10px 10px 0 10px;
-  margin: 20px auto 20px auto;
-  background-color: var(--light-color) !important;
-}
-
 .frosted-card {
   width: 280px;
   padding: 10px 10px 0 10px;
@@ -79,7 +57,7 @@ h2 {
   text-transform: uppercase;
   font-size: 16px;
   letter-spacing: 1px;
-  line-height: 85%;
+  line-height: 95%;
   text-align: left;
   color: var(--dark-color);
   margin: 20px 20px 0 20px;
@@ -117,8 +95,45 @@ p {
   // box-shadow: 0px 0px 60px 0px rgba(0, 0, 0, 0.3);
 }
 
-.resCard h3 {
-  position: absolute;
+.caption-div {
+  background-color: rgba(105, 105, 105, 0.473);
+  border-radius: 20px;
+  padding: 15px;
+}
+
+.caption-div h2 {
+  color: white;
+  margin: 0;
+}
+
+.arrow-div {
+  position: fixed;
+  bottom: 20vh;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.left-arrow {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+}
+
+.left-arrow h2 {
+  margin: 0 0 0 0;
+  text-align: left;
+}
+
+.right-arrow {
+  display: flex;
+  flex-direction: column;
+  justify-content: right;
+}
+
+.right-arrow h2 {
+  margin: 0 !important;
+  text-align: right;
 }
 
 .restaurantcontainer {
@@ -154,4 +169,3 @@ p {
   padding: 3vw !important;
   color: #76e2b3 !important;
 }
-

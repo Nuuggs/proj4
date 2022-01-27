@@ -2,12 +2,15 @@ import dotenv from 'dotenv';
 import { resolve } from 'path';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import Sequelize from 'sequelize';
 
 // Initialize dotenv to pull secrets for salting process
 dotenv.config();
+// Initialise Op from sequelize for operator or
+const { Op } = Sequelize;
 
 const { PW_SALT_ROUNDS, JWT_SALT } = process.env;
-console.log('processenv', process.env)
+console.log('processenv', process.env);
 class UserCtrl {
   constructor(name, model, db) {
     this.name = name;
@@ -33,7 +36,6 @@ class UserCtrl {
     const payload = { id: newUser.id, email: newUser.email };
     const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1h' });
     return res.status(200).json({ success: true, token, id: newUser.id });
-
   }
 
   async postLogin(req, res) {
@@ -103,6 +105,12 @@ class UserCtrl {
       const { id, name } = chosenFriend;
       const friendData = { id, email, name };
 
+      // validate if user adding self
+      console.log('validate against self');
+      console.log(friendData.id);
+      console.log(currentUserId);
+      if (Number(friendData.id) === Number(currentUserId)) return res.status(400).send({ isValid: false });
+
       let updatedUser;
       // if user currently has no friends
       if (!currentUser.friendsUid) {
@@ -119,7 +127,20 @@ class UserCtrl {
       }
       // if user has friends
       else if (currentUser.friendsUid) {
+        // current user friends - array
         const { friendsList } = currentUser.friendsUid;
+        console.log('FRIENDS LIST: ', friendsList);
+        /* 
+        { id: 7, name: 'Doraemon', email: 'doraemon@future.com' },
+        { id: 7, name: 'Doraemon', email: 'doraemon@future.com' },
+        { id: 13, name: 'bryan', email: 'bryan@test.com' }
+        */
+       
+        // valiidate if user already has specific friend
+        for (let i=0; i<friendsList.length; i+=1){
+          if(friendsList[i].id === friendData.id) throw "error: added person already in friend list";
+        }
+
         const updatedFriendsList = [...friendsList, friendData];
         updatedUser = await currentUser.update({ friendsUid: { friendsList: updatedFriendsList } },
           {
@@ -159,36 +180,61 @@ class UserCtrl {
   async getSession(req, res) {
     console.log('GET Request: /user/session/:id');
     console.log('req params', req.params);
-    // id of current user
 
     try {
-      const { id } = req.params;
-      const result = await this.db.Match.findOne({ where: { p2Id: id } });
-      if (!result) return res.json({ sessionFound: false });
+      // id of current user, it's a number in string form
+      const { id: currentUserId } = req.params;
+      // find session with user, user could either be stored as p1 or p2 in db
+      const sessionWithUser = await this.db.Match.findOne(
+        {
+          where: {
+            [Op.or]: [
+              { p2Id: currentUserId },
+              { p1Id: currentUserId },
+            ],
+          },
+        },
+      );
+      console.log('either or session with user', sessionWithUser);
 
-      console.log('result from session query', result);
-      // pass session id if session found
-      const sessionPk = result.id;
-      const { p1Id } = result;
+      if (!sessionWithUser) return res.json({ sessionFound: false });
 
-      const player1 = await this.model.findByPk(p1Id);
-      const p1Name = player1.name;
-      console.log(player1.name);
+      // id: sessionPK destructures id as sessionPk
+      // destructure relevant variables
+      const { p1Id, p2Id, id: sessionPk } = sessionWithUser;
 
-      return res.status(200).json({ sessionFound: true, sessionPk, p1Name });
+      if (p2Id === Number(currentUserId)) {
+        const player1 = await this.model.findByPk(p1Id);
+        // if user is p2, assign host to p1
+        // front end will recognise that user is not the host
+        const partner = player1.name;
+        return res.status(200).json({
+          sessionFound: true, userRole: 'p2', sessionPk, partner,
+        });
+      } if (p1Id === Number(currentUserId)) {
+        const player2 = await this.model.findByPk(p2Id);
+        const partner = player2.name;
+        // if user is p1, assign invitee to p2
+        // front end will recognise that user is the host
+        return res.status(200).json({
+          sessionFound: true, userRole: 'p1', sessionPk, partner,
+        });
+      }
     } catch (err) { console.log(err); }
   }
 
-  // To be deleted: this has been moved to /match
-  // async postSession(req, res) {
-  //   console.log('POST Request: /user/session/new');
-  //   console.log(req.body);
-  //   const { userId, matchId, parameters } = req.body;
-  //   try {
-  //     const result = await this.db.Match.create({ p1_id: userId, p2_id: matchId, parameters });
-  //     console.log(result);
-  //   } catch (err) { console.log(err); }
-  // }
+  async deleteSession(req, res) {
+    console.log('DELETE Request: /user/delete/:sessionId');
+
+    const { sessionId } = req.params;
+    // finds session row in db via id and destroys it
+    const deleteSession = await this.db.Match.destroy(
+      { where: { id: sessionId } },
+    );
+
+    res.status(204).json({ isDeleted: true });
+    if (deleteSession === 0) res.status(404).json({ isDeleted: false });
+  }
 }
 
 export default UserCtrl;
