@@ -18,9 +18,10 @@ router.post('/email', userCtrl.postEmail.bind(userCtrl));
 router.post('/friends', userCtrl.addFriends.bind(userCtrl));
 router.get('/allFriends/:id', userCtrl.getFriends.bind(userCtrl));
 
-// routes for session functionality
+// route for to find existing session
 router.get('/session/:id', userCtrl.getSession.bind(userCtrl));
-// To be deleted, route moved to /match
-// router.post('/session/new', userCtrl.postSession.bind(userCtrl));
+
+// route to delete existing session
+router.delete('/delete/:sessionId', userCtrl.deleteSession.bind(userCtrl));
 
 export default router;
