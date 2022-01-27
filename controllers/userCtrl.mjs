@@ -165,7 +165,7 @@ class UserCtrl {
 
     try {
       const { id: currentUserId } = req.params;
-      const sessionWithP2 = await this.db.Match.findOne({ where: { p2Id: currentUserId } });
+      // const sessionWithP2 = await this.db.Match.findOne({ where: { p2Id: currentUserId } });
 
       const sessionWithUser = await this.db.Match.findOne(
         {
@@ -183,17 +183,27 @@ class UserCtrl {
       // id: sessionPK destructures id as sessionPk
       // destructure relevant variables
       const { p1Id, p2Id, id: sessionPk } = sessionWithUser;
+      console.log('player one!!!!', p1Id);
+      console.log('player 2 **************', p2Id);
 
-      // if user is p2, assign host to p1
-      let host;
-      if (p2Id === currentUserId) {
+      if (p2Id === Number(currentUserId)) {
         const player1 = await this.model.findByPk(p1Id);
-        host = player1.name;
-      } else if (p1Id === currentUserId) {
-        console.log(p1Id);
+        // if user is p2, assign host to p1
+        // front end will recognise that user is not the host
+        const partner = player1.name;
+        return res.status(200).json({
+          sessionFound: true, userRole: 'p2', sessionPk, partner,
+        });
+      } if (p1Id === Number(currentUserId)) {
+        console.log('~~~~~~~~~~~ FOUND USER ~~~~~~~~~~~~~');
+        const player2 = await this.model.findByPk(p2Id);
+        const partner = player2.name;
+        // if user is p1, assign invitee to p2
+        // front end will recognise that user is the host
+        return res.status(200).json({
+          sessionFound: true, userRole: 'p1', sessionPk, partner,
+        });
       }
-      return res.status(200).json({ sessionFound: true, sessionPk, p1Name });
-      console.log('sessionWithUser from session query', sessionWithUser);
     } catch (err) { console.log(err); }
   }
 
