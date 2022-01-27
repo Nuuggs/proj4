@@ -105,6 +105,12 @@ class UserCtrl {
       const { id, name } = chosenFriend;
       const friendData = { id, email, name };
 
+      // validate if user adding self
+      console.log('validate against self');
+      console.log(friendData.id);
+      console.log(currentUserId);
+      if (Number(friendData.id) === Number(currentUserId)) return res.status(400).send({ isValid: false });
+
       let updatedUser;
       // if user currently has no friends
       if (!currentUser.friendsUid) {
@@ -121,7 +127,20 @@ class UserCtrl {
       }
       // if user has friends
       else if (currentUser.friendsUid) {
+        // current user friends - array
         const { friendsList } = currentUser.friendsUid;
+        console.log('FRIENDS LIST: ', friendsList);
+        /* 
+        { id: 7, name: 'Doraemon', email: 'doraemon@future.com' },
+        { id: 7, name: 'Doraemon', email: 'doraemon@future.com' },
+        { id: 13, name: 'bryan', email: 'bryan@test.com' }
+        */
+       
+        // valiidate if user already has specific friend
+        for (let i=0; i<friendsList.length; i+=1){
+          if(friendsList[i].id === friendData.id) throw "error: added person already in friend list";
+        }
+
         const updatedFriendsList = [...friendsList, friendData];
         updatedUser = await currentUser.update({ friendsUid: { friendsList: updatedFriendsList } },
           {
