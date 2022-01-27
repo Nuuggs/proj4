@@ -11,6 +11,8 @@ export default function routes(app) {
 
   app.post('/match', matchRouter);
 
+  app.post('/swipe', matchRouter);
+
   // Redirect any incoming traffic to '/home' that will immediately render the main page instead
   app.get('/', (req, res) => res.redirect('/home'));
 }

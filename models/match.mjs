@@ -18,17 +18,17 @@ export default function initMatchModel(sequelize, DataTypes) {
     },
     parameters: {
       allowNull: false,
-      type: DataTypes.JSON,
+      type: DataTypes.JSONB,
     },
     searchResults: {
-      type: DataTypes.JSON,
+      type: DataTypes.JSONB,
     },
     timeExpiry: {
       type: DataTypes.DATE,
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP + INTERVAL \'1d\''),
     },
     likesList: {
-      type: DataTypes.JSON,
+      type: DataTypes.JSONB,
     },
     createdAt: {
       allowNull: false,
