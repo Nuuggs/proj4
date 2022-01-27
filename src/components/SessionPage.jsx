@@ -29,6 +29,7 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
   console.log('host', host);
 
   const createNewSession = () => {
+    setSessionId(null);
     setAppState('form');
   };
 
