@@ -16,8 +16,6 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
   const [testIndex, setTestIndex] = useState();
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
-  
-
   useEffect(async () => {
     console.log('This is running');
     // THIS IS PARAMS FROM FORM
@@ -93,6 +91,7 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
       // If swiped direction is right - do a axios.post to DB to store data
 
       // dummy player identity (either p1 or p2) post to backend - to work on further with team
+
       const getUser1Id = window.localStorage.getItem('userId');
       const getUser2Id = localStorage.getItem('p2Id');
       console.log('userId local', getUser1Id);
@@ -130,6 +129,7 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
   //     .map((i) => React.createRef()),
   //   [restaurantCard],
   // );
+  
   // let childRefs = [];
 
   // useEffect(() => {
@@ -137,7 +137,6 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
   //     .fill(0)
   //     .map((i) => React.createRef());
   // }, []);
-
   const updateCurrentIndex = (val) => {
     setCurrentIndex(val);
     currentIndexRef.current = val;
@@ -147,6 +146,7 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
     console.log(`${name} left the screen`);
   };
   const canSwipe = currentIndex >= 0;
+
 
   // const swipe = async (dir) => {
   //   console.log(childRefs);
@@ -164,6 +164,38 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
   //   await childRefs[currentIndex].current.swipe(direction);
   // };
 
+  return (
+    <>
+      <div className="restaurantcontainer">
+        {restaurantCard.map((restaurant) => (
+          <TinderCard
+            className="swipe"
+            key={restaurant.place_id}
+            id={restaurant.place_id}
+            preventSwipe={['up', 'down']}
+            onSwipe={(direction) => swiped(direction, restaurant.place_id, restaurant.name)}
+            onCardLeftScreen={() => outOfFrame(restaurant.name)}
+          >
+            <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
+              <h3>{restaurant.name}</h3>
+              {/* <h3>{restaurant.rating}</h3>
+              <p>{restaurant.vicnity}</p> */}
+            </div>
+          </TinderCard>
+        ))}
+      </div>
+      <>
+        <div className="cardsButtons">
+          <IconButton className="clickButtons__left">
+            <CloseIcon fontSize="large" />
+          </IconButton>
+
+          <IconButton className="clickButtons__right" onClick={() => swipe(right, restaurant.place_id, restaurant.name)}>
+            <FavoriteIcon fontSize="large" />
+          </IconButton>
+        </div>
+      </>
+
   if (isLoading) {
     return <div>Loading</div>;
   }
@@ -178,6 +210,8 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
 };
 
 export default RestaurantPage;
+
+// have a child component: make API call in parent component and get data - pass it in as props to child component.
 
 // Hard code useState in restaurantcard for test
 // [

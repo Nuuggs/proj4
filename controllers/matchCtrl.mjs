@@ -2,7 +2,7 @@
 import dotenv from 'dotenv';
 import { resolve } from 'path';
 import axios from 'axios';
-import { Sequelize } from 'sequelize';
+
 
 // Initialize dotenv to pull secrets for salting process
 dotenv.config();
