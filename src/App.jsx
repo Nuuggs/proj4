@@ -31,7 +31,5 @@ export default function App() {
         { appState === 'restaurant' && <RestaurantPage appState={appState} setAppState={setAppState} appParams={appParams} /> }
       </ThemeProvider>
     </>
-
-    </div>
   );
 }
