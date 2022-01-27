@@ -23,7 +23,6 @@ const FormTwo = (
     'Japanese',
     'Thai',
     'Italian',
-    'American',
   ];
 
   const handleClick = (e) => {

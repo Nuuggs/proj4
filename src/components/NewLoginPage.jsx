@@ -89,7 +89,7 @@ const LoginFunction = ({
           <h2>
             Hey
             {' '}
-            {name}
+            <u>{name}</u>
             , welcome back!
             {' '}
           </h2>

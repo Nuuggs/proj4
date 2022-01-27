@@ -159,15 +159,22 @@ class UserCtrl {
     console.log('GET Request: /user/session/:id');
     console.log('req params', req.params);
     // id of current user
-    const { id } = req.params;
 
     try {
-      const result = await this.db.Match.findOne({ where: { p2_id: id } });
-      if (!result) return res.json({ sessionFound: false }); // return works... think of what to do with this return...
-      console.log(result);
-      console.log(result.id);
-      console.log(result.p1_id);
-      return res.json({ sessionFound: true });
+      const { id } = req.params;
+      const result = await this.db.Match.findOne({ where: { p2Id: id } });
+      if (!result) return res.json({ sessionFound: false });
+
+      console.log('result from session query', result);
+      // pass session id if session found
+      const sessionPk = result.id;
+      const { p1Id } = result;
+
+      const player1 = await this.model.findByPk(p1Id);
+      const p1Name = player1.name;
+      console.log(player1.name);
+
+      return res.status(200).json({ sessionFound: true, sessionPk, p1Name });
     } catch (err) { console.log(err); }
   }
 

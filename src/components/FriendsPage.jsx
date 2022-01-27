@@ -18,20 +18,13 @@ const FriendsList = ({ friendsList, setFriendsList }) => {
 
   return (
     <div>
-      <Card
-        sx={{
-          width: 280,
-          backgroundColor: 'primary',
-          pt: 1,
-          px: 1,
-          my: 2,
-          mx: 'auto',
-        }}
-      >
+      <Card className="frosted-card">
         <CardContent>
-          <p>
-            Friend's List
-          </p>
+          <h1>
+            Friends
+          </h1>
+        </CardContent>
+        <CardContent sx={{ maxHeight: '300px', overflow: 'scroll' }}>
           {friendsList
             ? (
               <div>
@@ -40,8 +33,7 @@ const FriendsList = ({ friendsList, setFriendsList }) => {
                 ))}
               </div>
             )
-            : <p>You don't have any friends</p>}
-
+            : <p>You don't have any friends, add some friends.</p>}
         </CardContent>
       </Card>
     </div>
