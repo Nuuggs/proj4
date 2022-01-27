@@ -18,22 +18,20 @@ export default function App() {
   */
   const [appState, setAppState] = useState('landing');
   const [appParams, setAppParams] = useState({});
+  // sessionId for tracking active session in SessionPage
   const [sessionId, setSessionId] = useState(null);
+  // sessionType for RestaurantCards functionality
+  const [sessionType, setSessionType] = useState();
 
   return (
     <>
       <ThemeProvider theme={mainTheme}>
         { appState === 'landing' && <UserAuth appState={appState} setAppState={setAppState} /> }
-        { appState === 'session' && <SessionPage appState={appState} setAppState={setAppState} setSessionId={setSessionId} sessionId={sessionId} /> }
+        { appState === 'session' && <SessionPage appState={appState} setAppState={setAppState} setSessionId={setSessionId} sessionId={sessionId} setSessionType={setSessionType} /> }
         { appState === 'friends' && <AddFriends appState={appState} setAppState={setAppState} /> }
         { appState === 'form' && <MainForm appState={appState} setAppState={setAppState} setAppParams={setAppParams} /> }
-<<<<<<< HEAD
-        {appState !== 'landing' && <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />}
-        {/* { appState === 'restaurant' && <RestaurantPage appState={appState} setAppState={setAppState} appParams={appParams} sessionId={sessionId} /> } */}
-=======
-        {appState !== 'landing' && <Navigation appState={appState} setAppState={setAppState} />}
-        { appState === 'restaurant' && <RestaurantPage appState={appState} setAppState={setAppState} appParams={appParams} /> }
->>>>>>> 9ed385853ddb0e36224c4b35a965e2e58f06a843
+        {appState !== 'landing' && <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} setSessionType={setSessionType} />}
+        { appState === 'restaurant' && <RestaurantPage appState={appState} setAppState={setAppState} appParams={appParams} sessionId={sessionId} sessionType={sessionType} /> }
       </ThemeProvider>
     </>
   );

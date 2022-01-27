@@ -8,38 +8,65 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 
-const RestaurantPage = ({ appState, setAppState, appParams }) => {
+const RestaurantPage = ({
+  appState, setAppState, appParams, sessionId, sessionType,
+}) => {
   const [isLoading, setLoading] = useState(true);
   const [restaurantCard, setRestaurantCard] = useState([]);
-  const [sessionId, setSessionId] = useState();
+  const [localSessionId, setLocalSessionId] = useState();
   const [currentIndex, setCurrentIndex] = useState(restaurantCard.length - 1);
   const [testIndex, setTestIndex] = useState();
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
   useEffect(async () => {
     console.log('This is running');
-    // THIS IS PARAMS FROM FORM
-    console.log('App Params: ', appParams);
-    const result = await axios.post('/match', appParams);
-    console.log('THIS IS RETURN RESULT AFTER AXIOS POST', result);
-    console.log(result.data.createdDB);
-    console.log(result.data.createdDB.id);
-    setSessionId(result.data.createdDB.id);
-    const restaurantData = result.data.createdDB.searchResults.results;
-    // console.log(restaurantData);
-    // console.log('restaurantData[0]', restaurantData[0]);
-    // console.log('restaurantData[0].photos', restaurantData[0].photos); // works
-    // console.log('restaurant[0].photos[0]', restaurantData[0].photos[0]); // works
-    // console.log('restaurant[0].photos[0].photo_reference', restaurantData[0].photos[0].photo_reference); // works
-    // const restaurantPicID = restaurantData.photos[0].photo_reference;
-    // console.log(restaurantPicID);
-    setRestaurantCard([...restaurantData]);
-    setLoading(false);
+
+    // Require dummy variable to track appPreviousState - to track and run different post request.
+
+    // This runs if previousState is joinSession
+    if (sessionType === 'join') {
+      console.log('<------Restaurant Card: Join Session------>');
+      const getUserId = window.localStorage.getItem('userId');
+      const data = {
+        playerId: getUserId,
+        sessionId, // this comes from globalState
+      };
+      // Do post request to get data stored in DB.
+      const result = await axios.post('/join', data);
+      console.log('THIS IS RETURN RESULT AFTER AXIOS POST', result);
+      const restaurantData = result.data.createdDB.searchResults.results;
+      setLocalSessionId(result.data.createdDB.id);
+
+      // const currentUser = window.localStorage.getItem('userID');
+
+      // // Set p2Id in localStorage as p1Id in DB since player join
+      // localStorage.setItem('p2Id', result.data.createdDB.p1Id);
+
+      setRestaurantCard([...restaurantData]);
+      setLoading(false);
+    } else if (sessionType === 'create') {
+      // This runs if previousState is createSession
+      console.log('<------Restaurant Card: Create Session------>');
+      // THIS IS PARAMS FROM FORM
+      console.log('App Params: ', appParams);
+      const result = await axios.post('/match', appParams);
+      console.log('THIS IS RETURN RESULT AFTER AXIOS POST', result);
+      console.log(result.data.createdDB);
+      console.log(result.data.createdDB.id);
+      setLocalSessionId(result.data.createdDB.id);
+      const restaurantData = result.data.createdDB.searchResults.results;
+      // console.log('restaurantData[0].photos', restaurantData[0].photos); // works
+      // console.log('restaurant[0].photos[0]', restaurantData[0].photos[0]); // works
+      // console.log('restaurant[0].photos[0].photo_reference', restaurantData[0].photos[0].photo_reference); // works
+      setRestaurantCard([...restaurantData]);
+      setLoading(false);
+    }
+
     // setCurrentIndex(restaurantData.length - 1);
   }, []);
   // console.log('restaurantCard: ', restaurantCard);
 
-  const TinderCards = () => {
+  const TinderCardsIfJoin = () => {
     console.log('this is tinder cards component');
     // console.log('restaurantCard: ', restaurantCard);
     // console.log(restaurantCard[0]);
@@ -55,7 +82,7 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
               key={restaurant.place_id}
               id={restaurant.place_id}
               preventSwipe={['up', 'down']}
-              onSwipe={(direction) => swiped(direction, restaurant.place_id, restaurant.name)}
+              onSwipe={(direction) => swipedIfJoin(direction, restaurant.place_id, restaurant.name)}
               onCardLeftScreen={() => outOfFrame(restaurant.name)}
             >
               <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
@@ -70,7 +97,7 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
           <IconButton className="clickButtons__left">
             <CloseIcon fontSize="large" />
           </IconButton>
-          <IconButton className="clickButtons__right" onClick={() => swiped(right, restaurant.place_id, restaurant.name)}>
+          <IconButton className="clickButtons__right" onClick={() => swipedIfJoin(right, restaurant.place_id, restaurant.name)}>
             <FavoriteIcon fontSize="large" />
           </IconButton>
         </div>
@@ -78,8 +105,47 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
     );
   };
 
-  // To build a function onclickRight & onclickleft and attach same principle
-  const swiped = async (direction, restaurantId, restaurantName) => {
+  const TinderCardsIfCreate = () => {
+    console.log('this is tinder cards component');
+    // console.log('restaurantCard: ', restaurantCard);
+    // console.log(restaurantCard[0]);
+    // console.log(restaurantCard[0].photos);
+    // console.log(restaurantCard[0].photos[0]);
+    // console.log(restaurantCard[0].photos[0].photo_reference);
+    return (
+      <>
+        <div className="restaurantcontainer">
+          {restaurantCard.map((restaurant) => (
+            <TinderCard
+              className="swipe"
+              key={restaurant.place_id}
+              id={restaurant.place_id}
+              preventSwipe={['up', 'down']}
+              onSwipe={(direction) => swipedIfCreate(direction, restaurant.place_id, restaurant.name)}
+              onCardLeftScreen={() => outOfFrame(restaurant.name)}
+            >
+              <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
+                <h3>{restaurant.name}</h3>
+                {/* <h3>{restaurant.rating}</h3>
+              <p>{restaurant.vicnity}</p> */}
+              </div>
+            </TinderCard>
+          ))}
+        </div>
+        <div className="cardsButtons">
+          <IconButton className="clickButtons__left">
+            <CloseIcon fontSize="large" />
+          </IconButton>
+          <IconButton className="clickButtons__right" onClick={() => swipedIfCreate(right, restaurant.place_id, restaurant.name)}>
+            <FavoriteIcon fontSize="large" />
+          </IconButton>
+        </div>
+      </>
+    );
+  };
+
+  // Function to append to TinderCards swipe if 'create'
+  const swipedIfCreate = async (direction, restaurantId, restaurantName) => {
     console.log('removing:', restaurantName);
     // setLastDirection(direction);
     console.log('swiped direction =', direction);
@@ -97,17 +163,40 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
       console.log('userId local', getUser1Id);
       console.log('user2d local', getUser2Id);
 
-      console.log('session id: ', sessionId);
+      console.log('session id: ', localSessionId);
       const data = {
         restaurant_id: restaurantId,
         player1_Identity: getUser1Id,
         player2_Identity: getUser2Id,
-        session_id: sessionId,
+        session_id: localSessionId,
       };
       console.log('data: ', data);
-      await axios.post('/swipe', data);
+      await axios.post('/swipe/ifCreate', data);
+    }
+  };
 
-      // After that move to matchCtrl and create new function - do a .create if no existing restaurant ID in place - else do a .update on existing data
+  // Function to append to TinderCards swipe if 'join
+  const swipedIfJoin = async (direction, restaurantId, restaurantName) => {
+    console.log('removing:', restaurantName);
+    // setLastDirection(direction);
+    console.log('swiped direction =', direction);
+    console.log('restaurantId:', restaurantId);
+    console.log('restaurant Card', restaurantCard);
+    console.log('set restaurant Card', setRestaurantCard);
+    if (direction === 'right') {
+      console.log('its right');
+      // If swiped direction is right - do a axios.post to DB to store data
+
+      const getUser1Id = window.localStorage.getItem('userId');
+
+      console.log('session id: ', localSessionId);
+      const data = {
+        restaurant_id: restaurantId,
+        user_identity: getUser1Id,
+        session_id: localSessionId,
+      };
+      console.log('data: ', data);
+      await axios.post('/swipe/ifJoin', data);
     }
   };
 
@@ -127,9 +216,9 @@ const RestaurantPage = ({ appState, setAppState, appParams }) => {
 
   return (
     <>
-      {restaurantCard.length === 0
-        ? <div>No cards</div>
-        : <TinderCards />}
+      {sessionType === 'create'
+        ? <TinderCardsIfCreate />
+        : <TinderCardsIfJoin />}
     </>
   );
 };

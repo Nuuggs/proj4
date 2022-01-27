@@ -9,9 +9,14 @@ export default function routes(app) {
   // special JS page. Include the webpack index.html file
   app.use('/home', mainRouter);
 
+  // Currently link to match Router / Controller. To be refactor to nicer link later
   app.post('/match', matchRouter);
 
-  app.post('/swipe', matchRouter);
+  app.post('/swipe/ifCreate', matchRouter);
+
+  app.post('/join', matchRouter)
+
+  app.post('/swipe/ifJoin', matchRouter);
 
   // Redirect any incoming traffic to '/home' that will immediately render the main page instead
   app.get('/', (req, res) => res.redirect('/home'));

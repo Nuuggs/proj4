@@ -1,14 +1,19 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   TextField, Card, CardContent, Button, Autocomplete, Box,
 } from '@mui/material';
 
-const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
+const SessionPage = ({
+  setAppState, setSessionId, sessionId, setSessionType,
+}) => {
   const [host, setHost] = useState('');
 
   // On load, make a get request to see if there are
   useEffect(() => {
+    // Reset session type on page load
+    setSessionType('');
     const id = localStorage.userId;
     console.log('current user id', id);
     axios.get(`/user/session/${id}`)
@@ -30,11 +35,16 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
 
   const createNewSession = () => {
     setSessionId(null);
+    // Set session type for creating new session
+    setSessionType('create');
     setAppState('form');
   };
 
   const joinSession = () => {
     console.log('need to join some session');
+    // Set session type for joining session
+    setSessionType('join');
+    setAppState('restaurant');
   };
 
   const handleClick = (e) => {
