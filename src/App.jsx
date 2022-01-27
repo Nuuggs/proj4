@@ -16,6 +16,7 @@ export default function App() {
     Landing -> Match Area -> (create session)Search Params -> Restaurant Details
 
   */
+
   const [appState, setAppState] = useState('landing');
   const [appParams, setAppParams] = useState({});
   const [sessionId, setSessionId] = useState(null);
@@ -27,14 +28,10 @@ export default function App() {
         { appState === 'session' && <SessionPage appState={appState} setAppState={setAppState} setSessionId={setSessionId} sessionId={sessionId} /> }
         { appState === 'friends' && <AddFriends appState={appState} setAppState={setAppState} /> }
         { appState === 'form' && <MainForm appState={appState} setAppState={setAppState} setAppParams={setAppParams} /> }
-<<<<<<< HEAD
         {appState !== 'landing' && <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />}
-        {/* { appState === 'restaurant' && <RestaurantPage appState={appState} setAppState={setAppState} appParams={appParams} sessionId={sessionId} /> } */}
-=======
-        {appState !== 'landing' && <Navigation appState={appState} setAppState={setAppState} />}
-        { appState === 'restaurant' && <RestaurantPage appState={appState} setAppState={setAppState} appParams={appParams} /> }
->>>>>>> 9ed385853ddb0e36224c4b35a965e2e58f06a843
+        { appState === 'restaurant' && <RestaurantPage appState={appState} setAppState={setAppState} appParams={appParams} sessionId={sessionId} /> }
       </ThemeProvider>
     </>
+
   );
 }

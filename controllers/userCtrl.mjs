@@ -2,12 +2,15 @@ import dotenv from 'dotenv';
 import { resolve } from 'path';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import Sequelize from 'sequelize';
 
 // Initialize dotenv to pull secrets for salting process
 dotenv.config();
+// Initialise Op from sequelize for operator or
+const { Op } = Sequelize;
 
 const { PW_SALT_ROUNDS, JWT_SALT } = process.env;
-console.log('processenv', process.env)
+console.log('processenv', process.env);
 class UserCtrl {
   constructor(name, model, db) {
     this.name = name;
@@ -33,7 +36,6 @@ class UserCtrl {
     const payload = { id: newUser.id, email: newUser.email };
     const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1h' });
     return res.status(200).json({ success: true, token, id: newUser.id });
-
   }
 
   async postLogin(req, res) {
@@ -162,20 +164,36 @@ class UserCtrl {
     // id of current user
 
     try {
-      const { id } = req.params;
-      const result = await this.db.Match.findOne({ where: { p2Id: id } });
-      if (!result) return res.json({ sessionFound: false });
+      const { id: currentUserId } = req.params;
+      const sessionWithP2 = await this.db.Match.findOne({ where: { p2Id: currentUserId } });
 
-      console.log('result from session query', result);
-      // pass session id if session found
-      const sessionPk = result.id;
-      const { p1Id } = result;
+      const sessionWithUser = await this.db.Match.findOne(
+        {
+          where: {
+            [Op.or]: [
+              { p2Id: currentUserId },
+              { p1Id: currentUserId },
+            ],
+          },
+        },
+      );
+      console.log('either or session with user', sessionWithUser);
+      if (!sessionWithUser) return res.json({ sessionFound: false });
 
-      const player1 = await this.model.findByPk(p1Id);
-      const p1Name = player1.name;
-      console.log(player1.name);
+      // id: sessionPK destructures id as sessionPk
+      // destructure relevant variables
+      const { p1Id, p2Id, id: sessionPk } = sessionWithUser;
 
+      // if user is p2, assign host to p1
+      let host;
+      if (p2Id === currentUserId) {
+        const player1 = await this.model.findByPk(p1Id);
+        host = player1.name;
+      } else if (p1Id === currentUserId) {
+        console.log(p1Id);
+      }
       return res.status(200).json({ sessionFound: true, sessionPk, p1Name });
+      console.log('sessionWithUser from session query', sessionWithUser);
     } catch (err) { console.log(err); }
   }
 
@@ -185,7 +203,7 @@ class UserCtrl {
   //   console.log(req.body);
   //   const { userId, matchId, parameters } = req.body;
   //   try {
-  //     const result = await this.db.Match.create({ p1_id: userId, p2_id: matchId, parameters });
+  //     const sessionWithUser = await this.db.Match.create({ p1_id: userId, p2_id: matchId, parameters });
   //     console.log(result);
   //   } catch (err) { console.log(err); }
   // }
