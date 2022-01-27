@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
-  TextField, Card, CardContent, Button, Autocomplete, Box,
+  Card, CardContent, Button, Box,
 } from '@mui/material';
 
 const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
@@ -9,7 +9,7 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
   const [userRole, setUserRole] = useState(null);
   // const [isLoading, setIsLoading] = useState(true);
 
-  // On load, make a get request to see if there are any existing sessions
+  // GET Request on mount: Queries db for any existing session for current user
   useEffect(() => {
     const id = localStorage.userId;
     console.log('current user id', id);
@@ -36,8 +36,27 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
   console.log('user role', userRole);
   // console.log('isLoading', isLoading);
 
+  // Event listener for "New Session" button
   const createNewSession = (e) => {
     e.preventDefault();
+
+    // if there is an existing session and user clicks "New Session", app deletes existing session
+
+    if (sessionId) {
+      // DELETE Request: Deletes session in db
+      // Post-Demo: Port all session info to separate storage table.
+
+      axios.delete(`/user/delete/${sessionId}`)
+        .then((res) => {
+          // if successful status 204 will be sent, else status 404
+
+          console.log(res.data);
+
+          // Post-Demo: create alert for when session is successfully deleted
+        }).catch((err) => console.log(err));
+    }
+
+    // resets props
     setSessionId(null);
     setUserRole(null);
     setPartner(null);
@@ -46,6 +65,7 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
 
   const joinSession = (e) => {
     e.preventDefault();
+    setAppState('restaurant');
     console.log('need to join some session');
   };
 

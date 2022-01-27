@@ -161,12 +161,11 @@ class UserCtrl {
   async getSession(req, res) {
     console.log('GET Request: /user/session/:id');
     console.log('req params', req.params);
-    // id of current user
 
     try {
+      // id of current user, it's a number in string form
       const { id: currentUserId } = req.params;
-      // const sessionWithP2 = await this.db.Match.findOne({ where: { p2Id: currentUserId } });
-
+      // find session with user, user could either be stored as p1 or p2 in db
       const sessionWithUser = await this.db.Match.findOne(
         {
           where: {
@@ -178,13 +177,12 @@ class UserCtrl {
         },
       );
       console.log('either or session with user', sessionWithUser);
+
       if (!sessionWithUser) return res.json({ sessionFound: false });
 
       // id: sessionPK destructures id as sessionPk
       // destructure relevant variables
       const { p1Id, p2Id, id: sessionPk } = sessionWithUser;
-      console.log('player one!!!!', p1Id);
-      console.log('player 2 **************', p2Id);
 
       if (p2Id === Number(currentUserId)) {
         const player1 = await this.model.findByPk(p1Id);
@@ -195,7 +193,6 @@ class UserCtrl {
           sessionFound: true, userRole: 'p2', sessionPk, partner,
         });
       } if (p1Id === Number(currentUserId)) {
-        console.log('~~~~~~~~~~~ FOUND USER ~~~~~~~~~~~~~');
         const player2 = await this.model.findByPk(p2Id);
         const partner = player2.name;
         // if user is p1, assign invitee to p2
@@ -207,16 +204,18 @@ class UserCtrl {
     } catch (err) { console.log(err); }
   }
 
-  // To be deleted: this has been moved to /match
-  // async postSession(req, res) {
-  //   console.log('POST Request: /user/session/new');
-  //   console.log(req.body);
-  //   const { userId, matchId, parameters } = req.body;
-  //   try {
-  //     const sessionWithUser = await this.db.Match.create({ p1_id: userId, p2_id: matchId, parameters });
-  //     console.log(result);
-  //   } catch (err) { console.log(err); }
-  // }
+  async deleteSession(req, res) {
+    console.log('DELETE Request: /user/delete/:sessionId');
+
+    const { sessionId } = req.params;
+    // finds session row in db via id and destroys it
+    const deleteSession = await this.db.Match.destroy(
+      { where: { id: sessionId } },
+    );
+
+    res.status(204).json({ isDeleted: true });
+    if (deleteSession === 0) res.status(404).json({ isDeleted: false });
+  }
 }
 
 export default UserCtrl;
