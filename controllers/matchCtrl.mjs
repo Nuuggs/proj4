@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import { resolve } from 'path';
 import axios from 'axios';
 
-
 // Initialize dotenv to pull secrets for salting process
 dotenv.config();
 
@@ -28,87 +27,104 @@ class MatchCtrl {
     const { lng } = coordinates;
     const userId = Number(currentUserId);
     const partnerUserId = Number(partner);
-    // console.log('coordinates', coordinates);
-    // console.log('partner user ID', partnerUserId);
-
-    // console.log('lat', lat);
-    // console.log('lng', lng);
-    // console.log('currentUserId', currentUserId);
-    // console.log('partner:', partner);
 
     // Get URL request to google for nearby places Data
     const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=2000&type=restaurant&keyword=${cuisine}`;
 
     const response = await axios.get(url);
-    
-    const searchResult = response.data;
-    
 
-    const initLikesList = [];
+    const searchResults = response.data;
 
-    const createSession = await this.model.create({
+    const likesList = [];
+
+    const newSession = await this.model.create({
       p1Id: userId,
       p2Id: partnerUserId,
       // eslint-disable-next-line quote-props
       parameters: {
         url, cuisine, dateTime, price, rating,
       },
-      searchResults: searchResult,
-      likesList: initLikesList,
+      searchResults,
+      likesList,
     });
 
-    res.status(200).send({ createdDB: createSession });
+    res.status(200).send({ newSession });
+  }
+
+  async findSession(req, res) {
+    console.log('GET Request: /match/session/:sessionId');
+    console.log('req params', req.params);
+
+    try {
+      // sessionId is a string
+      const sessionPk = Number(req.params.sessionId);
+
+      // Find session in match table by pk
+      const existingSession = await this.model.findByPk(sessionPk);
+
+      console.log('found exisitng session?', existingSession);
+
+      res.status(200).json({ existingSession });
+    } catch (err) { console.log(err); }
   }
 
   async swipeUpdate(req, res) {
+    console.log('POST Request: /match/swipe');
     console.log('<------swipe update------>');
     // Request.body = {restaurant_ID: integer, playerID, player1/player2 }
-    const { restaurant_id, player1_Identity, player2_Identity, session_id } = req.body;
-    console.log(restaurant_id); // works
+    const {
+      restaurantId,
+      userId,
+      p1Id,
+      p2Id,
+      sessionId,
+    } = req.body;
 
-    const p1Id = Number(player1_Identity);
-    const p2Id = Number(player2_Identity);
+    const currentSession = await this.model.findByPk(sessionId);
+    const { likesList: updatedLikesList } = currentSession;
+    console.log('+++++++++++++++ current session likes list +++++++++++++++', updatedLikesList);
 
-    console.log('p1Id:', p1Id); // what are these for??
-    console.log('p2Id:', p2Id);
+    // >>>>>> NEW likesList format <<<<<< //
+    // [{
+    // restaurant_id: blah-blah-numbers,
+    // likes: [p1Id, p2Id],
+    // dislikes: []
+    // }]
 
-    const newData = {
-      restaurantId: restaurant_id,
-      p1_like: null,
-      p2_like: null,
-    };
-
-    if (player1_Identity == 'p1') {
-      newData.p1_like = true;
-    } else {
-      newData.p2_like = true;
+    if (updatedLikesList.length === 0) {
+      updatedLikesList.push({
+        restaurant_id: restaurantId,
+        likes: [userId],
+        dislikes: [],
+      });
+      const updatedSession = await currentSession.update({ updatedLikesList });
+      console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
+      return res.status(200).json({ updatedSession });
     }
 
-    console.log('newdata', newData);
-    console.log('session id: ', session_id);
-
-    console.log('FINDING BY PK');
-    const findData = await this.db.Match.findByPk(session_id);
-    console.log('findData', findData);
-    console.log(findData.likesList);
-    const dbLikesList = findData.likesList;
-    const updatedLikesList = [...dbLikesList, newData];
-    // dbLikesList.push(newData);
-    console.log('updated likes list: ', updatedLikesList);
- 
-    console.log('UPDATING ')
-    await this.db.Match.update(
-      {
-      likesList: updatedLikesList,
-      },
-      {
-        where: {
-          id: findData.id,
-        },
+    // If restaurant is already in like list
+    for (let i = 0; i < updatedLikesList.length; i += 1) {
+      if (updatedLikesList[i].restaurant_id === restaurantId) {
+        updatedLikesList.likes.push(userId);
+        if (updatedLikesList.likes.length === 2) {
+          console.log('////// MATCH /////');
+          return res.status(200).json({ match: true });
+        } if (updatedLikesList.likes.length < 2) {
+          console.log('<=== NO MATCH ===>');
+          return res.status(200).json({ match: false });
+        }
       }
-    );
-
-    res.status(200).send({ restaurantId: restaurant_id });
+    }
+    // else if restaurant is not yet in likes list
+    updatedLikesList.push({
+      restaurant_id: restaurantId,
+      likes: [userId],
+      dislikes: [],
+    });
+    const updatedSession = await currentSession.update({ likesList: updatedLikesList },
+      { where: { id: sessionId } });
+    console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
+    return res.status(200).json({ updatedSession });
   }
 }
 

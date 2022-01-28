@@ -130,15 +130,15 @@ class UserCtrl {
         // current user friends - array
         const { friendsList } = currentUser.friendsUid;
         console.log('FRIENDS LIST: ', friendsList);
-        /* 
+        /*
         { id: 7, name: 'Doraemon', email: 'doraemon@future.com' },
         { id: 7, name: 'Doraemon', email: 'doraemon@future.com' },
         { id: 13, name: 'bryan', email: 'bryan@test.com' }
         */
-       
+
         // valiidate if user already has specific friend
-        for (let i=0; i<friendsList.length; i+=1){
-          if(friendsList[i].id === friendData.id) throw "error: added person already in friend list";
+        for (let i = 0; i < friendsList.length; i += 1) {
+          if (friendsList[i].id === friendData.id) throw 'error: added person already in friend list';
         }
 
         const updatedFriendsList = [...friendsList, friendData];
@@ -209,7 +209,7 @@ class UserCtrl {
         // front end will recognise that user is not the host
         const partner = player1.name;
         return res.status(200).json({
-          sessionFound: true, userRole: 'p2', sessionPk, partner,
+          sessionFound: true, userRole: 'p2', sessionPk, partner, p1Id, p2Id,
         });
       } if (p1Id === Number(currentUserId)) {
         const player2 = await this.model.findByPk(p2Id);
@@ -217,7 +217,7 @@ class UserCtrl {
         // if user is p1, assign invitee to p2
         // front end will recognise that user is the host
         return res.status(200).json({
-          sessionFound: true, userRole: 'p1', sessionPk, partner,
+          sessionFound: true, userRole: 'p1', sessionPk, partner, p1Id, p2Id,
         });
       }
     } catch (err) { console.log(err); }
