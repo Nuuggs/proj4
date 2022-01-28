@@ -1,13 +1,13 @@
 import React, {
-  useState, useEffect, useMemo, useRef,
+  useState, useEffect,
 } from 'react';
-import TinderCard from 'react-tinder-card';
-import '../styles.scss';
-import axios from 'axios';
 import { Rating } from '@mui/material';
+import TinderCard from 'react-tinder-card';
+import axios from 'axios';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ErrorBoundary from './ErrorBoundaries.jsx';
+import Navigation from './NavBar.jsx';
 
 const RestaurantPage = ({
   appState, setAppState, appParams, sessionId, setSessionId,
@@ -26,6 +26,7 @@ const RestaurantPage = ({
   if (!sessionId) {
     useEffect(
       async () => {
+        console.log('no session id detected block is running');
         // appParams = { currentUserId, partner, coordinates, cuisine, dateTime, price, rating }
         // setAppParams in <FormComplete /> FormPage.jsx
 
@@ -43,7 +44,7 @@ const RestaurantPage = ({
   }
   else if (sessionId) {
     // If sessionId exists
-    console.log('else if session id exists block is running');
+    console.log('else if session id exists block is running, sessio id:', sessionId);
 
     useEffect(
       async () => {
@@ -94,21 +95,22 @@ const RestaurantPage = ({
             ))}
           </div>
         </ErrorBoundary>
-
         <div className="arrow-div">
           <div className="left-arrow">
             <ArrowBackIcon />
             <h2>
-              This way to like
+              This way to dislike
             </h2>
           </div>
           <div className="right-arrow">
             <ArrowForwardIcon />
             <h2>
-              This way to dislike
+              This way to like
             </h2>
-
           </div>
+        </div>
+        <div className="nav-box-restaurant">
+          <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
         </div>
       </>
     );

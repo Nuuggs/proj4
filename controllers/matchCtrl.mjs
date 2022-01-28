@@ -18,18 +18,17 @@ class MatchCtrl {
     console.log('req.body', req.body);
     const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
-    console.log('to get lat & lng and insert into DB ');
     // Destructure params from front end
     const {
-      currentUserId, partner, coordinates, cuisine, dateTime, price, rating,
+      currentUserId, partner, coordinates, cuisine, dateTime, price, radius,
     } = req.body;
-    const { lat } = coordinates;
-    const { lng } = coordinates;
+    const { lat, lng } = coordinates;
+
     const userId = Number(currentUserId);
     const partnerUserId = Number(partner);
 
     // Get URL request to google for nearby places Data
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=2000&type=restaurant&keyword=${cuisine}`;
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=${radius}&type=restaurant&keyword=${cuisine}`;
 
     const response = await axios.get(url);
 
@@ -42,7 +41,7 @@ class MatchCtrl {
       p2Id: partnerUserId,
       // eslint-disable-next-line quote-props
       parameters: {
-        url, cuisine, dateTime, price, rating,
+        url, cuisine, dateTime, price,
       },
       searchResults,
       likesList,

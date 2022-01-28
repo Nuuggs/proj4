@@ -77,20 +77,21 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
   return (
     <div>
 
-      <Card className="frosted-card">
+      <Card className="frosted-card align-text" sx={{ mt: '30px', minHeight: '300px' }}>
         {userRole === 'p2'
         && (
         <CardContent>
           <h2>
-            <u>{partner}</u>
+            <span className="emphasis-text">{partner}</span>
             {' '}
-            has invited you to join a session. Join now, or create a new session.
+            invites you to join a session.
           </h2>
           <h2>
-            Creating a new session closes your current open session with
+            Or, create a new session. Doing so will delete your session with
             {' '}
-            <u>{partner}</u>
+            <span className="emphasis-text">{partner}</span>
           </h2>
+
         </CardContent>
         )}
         {userRole === 'p1'

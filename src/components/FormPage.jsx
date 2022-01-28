@@ -47,7 +47,7 @@ const MainForm = ({ appState, setAppState, setAppParams }) => {
   return (
 
     <div className="form-container">
-      <div className="header-box">
+      {/* <div className="header-box">
         <h1>
           Tell us
           {' '}
@@ -57,14 +57,14 @@ const MainForm = ({ appState, setAppState, setAppParams }) => {
           {' '}
           want
         </h1>
-      </div>
-      <ThemeProvider theme={mainTheme}>
-        {formState === 1 && <FormOne setFormOneParams={setFormOneParams} setFormState={setFormState} setAppState={setAppState} />}
+      </div> */}
 
-        {formState === 2 && <FormTwo setFormTwoParams={setFormTwoParams} setFormState={setFormState} />}
+      {formState === 1 && <FormOne setFormOneParams={setFormOneParams} setFormState={setFormState} />}
 
-        {formState === 3 && <FormComplete formTwoParams={formTwoParams} formOneParams={formOneParams} setAppState={setAppState} setAppParams={setAppParams} />}
-      </ThemeProvider>
+      {formState === 2 && <FormTwo setFormTwoParams={setFormTwoParams} setFormState={setFormState} setAppState={setAppState} />}
+
+      {formState === 3 && <FormComplete formTwoParams={formTwoParams} formOneParams={formOneParams} setAppState={setAppState} setAppParams={setAppParams} />}
+
     </div>
   );
 };

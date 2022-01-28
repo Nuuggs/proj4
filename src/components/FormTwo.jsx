@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   TextField, Card, CardContent, CardActions, Button, Autocomplete, FormControl, InputLabel, Select, MenuItem, Box,
 } from '@mui/material';
@@ -6,16 +7,67 @@ import { MobileDateTimePicker, LocalizationProvider } from '@mui/lab';
 import ArrowLeftOutlinedIcon from '@mui/icons-material/ArrowLeftOutlined';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 
+const PartnerChoice = ({ setPartner, setAppState }) => {
+  const [friends, setFriends] = useState([]);
+
+  // Get curren user id from local storage
+  const currentUserId = localStorage.getItem('userId');
+  // AJAX Call: get friends of user from db
+  useEffect(() => {
+    axios.get(`/user/allFriends/${currentUserId}`)
+      .then((result) => {
+        setFriends(result.data);
+        console.log('axios get friends', result.data);
+      });
+  }, []);
+  console.log('friends', friends);
+  const handleChange = (e, value) => {
+    // sets chosen partner's uid
+    console.log('partner value', value.id);
+    setPartner(`${value.id}`);
+  };
+
+  const addFriendsClick = (e) => {
+    e.preventDefault();
+    setAppState('friends');
+  };
+
+  return (
+    <div>
+      {friends ? (
+        <div>
+          <Autocomplete
+            onChange={handleChange}
+            // sets options as friends array
+            options={friends}
+            // renders name of each element of friends
+            getOptionLabel={(option) => option.name}
+            // What does this line do?
+            renderInput={(params) => <TextField {...params} label="Pick a partner" />}
+          />
+          <Button size="small" onClick={addFriendsClick}>
+            Add Friend
+          </Button>
+        </div>
+      )
+        : (
+          <div>
+            <h2>It seems like you don't have any friends yet.</h2>
+            <Button size="small" onClick={addFriendsClick}>Add friends</Button>
+          </div>
+        )}
+    </div>
+
+  );
+};
 const FormTwo = (
-  {
-    formOneParams, formTwoParams, setFormTwoParams, setFormState,
-  },
+  { setFormTwoParams, setFormState, setAppState },
 ) => {
   // value of price, rating change when select input changes, value of select input is {Params}
   const [dateTime, setDateTime] = useState(new Date());
   const [price, setPrice] = useState('');
   const [cuisine, setCuisine] = useState('');
-  const [rating, setRating] = useState('');
+  const [partner, setPartner] = useState('');
   const cuisineList = [
     'Western',
     'French',
@@ -28,9 +80,9 @@ const FormTwo = (
   const handleClick = (e) => {
     e.preventDefault();
     const data = {
+      partner,
       dateTime,
       price,
-      rating,
       cuisine,
     };
     setFormTwoParams(data);
@@ -47,15 +99,16 @@ const FormTwo = (
       <Card
         className="frosted-card"
       >
-
         <CardContent>
           <CardActions>
             <Button size="small" onClick={handleGoBack}>
               <ArrowLeftOutlinedIcon fontSize="small" />
-
               Previous
             </Button>
           </CardActions>
+          <FormControl fullWidth>
+            <PartnerChoice partner={partner} setPartner={setPartner} setAppState={setAppState} />
+          </FormControl>
           {/* Date Time Picker */}
           <FormControl fullWidth sx={{ my: 1 }}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -82,21 +135,6 @@ const FormTwo = (
               <MenuItem value="2">$$</MenuItem>
               <MenuItem value="3">$$$</MenuItem>
               <MenuItem value="4">$$$$</MenuItem>
-            </Select>
-          </FormControl>
-          {/* Rating select */}
-          <FormControl fullWidth sx={{ my: 1 }}>
-            <InputLabel id="rating">Rating</InputLabel>
-            <Select
-              value={rating}
-              label="rating"
-              name="rating"
-              onChange={(e) => setRating(e.target.value)}
-            >
-              <MenuItem value="1">★</MenuItem>
-              <MenuItem value="2">★★</MenuItem>
-              <MenuItem value="3">★★★</MenuItem>
-              <MenuItem value="4">★★★★</MenuItem>
             </Select>
           </FormControl>
           {/* Cuisine Autocomplete */}
