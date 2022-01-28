@@ -154,19 +154,6 @@ const RestaurantPage = ({
   };
   const canSwipe = currentIndex >= 0;
 
-  // if (isLoading) {
-  //   return <div>Loading</div>;
-  // }
-  //  {isLoading ? (<div><h2>Loading</h2></div>) : (<div>
-  //     {restaurantCard.length === 0
-  //       ? <div>No cards</div>
-  //       : <TinderCards />}
-  //   <div/>)
-  //   }
-  // const loadingEl =(
-  //   <div><h2>Loading</h2></div>
-  // )
-
   return (
     <div>
       {isLoading === true && (<div><h2>Loading</h2></div>)}
