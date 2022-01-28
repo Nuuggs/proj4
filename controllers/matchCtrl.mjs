@@ -97,7 +97,11 @@ class MatchCtrl {
         likes: [userId],
         dislikes: [],
       });
-      const updatedSession = await currentSession.update({ updatedLikesList });
+      const updatedSession = await this.model.update({ likesList: updatedLikesList }, {
+        where: {
+          id: sessionId,
+        },
+      });
       console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
       return res.status(200).json({ updatedSession });
     }
@@ -105,11 +109,15 @@ class MatchCtrl {
     // If restaurant is already in like list
     for (let i = 0; i < updatedLikesList.length; i += 1) {
       if (updatedLikesList[i].restaurant_id === restaurantId) {
-        updatedLikesList.likes.push(userId);
-        if (updatedLikesList.likes.length === 2) {
+        console.log('updatedLikesList', updatedLikesList);
+        console.log('updatedLikesList[0]', updatedLikesList[0]);
+        console.log('updatedLikesList.likes', updatedLikesList.likes);
+        console.log('updatedLikesList[0].likes', updatedLikesList[0].likes);
+        updatedLikesList[i].likes.push(userId);
+        if (updatedLikesList[i].likes.length === 2) {
           console.log('////// MATCH /////');
           return res.status(200).json({ match: true });
-        } if (updatedLikesList.likes.length < 2) {
+        } if (updatedLikesList[i].likes.length < 2) {
           console.log('<=== NO MATCH ===>');
           return res.status(200).json({ match: false });
         }
@@ -121,7 +129,7 @@ class MatchCtrl {
       likes: [userId],
       dislikes: [],
     });
-    const updatedSession = await currentSession.update({ likesList: updatedLikesList },
+    const updatedSession = await this.model.update({ likesList: updatedLikesList },
       { where: { id: sessionId } });
     console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
     return res.status(200).json({ updatedSession });
