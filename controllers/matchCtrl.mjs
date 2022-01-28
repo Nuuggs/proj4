@@ -109,10 +109,8 @@ class MatchCtrl {
     // If restaurant is already in like list
     for (let i = 0; i < updatedLikesList.length; i += 1) {
       if (updatedLikesList[i].restaurant_id === restaurantId) {
-        console.log('updatedLikesList', updatedLikesList);
-        console.log('updatedLikesList[0]', updatedLikesList[0]);
-        console.log('updatedLikesList.likes', updatedLikesList.likes);
-        console.log('updatedLikesList[0].likes', updatedLikesList[0].likes);
+        console.log('updatedLikesList[i]', updatedLikesList[i]);
+        console.log('updatedLikesList[i].likes', updatedLikesList[i].likes);
         updatedLikesList[i].likes.push(userId);
         if (updatedLikesList[i].likes.length === 2) {
           console.log('////// MATCH /////');
