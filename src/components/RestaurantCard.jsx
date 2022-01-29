@@ -207,7 +207,7 @@ const RestaurantPage = ({
         setMatchedRestaurant(response.data.matchedRestaurant);
         setIsMatch(true);
       }
-      setSwipeCounter((counter) => counter + 1);
+      setSwipeCounter(() => swipeCounter + 1);
       console.log(`swipeCounter when swipe right ${swipeCounter}`);
     }
   };
