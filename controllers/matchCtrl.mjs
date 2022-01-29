@@ -34,6 +34,11 @@ class MatchCtrl {
 
     const searchResults = response.data;
 
+    // Check if search results = zero. Then do not store item in DB and render text at front end. No results
+    console.log('SeARCH results from new api call', searchResults);
+    const searchResultsCheck = response.data.status;
+    if (searchResultsCheck === 'ZERO_RESULTS') return res.status(200).send('ZERO RESULTS');
+
     const likesList = [];
 
     const newSession = await this.model.create({
@@ -80,14 +85,20 @@ class MatchCtrl {
     } = req.body;
 
     const currentSession = await this.model.findByPk(sessionId);
+
+    // To check content of likesList before updating logic to either push existing restaurant data to card or update frontend it's a match
+
+    const checkSessionLiked = currentSession.likesList.match;
+    console.log('check return of session Like', checkSessionLiked);
+
+    if (checkSessionLiked === true) {
+      console.log('##### MATCH ##### this detected a match:true ');
+      const checkSessionLikedData = currentSession.likesList;
+      return res.status(200).json({ checkSessionLikedData });
+    }
+
     const { likesList: updatedLikesList } = currentSession;
     console.log('+++++++++++++++ current session likes list +++++++++++++++', updatedLikesList);
-
-    if (currrentSession.likesList.match === true) {
-      console.log('##### MATCH #####');
-      const { matchedRestaurant } = currentSession.likesList;
-      return res.status(200).json({ match: true, matchedRestaurant });
-    }
 
     // >>>>>> NEW likesList format <<<<<< //
     // [{

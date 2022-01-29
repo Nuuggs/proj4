@@ -13,6 +13,7 @@ const RestaurantPage = ({
   appState, setAppState, appParams, sessionId, setSessionId,
 }) => {
   const [isLoading, setLoading] = useState(true);
+  const [zeroResults, setZeroResults] = useState(false);
   const [restaurantCard, setRestaurantCard] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(restaurantCard.length - 1);
 
@@ -31,6 +32,13 @@ const RestaurantPage = ({
         // setAppParams in <FormComplete /> FormPage.jsx
 
         const result = await axios.post('/match/create', appParams);
+
+        // If zero results to notify page to render zero results instead of error
+        console.log('Result test if 0 results', result);
+        if (result.data === 'ZERO RESULTS') {
+          setLoading(false);
+          return setZeroResults(true);
+        }
 
         setSessionId(result.data.newSession.id);
 
@@ -59,6 +67,7 @@ const RestaurantPage = ({
 
   console.log('...... RESTAURANT CARD ......', restaurantCard);
   console.log('?? is loading ??', isLoading);
+  console.log('zeroResults ---->', zeroResults);
 
   const TinderCards = () => {
     console.log('<TinderCards/> running');
@@ -162,6 +171,7 @@ const RestaurantPage = ({
   return (
     <div>
       {isLoading === true && (<div><h2>Loading</h2></div>)}
+      {isLoading === false && zeroResults === true && (<div><h2>No Results - Please create a new session </h2></div>)}
       {(isLoading === false && restaurantCard.length !== 0)
    && (
    <ErrorBoundary>
