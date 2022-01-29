@@ -14,6 +14,7 @@ const RestaurantPage = ({
 }) => {
   const [isLoading, setLoading] = useState(true);
   const [zeroResults, setZeroResults] = useState(false);
+  const [isMatch, setIsMatch] = useState(false);
   const [restaurantCard, setRestaurantCard] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(restaurantCard.length - 1);
 
@@ -39,6 +40,11 @@ const RestaurantPage = ({
           setLoading(false);
           return setZeroResults(true);
         }
+        // Set session p1Id & p2Id when createSession (bug p2Id without this)
+        const p1Id = localStorage.setItem('p1Id', result.data.newSession.p1Id);
+        const p2Id = localStorage.setItem('p2Id', result.data.newSession.p2Id);
+        console.log('THIS IS NEW SESSION p1Id SET:', p1Id);
+        console.log('THIS IS NEW SESSION p2Id SET:', p2Id);
 
         setSessionId(result.data.newSession.id);
 
@@ -125,6 +131,37 @@ const RestaurantPage = ({
     );
   };
 
+  // To render MatchCard function once there's a match
+  const MatchCard = () => {
+    console.log('<TinderCards/> running');
+
+    return (
+      <>
+        <ErrorBoundary>
+          <div className="matchCardContainer">
+            <h2> It's A MATCH!!!</h2>
+
+            <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
+              <div className="caption-div">
+                <h2>{restaurant.name}</h2>
+                <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
+                <h2>
+                  out of
+                  {' '}
+                  {restaurant.user_ratings_total}
+                  {' '}
+                  reviews
+                </h2>
+
+              </div>
+
+            </div>
+          </div>
+        </ErrorBoundary>
+      </>
+    );
+  };
+
   // To build a function onclickRight & onclickleft and attach same principle
   const swiped = async (direction, restaurantId, restaurantName) => {
     console.log('removing:', restaurantName);
@@ -153,6 +190,7 @@ const RestaurantPage = ({
       const response = await axios.post('/match/swipe', data);
       if (response.data.match === true) {
         console.log("************ IT'S A MATCH **************", response.data.matchedRestaurant);
+        setIsMatch(true);
       }
       console.log('<<<< SWIPE RESPONSE >>>>', response);
     }
@@ -178,6 +216,7 @@ const RestaurantPage = ({
      <TinderCards />
    </ErrorBoundary>
    )}
+      {isLoading === false && isMatch === true && (<ErrorBoundary><MatchCard /></ErrorBoundary>)}
     </div>
 
   );
