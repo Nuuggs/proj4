@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable max-len */
 import React, {
   useState, useEffect,
 } from 'react';
@@ -18,6 +20,8 @@ const RestaurantPage = ({
   const [matchedRestaurant, setMatchedRestaurant] = useState(null);
   const [restaurantCard, setRestaurantCard] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(restaurantCard.length - 1);
+  // This is to create validation check for last card
+  const [swipeCounter, setSwipeCounter] = useState(0);
 
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
@@ -166,6 +170,7 @@ const RestaurantPage = ({
 
   // To build a function onclickRight & onclickleft and attach same principle
   const swiped = async (direction, restaurantId, restaurantName, restaurant) => {
+    console.log(`swipeCounter when swipe ${swipeCounter}`);
     console.log('<<<<< Restaurant Object >>>>>', restaurant);
     const p1Id = localStorage.getItem('p1Id');
     const p2Id = localStorage.getItem('p2Id');
@@ -194,12 +199,16 @@ const RestaurantPage = ({
     } else if (direction === 'left') {
       console.log('<=== LEFT SWIPE ===> Sending data: ', data);
       const response = await axios.post('/match/leftswipe', { sessionId });
+      setSwipeCounter((counter) => { counter + 1, console.log('swipeCounter when swipe right', swipeCounter); });
+      console.log(`swipeCounter when swipe left ${swipeCounter}`);
 
       if (response.data.match === true) {
         console.log("************ IT'S A MATCH **************", response.data.matchedRestaurant);
         setMatchedRestaurant(response.data.matchedRestaurant);
         setIsMatch(true);
       }
+      setSwipeCounter((counter) => counter + 1);
+      console.log(`swipeCounter when swipe right ${swipeCounter}`);
     }
   };
 
@@ -224,6 +233,7 @@ const RestaurantPage = ({
    </ErrorBoundary>
    )}
       {isLoading === false && isMatch === true && (<ErrorBoundary><MatchCard /></ErrorBoundary>)}
+      {isLoading === false && swipeCounter === 19 && (<div><h2>No More Cards to swipe</h2></div>)}
     </div>
 
   );
