@@ -83,6 +83,12 @@ class MatchCtrl {
     const { likesList: updatedLikesList } = currentSession;
     console.log('+++++++++++++++ current session likes list +++++++++++++++', updatedLikesList);
 
+    if (currrentSession.likesList.match === true) {
+      console.log('##### MATCH #####');
+      const { matchedRestaurant } = currentSession.likesList;
+      return res.status(200).json({ match: true, matchedRestaurant });
+    }
+
     // >>>>>> NEW likesList format <<<<<< //
     // [{
     // restaurant_id: blah-blah-numbers,
@@ -113,7 +119,18 @@ class MatchCtrl {
         updatedLikesList[i].likes.push(userId);
         if (updatedLikesList[i].likes.length === 2) {
           console.log('////// MATCH /////');
-          return res.status(200).json({ match: true });
+
+          // Replace entire likes list of session with {match: true}
+          // so that when user opens session page in future, this session will be deleted
+          const matchedSession = await this.model.update({ likesList: { match: true, matchedRestaurant: restaurantId } }, {
+            where: { id: sessionId },
+          });
+
+          // Handle success
+          console.log('matchedSession updated in db', matchedSession);
+
+          // send name instead of restaurantId
+          return res.status(200).json({ match: true, matchedRestaurant: restaurantId });
         } if (updatedLikesList[i].likes.length < 2) {
           console.log('<=== NO MATCH ===>');
           return res.status(200).json({ match: false });

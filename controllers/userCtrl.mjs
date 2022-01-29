@@ -196,8 +196,15 @@ class UserCtrl {
         },
       );
       console.log('either or session with user', sessionWithUser);
+      console.log('<-------> Likes List <------->', sessionWithUser.likesList);
 
-      if (!sessionWithUser) return res.json({ sessionFound: false });
+      // If session exists, check likes list for {match: true}
+      if (sessionWithUser.likesList.match === true) {
+        console.log('######## likesList match === true ########');
+      }
+
+      // if sessionWithUser === true, check if likesList = {match: true}
+      if (!sessionWithUser) return res.status(200).json({ sessionFound: false });
 
       // id: sessionPK destructures id as sessionPk
       // destructure relevant variables
