@@ -189,8 +189,10 @@ const RestaurantPage = ({
       console.log('<=== RIGHT SWIPE ===> Sending data: ', data);
       const response = await axios.post('/match/swipe', data);
       if (response.data.match === true) {
+        console.log('before match, is match', isMatch);
         console.log("************ IT'S A MATCH **************", response.data.matchedRestaurant);
         setIsMatch(true);
+        console.log('after match, is match', isMatch);
       }
       console.log('<<<< SWIPE RESPONSE >>>>', response);
     }
