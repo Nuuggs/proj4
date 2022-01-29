@@ -82,19 +82,21 @@ class MatchCtrl {
       p1Id,
       p2Id,
       sessionId,
+      restaurant, // current restaurant object
     } = req.body;
 
     const currentSession = await this.model.findByPk(sessionId);
 
     // To check content of likesList before updating logic to either push existing restaurant data to card or update frontend it's a match
 
-    const checkSessionLiked = currentSession.likesList.match;
-    console.log('check return of session Like', checkSessionLiked);
+    const { match } = currentSession.likesList;
+    console.log('check return of session Like', match);
 
-    if (checkSessionLiked === true) {
+    if (match === true) {
+      const { matchedRestaurant } = currentSession.likesList;
       console.log('##### MATCH ##### this detected a match:true ');
-      const checkSessionLikedData = currentSession.likesList;
-      return res.status(200).json({ checkSessionLikedData });
+      console.log('<<<<<< M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
+      return res.status(200).json({ match, matchedRestaurant });
     }
 
     const { likesList: updatedLikesList } = currentSession;
@@ -133,7 +135,7 @@ class MatchCtrl {
 
           // Replace entire likes list of session with {match: true}
           // so that when user opens session page in future, this session will be deleted
-          const matchedSession = await this.model.update({ likesList: { match: true, matchedRestaurant: restaurantId } }, {
+          const matchedSession = await this.model.update({ likesList: { match: true, matchedRestaurant: restaurant } }, {
             where: { id: sessionId },
           });
 
@@ -141,7 +143,7 @@ class MatchCtrl {
           console.log('matchedSession updated in db', matchedSession);
 
           // send name instead of restaurantId
-          return res.status(200).json({ match: true, matchedRestaurant: restaurantId });
+          return res.status(200).json({ match: true, matchedRestaurant: restaurant });
         } if (updatedLikesList[i].likes.length < 2) {
           console.log('<=== NO MATCH ===>');
           return res.status(200).json({ match: false });

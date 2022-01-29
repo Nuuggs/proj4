@@ -15,6 +15,7 @@ const RestaurantPage = ({
   const [isLoading, setLoading] = useState(true);
   const [zeroResults, setZeroResults] = useState(false);
   const [isMatch, setIsMatch] = useState(false);
+  const [matchedRestaurant, setMatchedRestaurant] = useState(null);
   const [restaurantCard, setRestaurantCard] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(restaurantCard.length - 1);
   // This is to create validation check for last card
@@ -93,7 +94,7 @@ const RestaurantPage = ({
                 key={restaurant.place_id}
                 id={restaurant.place_id}
                 preventSwipe={['up', 'down']}
-                onSwipe={(direction) => swiped(direction, restaurant.place_id, restaurant.name)}
+                onSwipe={(direction) => swiped(direction, restaurant.place_id, restaurant.name, restaurant)}
                 onCardLeftScreen={() => outOfFrame(restaurant.name)}
               >
                 <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
@@ -146,17 +147,18 @@ const RestaurantPage = ({
           <div className="matchCardContainer">
             <h2> It's A MATCH!!!</h2>
 
-            <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
+            <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${matchedRestaurant.photos[0].photo_reference}&key=${apiKey})` }}>
               <div className="caption-div">
-                <h2>{restaurant.name}</h2>
-                <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
+                <h2>{matchedRestaurant.name}</h2>
+                <h2>It's a Match!</h2>
+                {/* <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
                 <h2>
                   out of
                   {' '}
                   {restaurant.user_ratings_total}
                   {' '}
                   reviews
-                </h2>
+                </h2> */}
 
               </div>
 
@@ -168,13 +170,8 @@ const RestaurantPage = ({
   };
 
   // To build a function onclickRight & onclickleft and attach same principle
-  const swiped = async (direction, restaurantId, restaurantName) => {
-    console.log('removing:', restaurantName);
-    // setLastDirection(direction);
-    console.log('swiped direction =', direction);
-    console.log('restaurantId:', restaurantId);
-    console.log('restaurant Card', restaurantCard);
-    console.log('set restaurant Card', setRestaurantCard);
+  const swiped = async (direction, restaurantId, restaurantName, restaurant) => {
+    console.log('<<<<< Restaurant Object >>>>>', restaurant);
     if (direction === 'right') {
       console.log('its right');
       // If swiped direction is right - do a axios.post to DB to store data
@@ -189,6 +186,7 @@ const RestaurantPage = ({
         p1Id,
         p2Id,
         sessionId,
+        restaurant,
       };
 
       console.log('<=== RIGHT SWIPE ===> Sending data: ', data);
@@ -197,6 +195,7 @@ const RestaurantPage = ({
       if (response.data.match === true) {
         console.log('before match, is match', isMatch);
         console.log("************ IT'S A MATCH **************", response.data.matchedRestaurant);
+        setMatchedRestaurant(response.data.matchedRestaurant);
         setIsMatch(true);
         console.log('after match, is match', isMatch);
       }
@@ -223,7 +222,7 @@ const RestaurantPage = ({
     <div>
       {isLoading === true && (<div><h2>Loading</h2></div>)}
       {isLoading === false && zeroResults === true && (<div><h2>No Results - Please create a new session </h2></div>)}
-      {(isLoading === false && restaurantCard.length !== 0)
+      {(isLoading === false && restaurantCard.length !== 0 && isMatch === false)
    && (
    <ErrorBoundary>
      <TinderCards />
