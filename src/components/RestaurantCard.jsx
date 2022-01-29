@@ -167,22 +167,21 @@ const RestaurantPage = ({
   // To build a function onclickRight & onclickleft and attach same principle
   const swiped = async (direction, restaurantId, restaurantName, restaurant) => {
     console.log('<<<<< Restaurant Object >>>>>', restaurant);
+    const p1Id = localStorage.getItem('p1Id');
+    const p2Id = localStorage.getItem('p2Id');
+    const userId = localStorage.getItem('userId');
+
+    const data = {
+      restaurantId,
+      userId,
+      p1Id,
+      p2Id,
+      sessionId,
+      restaurant,
+    };
     if (direction === 'right') {
       console.log('its right');
       // If swiped direction is right - do a axios.post to DB to store data
-
-      const p1Id = localStorage.getItem('p1Id');
-      const p2Id = localStorage.getItem('p2Id');
-      const userId = localStorage.getItem('userId');
-
-      const data = {
-        restaurantId,
-        userId,
-        p1Id,
-        p2Id,
-        sessionId,
-        restaurant,
-      };
 
       console.log('<=== RIGHT SWIPE ===> Sending data: ', data);
       const response = await axios.post('/match/swipe', data);
@@ -191,7 +190,16 @@ const RestaurantPage = ({
         setMatchedRestaurant(response.data.matchedRestaurant);
         setIsMatch(true);
       }
-      console.log('<<<< SWIPE RESPONSE >>>>', response);
+      console.log('<<<< RIGHT SWIPE RESPONSE >>>>', response);
+    } else if (direction === 'left') {
+      console.log('<=== LEFT SWIPE ===> Sending data: ', data);
+      const response = await axios.post('/match/leftswipe', { sessionId });
+
+      if (response.data.match === true) {
+        console.log("************ IT'S A MATCH **************", response.data.matchedRestaurant);
+        setMatchedRestaurant(response.data.matchedRestaurant);
+        setIsMatch(true);
+      }
     }
   };
 

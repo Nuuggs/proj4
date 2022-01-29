@@ -90,7 +90,7 @@ class MatchCtrl {
     // To check content of likesList before updating logic to either push existing restaurant data to card or update frontend it's a match
 
     const { match } = currentSession.likesList;
-    console.log('check return of session Like', match);
+    console.log('RIGHT SWIPE: check return of session Like', match);
 
     if (match === true) {
       const { matchedRestaurant } = currentSession.likesList;
@@ -160,6 +160,26 @@ class MatchCtrl {
       { where: { id: sessionId } });
     console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
     return res.status(200).json({ updatedSession });
+  }
+
+  async swipeLeft(req, res) {
+    const { sessionId } = req.body;
+    console.log('<---- session id ---->', sessionId);
+    const currentSession = await this.model.findByPk(sessionId);
+
+    // Return match false if likeList is empty
+    if (!currentSession.likesList) {
+      return res.status(200).json({ match: false });
+    }
+    const { match } = currentSession.likesList;
+    console.log('LEFT SWIPE: check return of session Like', match);
+
+    if (match === true) {
+      const { matchedRestaurant } = currentSession.likesList;
+      console.log('##### MATCH ##### this detected a match:true ');
+      console.log('<<<<<< L E F T  S W I P E  M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
+      return res.status(200).json({ match, matchedRestaurant });
+    }
   }
 }
 
