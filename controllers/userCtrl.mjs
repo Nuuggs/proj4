@@ -34,7 +34,7 @@ class UserCtrl {
     const hash = await bcrypt.hash(password, Number(PW_SALT_ROUNDS));
     const newUser = await this.model.create({ email, name, password: hash });
     const payload = { id: newUser.id, email: newUser.email };
-    const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1h' });
+    const token = jwt.sign(payload, JWT_SALT, { expiresIn: '1min' });
     return res.status(200).json({ success: true, token, id: newUser.id });
   }
 
@@ -179,7 +179,6 @@ class UserCtrl {
 
   async getSession(req, res) {
     console.log('GET Request: /user/session/:id');
-    console.log('req params', req.params);
 
     try {
       // id of current user, it's a number in string form

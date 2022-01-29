@@ -12,7 +12,13 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
   useEffect(() => {
     const id = localStorage.userId;
     console.log('current user id', id);
-    axios.get(`/user/session/${id}`)
+
+    // User Auth for /user/session/:id
+    const token = localStorage.getItem('authToken');
+    if(!token) return alert('NO VALID TOKEN!');
+    const config = { headers: { 'authorization': `Bearer ${token}` } };
+
+    axios.get(`/user/session/${id}`, config)
       .then((res) => {
         console.log(res);
 
@@ -46,7 +52,13 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
       // DELETE Request: Deletes session in db
       // Post-Demo: Port all session info to separate storage table.
 
-      axios.delete(`/user/delete/${sessionId}`)
+      // User Auth for /user/delete/:sessionId
+      const token = localStorage.getItem('authToken');
+      if(!token) return alert('NO VALID TOKEN!');
+      const config = { headers: { 'authorization': `Bearer ${token}` } };
+
+
+      axios.delete(`/user/delete/${sessionId}`, config)
         .then((res) => {
           // If successful status 204 will be sent, else status 404
 
