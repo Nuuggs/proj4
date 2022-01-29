@@ -73,7 +73,9 @@ const LoginFunction = ({
         if (res.data.success) {
           setAppState('session');
           const { id } = res.data;
-          localStorage.setItem('userId', id); }
+          localStorage.setItem('userId', id);
+          localStorage.setItem('authToken', res.data.token);
+        }
       })
       .catch((err) => {
         console.log('generic err', err);

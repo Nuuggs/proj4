@@ -7,7 +7,12 @@ import {
 const FriendsList = ({ friendsList, setFriendsList }) => {
   const currentUserId = localStorage.getItem('userId');
   useEffect(() => {
-    axios.get(`/user/allFriends/${currentUserId}`)
+    // User Auth for /user/allFriends/:id
+    const token = localStorage.getItem('authToken');
+    if(!token) return alert('NO VALID TOKEN!');
+    const config = { headers: { 'authorization': `Bearer ${token}` } };
+
+    axios.get(`/user/allFriends/${currentUserId}`, config)
       .then((result) => {
         setFriendsList(result.data);
         console.log('result.data', result.data);
@@ -54,8 +59,14 @@ const AddFriends = () => {
 
   const handleClick = (e) => {
     e.preventDefault();
+
+    // User Auth for /user/friends
+    const token = localStorage.getItem('authToken');
+    if(!token) return alert('NO VALID TOKEN!');
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+
     // AJAX request: send both friend email and current user id to backend
-    axios.post('/user/friends', { email: chosenFriend, currentUserId })
+    axios.post('/user/friends', { email: chosenFriend, currentUserId }, config)
       .then((result) => {
         console.log(result.data);
         setValidity(result.data.isValid);
