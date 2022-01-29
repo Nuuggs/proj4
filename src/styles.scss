@@ -3,12 +3,10 @@ body {
 }
 
 :root {
-  --primary-color: #e29426;
+  --emphasis-color: #6d4a1a;
   --light-color: #e7cdb6;
-  --plain-color: white;
   --dark-color: #51682b;
   --grey-color: #f3f1ec;
-  --frosted: rgba(255, 255, 255, 0.466);
   --light-frosted: #e7cdb6c0;
 }
 
@@ -20,6 +18,23 @@ body {
   backdrop-filter: blur(10px);
 }
 
+.emphasis-text {
+  color: var(--emphasis-color);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+// center nav bar
+.nav-box {
+  display: flex;
+  justify-content: center;
+}
+
+.nav-box-restaurant {
+  display: flex;
+  justify-content: center;
+  margin-top: 400px;
+}
 // buttons at bottom of form, same width as card, place in div className center-box to center
 .center-box {
   display: flex;
@@ -37,6 +52,7 @@ body {
   justify-content: right;
   width: 320px;
   margin-top: 10px;
+  margin: 10px auto 5px;
 }
 
 h1 {
@@ -60,7 +76,7 @@ h2 {
   line-height: 95%;
   text-align: left;
   color: var(--dark-color);
-  margin: 20px 20px 0 20px;
+  margin: 20px;
 }
 
 h3 {
@@ -81,7 +97,12 @@ p {
   margin: 0 5px;
 }
 
-// // Restaurant Cards CSS
+// Session Page specific
+.align-text {
+  padding-top: 50px !important;
+}
+
+// // Restaurant Cards specific
 .resCard {
   position: relative;
   width: 600px;
@@ -91,8 +112,6 @@ p {
   border-radius: 20px;
   background-color: white;
   background-size: cover;
-  // background-position: center;
-  // box-shadow: 0px 0px 60px 0px rgba(0, 0, 0, 0.3);
 }
 
 .caption-div {
@@ -146,26 +165,26 @@ p {
   position: absolute;
 }
 
-// CardsButtons CSS
-.cardsButtons {
-  position: fixed;
-  bottom: 10vh;
-  display: flex;
-  width: 100%;
-  justify-content: space-evenly;
-}
+// // CardsButtons CSS
+// .cardsButtons {
+//   position: fixed;
+//   bottom: 10vh;
+//   display: flex;
+//   width: 100%;
+//   justify-content: space-evenly;
+// }
 
-.cardsButtons .MuiIconButton-root {
-  background-color: white;
-  box-shadow: 0px 10px 53px 0px rgba(0, 0, 0, 0.3) !important;
-}
+// .cardsButtons .MuiIconButton-root {
+//   background-color: white;
+//   box-shadow: 0px 10px 53px 0px rgba(0, 0, 0, 0.3) !important;
+// }
 
-.clickButtons__left {
-  padding: 3vw !important;
-  color: #ec5e6f !important;
-}
+// .clickButtons__left {
+//   padding: 3vw !important;
+//   color: #ec5e6f !important;
+// }
 
-.clickButtons__right {
-  padding: 3vw !important;
-  color: #76e2b3 !important;
-}
+// .clickButtons__right {
+//   padding: 3vw !important;
+//   color: #76e2b3 !important;
+// }

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import UserAuth from './components/NewLoginPage.jsx';
 import { AddFriends } from './components/FriendsPage.jsx';
@@ -22,16 +21,24 @@ export default function App() {
   const [sessionId, setSessionId] = useState(null);
 
   return (
-    <>
+    <div>
       <ThemeProvider theme={mainTheme}>
         { appState === 'landing' && <UserAuth appState={appState} setAppState={setAppState} /> }
         { appState === 'session' && <SessionPage appState={appState} setAppState={setAppState} setSessionId={setSessionId} sessionId={sessionId} /> }
         { appState === 'friends' && <AddFriends appState={appState} setAppState={setAppState} /> }
         { appState === 'form' && <MainForm appState={appState} setAppState={setAppState} setAppParams={setAppParams} /> }
+<<<<<<< HEAD
+        { appState === 'restaurant' && <RestaurantPage appState={appState} setAppState={setAppState} appParams={appParams} sessionId={sessionId} setSessionId={setSessionId} /> }
+        <div className="nav-box">
+          {appState !== 'landing' && appState !== 'restaurant' && <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />}
+        </div>
+
+=======
         { appState !== 'landing' && <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} /> }
         { appState === 'restaurant' && <RestaurantPage appState={appState} setAppState={setAppState} appParams={appParams} sessionId={sessionId} /> }
+>>>>>>> 6f4631d3f92e1cfe939cbbf0cdabaa102633f733
       </ThemeProvider>
-    </>
+    </div>
 
   );
 }

@@ -12,15 +12,15 @@ const FormComplete = ({
   const message = 'Fetching Data';
   const currentUserId = { currentUserId: localStorage.getItem('userId') };
 
+  // Set current user id as p1Id in localStorage
+  // p1 always submits the form to create new session, p2 joins session created
+
+  localStorage.setItem('p1Id', currentUserId);
+
   useEffect(() => {
     console.log('FormTwoParams', formTwoParams);
     console.log('FormOneParams', formOneParams);
     const allParams = { ...currentUserId, ...formOneParams, ...formTwoParams };
-
-    // testing
-    // const pseudoParams = {};
-    // allParams = pseudoParams;
-    // testing
 
     console.log('all params', allParams);
     localStorage.setItem('p2Id', allParams.partner);
@@ -47,7 +47,7 @@ const MainForm = ({ appState, setAppState, setAppParams }) => {
   return (
 
     <div className="form-container">
-      <div className="header-box">
+      {/* <div className="header-box">
         <h1>
           Tell us
           {' '}
@@ -57,14 +57,14 @@ const MainForm = ({ appState, setAppState, setAppParams }) => {
           {' '}
           want
         </h1>
-      </div>
-      <ThemeProvider theme={mainTheme}>
-        {formState === 1 && <FormOne setFormOneParams={setFormOneParams} setFormState={setFormState} setAppState={setAppState} />}
+      </div> */}
 
-        {formState === 2 && <FormTwo setFormTwoParams={setFormTwoParams} setFormState={setFormState} />}
+      {formState === 1 && <FormOne setFormOneParams={setFormOneParams} setFormState={setFormState} />}
 
-        {formState === 3 && <FormComplete formTwoParams={formTwoParams} formOneParams={formOneParams} setAppState={setAppState} setAppParams={setAppParams} />}
-      </ThemeProvider>
+      {formState === 2 && <FormTwo setFormTwoParams={setFormTwoParams} setFormState={setFormState} setAppState={setAppState} />}
+
+      {formState === 3 && <FormComplete formTwoParams={formTwoParams} formOneParams={formOneParams} setAppState={setAppState} setAppParams={setAppParams} />}
+
     </div>
   );
 };

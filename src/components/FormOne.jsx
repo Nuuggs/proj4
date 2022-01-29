@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  TextField, Card, CardContent, Button, Autocomplete, Box,
+  TextField, Card, CardContent, Button, Autocomplete, Box, FormControl, Select, InputLabel, MenuItem,
 } from '@mui/material';
 
 import {
@@ -122,8 +122,33 @@ const Map = ({ coordinates, setCoordinates }) => {
   );
 };
 
-const FormOne = ({ setFormOneParams, setFormState, setAppState }) => {
-  const [partner, setPartner] = useState('');
+const Radius = ({ radius, setRadius }) => {
+  console.log('Radius', radius);
+  return (
+    <CardContent>
+      <FormControl fullWidth sx={{ my: 2 }}>
+        <InputLabel id="radius">Radius</InputLabel>
+        <Select
+          value={radius}
+          label="radius"
+          name="radius"
+          onChange={(e) => setRadius(e.target.value)}
+        >
+          <MenuItem value="1000">
+            Short Walk / 1KM
+          </MenuItem>
+          <MenuItem value="3000">In the Hood / 3 KM </MenuItem>
+          <MenuItem value="8000">Short Drive / 8 KM</MenuItem>
+          <MenuItem value="20000">Will Travel for Food</MenuItem>
+        </Select>
+      </FormControl>
+    </CardContent>
+
+  );
+};
+
+const FormOne = ({ setFormOneParams, setFormState }) => {
+  const [radius, setRadius] = useState('');
   const [coordinates, setCoordinates] = useState({
     // Singapore's coordinates
     lat: 1.3521,
@@ -136,10 +161,10 @@ const FormOne = ({ setFormOneParams, setFormState, setAppState }) => {
     // Packaging same page info into object
     const data = {
       coordinates,
-      partner,
+      radius,
     };
     console.log('coordinates', coordinates);
-    console.log('partner', partner);
+    console.log('radius', radius);
 
     setFormOneParams(data);
     setFormState(2);
@@ -148,9 +173,7 @@ const FormOne = ({ setFormOneParams, setFormState, setAppState }) => {
   return (
     <div>
       <Card className="frosted-card">
-        <ErrorBoundary>
-          <PartnerChoice partner={partner} setPartner={setPartner} setAppState={setAppState} />
-        </ErrorBoundary>
+        <Radius setRadius={setRadius} radius={radius} />
         <Map coordinates={coordinates} setCoordinates={setCoordinates} />
       </Card>
       <Box className="center-box">

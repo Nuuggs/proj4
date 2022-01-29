@@ -38,7 +38,15 @@ const EmailField = ({
         </CardContent>
         {!error && (
           <CardContent>
-            <TextField fullWidth label="Email" variant="outlined" helperText="Enter your email. We'll check if you're registered." onChange={emailChange} />
+            <TextField
+              fullWidth
+              label="Email"
+              variant="outlined"
+              helperText="Enter your email.
+
+            We'll check if you're registered."
+              onChange={emailChange}
+            />
           </CardContent>
         )}
 
@@ -85,18 +93,25 @@ const LoginFunction = ({
 
   return (
     <div>
-      <Card className="frosted-card">
+      <Card className="frosted-card" sx={{ minHeight: '310.8px' }}>
         <CardContent>
-
           <h2>
             Hey
             {' '}
-            <u>{name}</u>
+            <span className="emphasis-text">
+              {name}
+            </span>
             , welcome back!
             {' '}
           </h2>
           <h2>
-            Enter your password.
+            You know
+            {' '}
+            <br />
+            the drill,
+            {' '}
+            <br />
+            password please.
           </h2>
         </CardContent>
 

@@ -7,7 +7,6 @@ import {
 const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
   const [partner, setPartner] = useState('');
   const [userRole, setUserRole] = useState(null);
-  // const [isLoading, setIsLoading] = useState(true);
 
   // GET Request on mount: Queries db for any existing session for current user
   useEffect(() => {
@@ -23,30 +22,31 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
       .then((res) => {
         console.log(res);
 
-        // if there is an existing session in db, userRole determines if user is host or not
+        // If there is an existing session in db, userRole determines if user is host or not
         // userRole === 'p1' means user is host
 
         if (res.data.sessionFound) {
           setSessionId(res.data.sessionPk);
           setPartner(res.data.partner);
           setUserRole(res.data.userRole);
+
+          // Set p1Id and p2Id in local storage so that it is accessible later on
+          localStorage.setItem('p1Id', res.data.p1Id);
+          localStorage.setItem('p2Id', res.data.p2Id);
         }
         else if (!res.data.sessionFound) return console.log('no current session');
-
-        // setIsLoading(false);
       })
       .catch((err) => console.log(err));
   }, []);
 
   console.log('existing session id', sessionId);
   console.log('user role', userRole);
-  // console.log('isLoading', isLoading);
 
   // Event listener for "New Session" button
   const createNewSession = (e) => {
     e.preventDefault();
 
-    // if there is an existing session and user clicks "New Session", app deletes existing session
+    // If there is an existing session and user clicks "New Session", app deletes existing session
 
     if (sessionId) {
       // DELETE Request: Deletes session in db
@@ -60,7 +60,7 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
 
       axios.delete(`/user/delete/${sessionId}`, config)
         .then((res) => {
-          // if successful status 204 will be sent, else status 404
+          // If successful status 204 will be sent, else status 404
 
           console.log(res.data);
 
@@ -89,20 +89,21 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
   return (
     <div>
 
-      <Card className="frosted-card">
+      <Card className="frosted-card align-text" sx={{ mt: '30px', minHeight: '300px' }}>
         {userRole === 'p2'
         && (
         <CardContent>
           <h2>
-            <u>{partner}</u>
+            <span className="emphasis-text">{partner}</span>
             {' '}
-            has invited you to join a session. Join now, or create a new session.
+            invites you to join a session.
           </h2>
           <h2>
-            Creating a new session closes your current open session with
+            Or, create a new session. Doing so will delete your session with
             {' '}
-            <u>{partner}</u>
+            <span className="emphasis-text">{partner}</span>
           </h2>
+
         </CardContent>
         )}
         {userRole === 'p1'

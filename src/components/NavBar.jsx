@@ -18,7 +18,7 @@ export default function Navigation({ setAppState, appState, setSessionId }) {
   };
   return (
 
-    <div className="center-box">
+    <div>
       <Box sx={{ width: 280, mt: 2 }}>
         <BottomNavigation
           sx={{ borderRadius: 16 }}
