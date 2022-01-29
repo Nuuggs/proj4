@@ -17,6 +17,8 @@ const RestaurantPage = ({
   const [isMatch, setIsMatch] = useState(false);
   const [restaurantCard, setRestaurantCard] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(restaurantCard.length - 1);
+  // This is to create validation check for last card
+  const [swipeCounter, setSwipeCounter] = useState(0);
 
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
@@ -38,6 +40,7 @@ const RestaurantPage = ({
         console.log('Result test if 0 results', result);
         if (result.data === 'ZERO RESULTS') {
           setLoading(false);
+          setSwipeCounter(0);
           return setZeroResults(true);
         }
         // Set session p1Id & p2Id when createSession (bug p2Id without this)
@@ -47,6 +50,7 @@ const RestaurantPage = ({
         console.log('THIS IS NEW SESSION p2Id SET:', p2Id);
 
         setSessionId(result.data.newSession.id);
+        setSwipeCounter(0);
 
         const restaurantData = result.data.newSession.searchResults.results;
         console.log('<=== RESTAURANT DATA ===>', restaurantData);
@@ -67,6 +71,7 @@ const RestaurantPage = ({
         console.log('<=== RESTAURANT DATA ===>', restaurantData);
         setRestaurantCard([...restaurantData]);
         setLoading(false);
+        setSwipeCounter(0);
       }, [],
     );
   }
@@ -187,6 +192,7 @@ const RestaurantPage = ({
       };
 
       console.log('<=== RIGHT SWIPE ===> Sending data: ', data);
+
       const response = await axios.post('/match/swipe', data);
       if (response.data.match === true) {
         console.log('before match, is match', isMatch);
@@ -195,6 +201,11 @@ const RestaurantPage = ({
         console.log('after match, is match', isMatch);
       }
       console.log('<<<< SWIPE RESPONSE >>>>', response);
+    }
+    // setSwipeCounter to keep track of swiping and render once no more card
+    if (direction === 'right' || direction === 'left') {
+      setSwipeCounter(swipeCounter + 1);
+      console.log('swipeCounter state ----->', swipeCounter);
     }
   };
 
@@ -219,6 +230,7 @@ const RestaurantPage = ({
    </ErrorBoundary>
    )}
       {isLoading === false && isMatch === true && (<ErrorBoundary><MatchCard /></ErrorBoundary>)}
+      {isLoading === false && swipeCounter === 20 && (<div><h2>No More Cards to swipe</h2></div>)}
     </div>
 
   );
