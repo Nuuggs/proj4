@@ -199,7 +199,17 @@ class UserCtrl {
 
       // If session exists, check likes list for {match: true}
       if (sessionWithUser.likesList.match === true) {
-        console.log('######## likesList match === true ########');
+        const { id: sessionId } = sessionWithUser;
+
+        console.log('######## likesList match === true session id ########', sessionId);
+
+        const deleteSession = await this.db.Match.destroy(
+          { where: { id: sessionId } },
+        );
+
+        console.log('VVVVV no. of rows deleted VVVVV', deleteSession);
+        // Send same message as if sessiionFound === false to front end
+        return res.status(200).json({ sessionFound: false });
       }
 
       // if sessionWithUser === true, check if likesList = {match: true}
