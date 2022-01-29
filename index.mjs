@@ -59,4 +59,5 @@ bindRoutes(app);
 
 // Set Express to listen on the given port
 const PORT = process.env.PORT || 3004;
+console.log('listening on PORT ', PORT);
 app.listen(PORT);
