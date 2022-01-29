@@ -233,7 +233,7 @@ const RestaurantPage = ({
    </ErrorBoundary>
    )}
       {isLoading === false && isMatch === true && (<ErrorBoundary><MatchCard /></ErrorBoundary>)}
-      {isLoading === false && swipeCounter === 19 && (<div><h2>No More Cards to swipe</h2></div>)}
+      {isLoading === false && swipeCounter === 20 && (<div><h2>No More Cards to swipe</h2></div>)}
     </div>
 
   );
