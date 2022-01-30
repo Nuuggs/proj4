@@ -146,7 +146,7 @@ const RestaurantPage = ({
           <div className="matchCardContainer">
             <h2> It's A MATCH!!!</h2>
 
-            <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${matchedRestaurant.photos[0].photo_reference}&key=${apiKey})` }}>
+            <div className="resCard" onClick={() => googleRestaurantSearch(matchedRestaurant)} style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${matchedRestaurant.photos[0].photo_reference}&key=${apiKey})` }}>
               <div className="caption-div">
                 <h2>{matchedRestaurant.name}</h2>
                 <h2>It's a Match!</h2>
@@ -166,6 +166,10 @@ const RestaurantPage = ({
         </ErrorBoundary>
       </>
     );
+  };
+
+  const googleRestaurantSearch = (matchedRestaurant) => {
+    window.open(`http://www.google.com/search?q=${matchedRestaurant.name}`, '_blank');
   };
 
   // To build a function onclickRight & onclickleft and attach same principle
