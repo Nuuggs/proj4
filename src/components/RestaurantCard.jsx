@@ -42,8 +42,8 @@ const RestaurantPage = ({
           return setZeroResults(true);
         }
         // Maybe can remove? No longer need p1Id, p2Id
-        // const p1Id = localStorage.setItem('p1Id', result.data.newSession.p1Id);
-        // const p2Id = localStorage.setItem('p2Id', result.data.newSession.p2Id);
+        const p1Id = localStorage.setItem('p1Id', result.data.newSession.p1Id);
+        const p2Id = localStorage.setItem('p2Id', result.data.newSession.p2Id);
 
         setSessionId(result.data.newSession.id);
 
@@ -69,8 +69,8 @@ const RestaurantPage = ({
     );
   }
 
-  console.log('RESTAURANT CARD', restaurantCard);
-  console.log('?? is loading ??', isLoading);
+  console.log('restaurantCard ---->', restaurantCard);
+  console.log('isLoading ---->', isLoading);
   console.log('zeroResults ---->', zeroResults);
 
   const TinderCards = () => {
@@ -87,7 +87,6 @@ const RestaurantPage = ({
                 id={restaurant.place_id}
                 preventSwipe={['up', 'down']}
                 onSwipe={(direction) => swiped(direction, restaurant, restaurantCardIndex)}
-                onCardLeftScreen={() => outOfFrame(restaurant.name)}
               >
                 <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
                   <div className="caption-div">
@@ -163,7 +162,6 @@ const RestaurantPage = ({
 
   // To build a function onclickRight & onclickleft and attach same principle
   const swiped = async (direction, restaurant, restaurantCardIndex) => {
-    console.log('<<<<< Restaurant Object >>>>>', restaurant);
     const userId = localStorage.getItem('userId');
 
     const data = {
@@ -173,23 +171,18 @@ const RestaurantPage = ({
       restaurantCardIndex,
     };
     if (direction === 'right') {
-      console.log('its right');
       // If swiped direction is right - do a axios.post to DB to store data
-
-      console.log('<=== RIGHT SWIPE ===> Sending data: ', data);
       const response = await axios.post('/match/swipe', data);
       if (response.data.match === true) {
-        console.log("************ IT'S A MATCH **************", response.data.matchedRestaurant);
+        console.log('<=== M A T C H ===>', response.data.matchedRestaurant);
         setMatchedRestaurant(response.data.matchedRestaurant);
         setIsMatch(true);
       } else if (response.data.isLastCard === true) {
         setIsLastCard(true);
-        console.log('<===== L A S T  C A R D =====>');
+        console.log('<===== RIGHT SWIPE: L A S T  C A R D =====>');
       }
-      console.log('<<<< RIGHT SWIPE RESPONSE >>>>', response);
     } else if (direction === 'left') {
-      console.log('<=== LEFT SWIPE ===> Sending data: ', data);
-      const response = await axios.post('/match/leftswipe', { sessionId, restaurantCardIndex });
+      const response = await axios.post('/match/leftswipe', data);
 
       if (response.data.match === true) {
         console.log("************ IT'S A MATCH **************", response.data.matchedRestaurant);
@@ -197,12 +190,9 @@ const RestaurantPage = ({
         setIsMatch(true);
       } else if (response.data.isLastCard === true) {
         setIsLastCard(true);
+        console.log('<===== LEFT SWIPE: L A S T  C A R D =====>');
       }
     }
-  };
-
-  const outOfFrame = (name) => {
-    console.log(`${name} left the screen`);
   };
 
   return (
@@ -227,10 +217,7 @@ const RestaurantPage = ({
       <div>
         <h2>
           Sorry, we've ran out of suggestions for
-          {' '}
-          {appParams.cuisine}
-          {' '}
-          food around your area.
+          restaurants around your chosen area.
         </h2>
         <h2>Start a new session to try something else.</h2>
         <div className="nav-box-restaurant">
