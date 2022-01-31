@@ -69,7 +69,7 @@ const FormTwo = (
   const [cuisine, setCuisine] = useState('');
   const [partner, setPartner] = useState('');
   const cuisineList = [
-    'Western',
+    'American',
     'French',
     'Chinese',
     'Japanese',
