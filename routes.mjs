@@ -1,10 +1,12 @@
-import db from './models/index.mjs';
 import mainRouter from './routers/mainRouter.mjs';
-import MainCtrl from './controllers/mainCtrl.mjs';
-
+import userRouter from './routers/userRouter.mjs';
+import matchRouter from './routers/matchRouter.mjs';
 
 
 export default function routes(app) {
+  app.use('/user', userRouter);
+  app.use('/match', matchRouter);
+
   // special JS page. Include the webpack index.html file
   app.use('/home', mainRouter);
 
