@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable max-len */
 import React, {
   useState, useEffect,
 } from 'react';
@@ -17,7 +19,7 @@ const RestaurantPage = ({
   const [isMatch, setIsMatch] = useState(false);
   const [matchedRestaurant, setMatchedRestaurant] = useState(null);
   const [restaurantCard, setRestaurantCard] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(restaurantCard.length - 1);
+  const [isLastCard, setIsLastCard] = useState(false);
 
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
@@ -30,8 +32,6 @@ const RestaurantPage = ({
     useEffect(
       async () => {
         console.log('no session id detected block is running');
-        // appParams = { currentUserId, partner, coordinates, cuisine, dateTime, price, rating }
-        // setAppParams in <FormComplete /> FormPage.jsx
 
         const result = await axios.post('/match/create', appParams);
 
@@ -41,11 +41,9 @@ const RestaurantPage = ({
           setLoading(false);
           return setZeroResults(true);
         }
-        // Set session p1Id & p2Id when createSession (bug p2Id without this)
+        // Maybe can remove? No longer need p1Id, p2Id
         const p1Id = localStorage.setItem('p1Id', result.data.newSession.p1Id);
         const p2Id = localStorage.setItem('p2Id', result.data.newSession.p2Id);
-        console.log('THIS IS NEW SESSION p1Id SET:', p1Id);
-        console.log('THIS IS NEW SESSION p2Id SET:', p2Id);
 
         setSessionId(result.data.newSession.id);
 
@@ -53,7 +51,6 @@ const RestaurantPage = ({
         console.log('<=== RESTAURANT DATA ===>', restaurantData);
         setRestaurantCard([...restaurantData]);
         setLoading(false);
-        // setCurrentIndex(restaurantData.length - 1);
       }, [],
     );
   }
@@ -72,8 +69,8 @@ const RestaurantPage = ({
     );
   }
 
-  console.log('...... RESTAURANT CARD ......', restaurantCard);
-  console.log('?? is loading ??', isLoading);
+  console.log('restaurantCard ---->', restaurantCard);
+  console.log('isLoading ---->', isLoading);
   console.log('zeroResults ---->', zeroResults);
 
   const TinderCards = () => {
@@ -83,14 +80,13 @@ const RestaurantPage = ({
       <>
         <ErrorBoundary>
           <div className="restaurantcontainer">
-            {restaurantCard.map((restaurant) => (
+            {restaurantCard.map((restaurant, restaurantCardIndex) => (
               <TinderCard
                 className="swipe"
                 key={restaurant.place_id}
                 id={restaurant.place_id}
                 preventSwipe={['up', 'down']}
-                onSwipe={(direction) => swiped(direction, restaurant.place_id, restaurant.name, restaurant)}
-                onCardLeftScreen={() => outOfFrame(restaurant.name)}
+                onSwipe={(direction) => swiped(direction, restaurant, restaurantCardIndex)}
               >
                 { restaurant.photos === undefined
                   ? (
@@ -184,65 +180,70 @@ const RestaurantPage = ({
   };
 
   // To build a function onclickRight & onclickleft and attach same principle
-  const swiped = async (direction, restaurantId, restaurantName, restaurant) => {
-    console.log('<<<<< Restaurant Object >>>>>', restaurant);
-    const p1Id = localStorage.getItem('p1Id');
-    const p2Id = localStorage.getItem('p2Id');
+  const swiped = async (direction, restaurant, restaurantCardIndex) => {
     const userId = localStorage.getItem('userId');
 
     const data = {
-      restaurantId,
       userId,
-      p1Id,
-      p2Id,
       sessionId,
       restaurant,
+      restaurantCardIndex,
     };
     if (direction === 'right') {
-      console.log('its right');
       // If swiped direction is right - do a axios.post to DB to store data
-
-      console.log('<=== RIGHT SWIPE ===> Sending data: ', data);
       const response = await axios.post('/match/swipe', data);
       if (response.data.match === true) {
-        console.log("************ IT'S A MATCH **************", response.data.matchedRestaurant);
+        console.log('<=== M A T C H ===>', response.data.matchedRestaurant);
         setMatchedRestaurant(response.data.matchedRestaurant);
         setIsMatch(true);
+      } else if (response.data.isLastCard === true) {
+        setIsLastCard(true);
+        console.log('<===== RIGHT SWIPE: L A S T  C A R D =====>');
       }
-      console.log('<<<< RIGHT SWIPE RESPONSE >>>>', response);
     } else if (direction === 'left') {
-      console.log('<=== LEFT SWIPE ===> Sending data: ', data);
-      const response = await axios.post('/match/leftswipe', { sessionId });
+      const response = await axios.post('/match/leftswipe', data);
 
       if (response.data.match === true) {
         console.log("************ IT'S A MATCH **************", response.data.matchedRestaurant);
         setMatchedRestaurant(response.data.matchedRestaurant);
         setIsMatch(true);
+      } else if (response.data.isLastCard === true) {
+        setIsLastCard(true);
+        console.log('<===== LEFT SWIPE: L A S T  C A R D =====>');
       }
     }
   };
 
-  const updateCurrentIndex = (val) => {
-    setCurrentIndex(val);
-    currentIndexRef.current = val;
-  };
-
-  const outOfFrame = (name) => {
-    console.log(`${name} left the screen`);
-  };
-  const canSwipe = currentIndex >= 0;
-
   return (
     <div>
       {isLoading === true && (<div><h2>Loading</h2></div>)}
-      {isLoading === false && zeroResults === true && (<div><h2>No Results - Please create a new session </h2></div>)}
-      {(isLoading === false && restaurantCard.length !== 0 && isMatch === false)
+      {isLoading === false && zeroResults === true && (
+      <div>
+        <h2>No Results - Please create a new session </h2>
+        <div className="nav-box-restaurant">
+          <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
+        </div>
+      </div>
+      )}
+      {(isLoading === false && restaurantCard.length !== 0 && isMatch === false && isLastCard === false)
    && (
    <ErrorBoundary>
      <TinderCards />
    </ErrorBoundary>
    )}
       {isLoading === false && isMatch === true && (<ErrorBoundary><MatchCard /></ErrorBoundary>)}
+      {isLoading === false && isLastCard === true && (
+      <div>
+        <h2>
+          Sorry, we've ran out of suggestions for
+          restaurants around your chosen area.
+        </h2>
+        <h2>Start a new session to try something else.</h2>
+        <div className="nav-box-restaurant">
+          <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
+        </div>
+      </div>
+      )}
     </div>
 
   );

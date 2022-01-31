@@ -195,13 +195,16 @@ class UserCtrl {
         },
       );
       console.log('either or session with user', sessionWithUser);
-      console.log('<-------> Likes List <------->', sessionWithUser.likesList);
+
+      // If sessionWithUser returns null
+      if (!sessionWithUser) {
+        console.log('<=== session with user not found ===>');
+        return res.status(200).json({ sessionFound: false }); }
 
       // If session exists, check likes list for {match: true}
+      // If match: true, delete the session
       if (sessionWithUser.likesList.match === true) {
         const { id: sessionId } = sessionWithUser;
-
-        console.log('######## likesList match === true session id ########', sessionId);
 
         const deleteSession = await this.db.Match.destroy(
           { where: { id: sessionId } },
@@ -212,13 +215,26 @@ class UserCtrl {
         return res.status(200).json({ sessionFound: false });
       }
 
-      // if sessionWithUser === true, check if likesList = {match: true}
-      if (!sessionWithUser) return res.status(200).json({ sessionFound: false });
+      // Check if session has ran out of cards for both players
+      if (sessionWithUser.lastCard) {
+        if (sessionWithUser.lastCard.outOfCardsPlayers.length > 1) {
+          const { id: sessionId } = sessionWithUser;
+
+          const deleteSession = await this.db.Match.destroy(
+            { where: { id: sessionId } },
+          );
+
+          console.log('<=== NO. OF ROWS DELETED ===>', deleteSession);
+          // Send same message as if sessiionFound === false to front end
+          return res.status(200).json({ sessionFound: false });
+        }
+      }
 
       // id: sessionPK destructures id as sessionPk
       // destructure relevant variables
       const { p1Id, p2Id, id: sessionPk } = sessionWithUser;
 
+      // Determine user role
       if (p2Id === Number(currentUserId)) {
         const player1 = await this.model.findByPk(p1Id);
         // if user is p2, assign host to p1
