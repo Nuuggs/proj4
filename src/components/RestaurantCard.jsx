@@ -68,6 +68,15 @@ const RestaurantPage = ({
     useEffect(
       async () => {
         const result = await axios.get(`/match/session/${sessionId}`);
+
+        if (result.data.match === true) {
+          console.log("************ IT'S A MATCH **************", result.data.matchedRestaurant);
+          setMatchedRestaurant(result.data.matchedRestaurant);
+          setIsMatch(true);
+          setLoading(false);
+          return;
+        }
+
         const restaurantData = result.data.existingSession.searchResults.results;
         console.log('<=== RESTAURANT DATA ===>', restaurantData);
         setRestaurantCard([...restaurantData]);
