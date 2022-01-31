@@ -77,14 +77,23 @@ class MatchCtrl {
     console.log('<------swipe update------>');
     // Request.body = {restaurant_ID: integer, playerID, player1/player2 }
     const {
-      restaurantId,
       userId,
-      p1Id,
-      p2Id,
       sessionId,
       restaurant, // current restaurant object
+      restaurantCardIndex,
     } = req.body;
 
+    // Initiate isLastCard boolean
+    // TinderCards frontend npm reads restaurantCards array from 19 to 0, hence last card's index is 0
+    let isLastCard = false;
+    if (restaurantCardIndex === 0) {
+      isLastCard = true;
+    }
+
+    console.log(`<======= L A S T  C A R D ======> 
+    is this the last card ${isLastCard}, card index: ${restaurantCardIndex}`);
+
+    // Find current session in order to update it during each swipe
     const currentSession = await this.model.findByPk(sessionId);
 
     // To check content of likesList before updating logic to either push existing restaurant data to card or update frontend it's a match
@@ -94,7 +103,6 @@ class MatchCtrl {
 
     if (match === true) {
       const { matchedRestaurant } = currentSession.likesList;
-      console.log('##### MATCH ##### this detected a match:true ');
       console.log('<<<<<< M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
       return res.status(200).json({ match, matchedRestaurant });
     }
@@ -109,62 +117,64 @@ class MatchCtrl {
     // dislikes: []
     // }]
 
-    if (updatedLikesList.length === 0) {
-      updatedLikesList.push({
-        restaurant_id: restaurantId,
-        likes: [userId],
-        dislikes: [],
-      });
-      const updatedSession = await this.model.update({ likesList: updatedLikesList }, {
-        where: {
-          id: sessionId,
-        },
-      });
-      console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
-      return res.status(200).json({ updatedSession });
-    }
-
     // If restaurant is already in like list
-    for (let i = 0; i < updatedLikesList.length; i += 1) {
-      if (updatedLikesList[i].restaurant_id === restaurantId) {
-        console.log('updatedLikesList[i]', updatedLikesList[i]);
-        console.log('updatedLikesList[i].likes', updatedLikesList[i].likes);
-        updatedLikesList[i].likes.push(userId);
-        if (updatedLikesList[i].likes.length === 2) {
-          console.log('////// MATCH /////');
+    // For loop needs updatedLikesList.length > 0
+    if (updatedLikesList.length !== 0) {
+      for (let i = 0; i < updatedLikesList.length; i += 1) {
+        if (updatedLikesList[i].restaurant_id === restaurant.place_id) {
+          // console.log('updatedLikesList[i]', updatedLikesList[i]);
+          // console.log('updatedLikesList[i].likes', updatedLikesList[i].likes);
+          updatedLikesList[i].likes.push(userId);
+          if (updatedLikesList[i].likes.length === 2) {
+            console.log('////// MATCH /////');
 
-          // Replace entire likes list of session with {match: true}
-          // so that when user opens session page in future, this session will be deleted
-          const matchedSession = await this.model.update({ likesList: { match: true, matchedRestaurant: restaurant } }, {
-            where: { id: sessionId },
-          });
+            // Replace entire likes list of session with {match: true}
+            // so that when user opens session page in future, this session will be deleted
+            const matchedSession = await this.model.update({ likesList: { match: true, matchedRestaurant: restaurant } }, {
+              where: { id: sessionId },
+            });
 
-          // Handle success
-          console.log('matchedSession updated in db', matchedSession);
+            // Handle success
+            console.log('matchedSession updated in db', matchedSession);
 
-          // send name instead of restaurantId
-          return res.status(200).json({ match: true, matchedRestaurant: restaurant });
-        } if (updatedLikesList[i].likes.length < 2) {
+            // send name instead of restaurant.place_id
+            return res.status(200).json({ match: true, matchedRestaurant: restaurant, isLastCard });
+          }
           console.log('<=== NO MATCH ===>');
-          return res.status(200).json({ match: false });
+          if(isLastCard === true){
+            // Update session db likesList so that when user next logs in, this session can be identified and deleted
+               const sessionOutOfCards = await this.model.update({ likesList: { outOfCards: true, match: false} }, {
+              where: { id: sessionId },
+            });
+              return res.status(200).json({ match: false, isLastCard });
+          }
+          return res.status(200).json({ match: false, isLastCard });
         }
       }
     }
+
     // else if restaurant is not yet in likes list
     updatedLikesList.push({
-      restaurant_id: restaurantId,
+      restaurant_id: restaurant.place_id,
       likes: [userId],
       dislikes: [],
     });
     const updatedSession = await this.model.update({ likesList: updatedLikesList },
       { where: { id: sessionId } });
     console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
-    return res.status(200).json({ updatedSession });
-  }
+    return res.status(200).json({ updatedSession, isLastCard });
+  }isLas
 
   async swipeLeft(req, res) {
-    const { sessionId } = req.body;
+    const { sessionId, restaurantCardIndex } = req.body;
     console.log('<---- session id ---->', sessionId);
+
+    // Initiate isLastCard boolean
+    let isLastCard = false;
+    if (restaurantCardIndex === 0) {
+      isLastCard = true;
+    }
+
     const currentSession = await this.model.findByPk(sessionId);
 
     // Return match false if likeList is empty
@@ -178,8 +188,10 @@ class MatchCtrl {
       const { matchedRestaurant } = currentSession.likesList;
       console.log('##### MATCH ##### this detected a match:true ');
       console.log('<<<<<< L E F T  S W I P E  M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
-      return res.status(200).json({ match, matchedRestaurant });
+      return res.status(200).json({ match, matchedRestaurant, isLastCard });
     }
+
+    return res.status(200).json({ match: false, isLastCard });
   }
 }
 
