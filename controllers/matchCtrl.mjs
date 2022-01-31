@@ -85,81 +85,97 @@ class MatchCtrl {
       restaurant, // current restaurant object
     } = req.body;
 
-    const currentSession = await this.model.findByPk(sessionId);
+    let transaction;
+    try {
+      transaction = await this.db.sequelize.transaction(); // Starting new transation
+      const currentSession = await this.model.findByPk(sessionId, { transaction });
 
-    // To check content of likesList before updating logic to either push existing restaurant data to card or update frontend it's a match
+      // To check content of likesList before updating logic to either push existing restaurant data to card or update frontend it's a match
 
-    const { match } = currentSession.likesList;
-    console.log('RIGHT SWIPE: check return of session Like', match);
+      const { match } = currentSession.likesList;
+      console.log('RIGHT SWIPE: check return of session Like', match);
 
-    if (match === true) {
-      const { matchedRestaurant } = currentSession.likesList;
-      console.log('##### MATCH ##### this detected a match:true ');
-      console.log('<<<<<< M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
-      return res.status(200).json({ match, matchedRestaurant });
-    }
+      if (match === true) {
+        const { matchedRestaurant } = currentSession.likesList;
+        console.log('##### MATCH ##### this detected a match:true ');
+        console.log('<<<<<< M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
+        return res.status(200).json({ match, matchedRestaurant });
+      }
 
-    const { likesList: updatedLikesList } = currentSession;
-    console.log('+++++++++++++++ current session likes list +++++++++++++++', updatedLikesList);
+      const { likesList: updatedLikesList } = currentSession;
+      console.log('+++++++++++++++ current session likes list +++++++++++++++', updatedLikesList);
 
-    // >>>>>> NEW likesList format <<<<<< //
-    // [{
-    // restaurant_id: blah-blah-numbers,
-    // likes: [p1Id, p2Id],
-    // dislikes: []
-    // }]
+      // >>>>>> NEW likesList format <<<<<< //
+      // [{
+      // restaurant_id: blah-blah-numbers,
+      // likes: [p1Id, p2Id],
+      // dislikes: []
+      // }]
 
-    if (updatedLikesList.length === 0) {
+      // If nothing in likes list... transaction added!
+      if (updatedLikesList.length === 0) {
+        updatedLikesList.push({
+          restaurant_id: restaurantId,
+          likes: [userId],
+          dislikes: [],
+        });
+        const updatedSession = await this.model.update({ likesList: updatedLikesList }, {
+          where: {
+            id: sessionId,
+          },
+        }, { transaction }); // part of transaction!!
+        console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
+        
+        await transaction.commit(); // commit transaction before return
+
+        return res.status(200).json({ updatedSession });
+      }
+
+      // If restaurant is already in like list, means that match is found! Transaction Added!
+      for (let i = 0; i < updatedLikesList.length; i += 1) {
+        if (updatedLikesList[i].restaurant_id === restaurantId) {
+          console.log('updatedLikesList[i]', updatedLikesList[i]);
+          console.log('updatedLikesList[i].likes', updatedLikesList[i].likes);
+          updatedLikesList[i].likes.push(userId);
+          if (updatedLikesList[i].likes.length === 2) {
+            console.log('////// MATCH /////');
+
+            // Replace entire likes list of session with {match: true}
+            // so that when user opens session page in future, this session will be deleted
+            const matchedSession = await this.model.update({ likesList: { match: true, matchedRestaurant: restaurant } }, {
+              where: { id: sessionId },
+            }, { transaction });
+
+            // Handle success
+            console.log('matchedSession updated in db', matchedSession);
+            await transaction.commit(); // commit transaction before return
+            // send name instead of restaurantId
+            return res.status(200).json({ match: true, matchedRestaurant: restaurant });
+          } if (updatedLikesList[i].likes.length < 2) {
+            console.log('<=== NO MATCH ===>');
+            await transaction.commit(); // commit transaction before return
+            return res.status(200).json({ match: false });
+          }
+        }
+      }
+
+      // else if restaurant is not yet in likes list, update likesList. Added Transaction!
       updatedLikesList.push({
         restaurant_id: restaurantId,
         likes: [userId],
         dislikes: [],
       });
-      const updatedSession = await this.model.update({ likesList: updatedLikesList }, {
-        where: {
-          id: sessionId,
-        },
-      });
+      const updatedSession = await this.model.update({ likesList: updatedLikesList },
+        { where: { id: sessionId } }, { transaction });
       console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
+      await transaction.commit(); // commit transaction before return
       return res.status(200).json({ updatedSession });
-    }
-
-    // If restaurant is already in like list
-    for (let i = 0; i < updatedLikesList.length; i += 1) {
-      if (updatedLikesList[i].restaurant_id === restaurantId) {
-        console.log('updatedLikesList[i]', updatedLikesList[i]);
-        console.log('updatedLikesList[i].likes', updatedLikesList[i].likes);
-        updatedLikesList[i].likes.push(userId);
-        if (updatedLikesList[i].likes.length === 2) {
-          console.log('////// MATCH /////');
-
-          // Replace entire likes list of session with {match: true}
-          // so that when user opens session page in future, this session will be deleted
-          const matchedSession = await this.model.update({ likesList: { match: true, matchedRestaurant: restaurant } }, {
-            where: { id: sessionId },
-          });
-
-          // Handle success
-          console.log('matchedSession updated in db', matchedSession);
-
-          // send name instead of restaurantId
-          return res.status(200).json({ match: true, matchedRestaurant: restaurant });
-        } if (updatedLikesList[i].likes.length < 2) {
-          console.log('<=== NO MATCH ===>');
-          return res.status(200).json({ match: false });
+      } catch (err) {
+        console.log('error: ', err);
+        if(transaction) {
+          await transaction.rollback();
         }
       }
-    }
-    // else if restaurant is not yet in likes list
-    updatedLikesList.push({
-      restaurant_id: restaurantId,
-      likes: [userId],
-      dislikes: [],
-    });
-    const updatedSession = await this.model.update({ likesList: updatedLikesList },
-      { where: { id: sessionId } });
-    console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
-    return res.status(200).json({ updatedSession });
   }
 
   async swipeLeft(req, res) {
