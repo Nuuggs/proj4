@@ -28,7 +28,7 @@ class MatchCtrl {
     const partnerUserId = Number(partner);
 
     // Get URL request to google for nearby places Data
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=${radius}&type=restaurant&keyword=${cuisine}`;
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=${radius}&type=restaurant&keyword=${cuisine}&rankby=prominence`;
 
     const response = await axios.get(url);
 
@@ -125,7 +125,7 @@ class MatchCtrl {
           },
         }, { transaction }); // part of transaction!!
         console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
-        
+
         await transaction.commit(); // commit transaction before return
 
         return res.status(200).json({ updatedSession });
@@ -170,12 +170,12 @@ class MatchCtrl {
       console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
       await transaction.commit(); // commit transaction before return
       return res.status(200).json({ updatedSession });
-      } catch (err) {
-        console.log('error: ', err);
-        if(transaction) {
-          await transaction.rollback();
-        }
+    } catch (err) {
+      console.log('error: ', err);
+      if (transaction) {
+        await transaction.rollback();
       }
+    }
   }
 
   async swipeLeft(req, res) {

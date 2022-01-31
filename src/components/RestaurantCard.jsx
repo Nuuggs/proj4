@@ -92,22 +92,39 @@ const RestaurantPage = ({
                 onSwipe={(direction) => swiped(direction, restaurant.place_id, restaurant.name, restaurant)}
                 onCardLeftScreen={() => outOfFrame(restaurant.name)}
               >
-              { restaurant.photos === undefined
-                ? <div className="resCard"> no photo </div>
-                : <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
-                  <div className="caption-div">
-                    <h2>{restaurant.name}</h2>
-                    <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
-                    <h2>
-                    out of
-                    {' '}
-                    {restaurant.user_ratings_total}
-                    {' '}
-                    reviews
-                    </h2>
-                  </div>
-                </div>
-              }
+                { restaurant.photos === undefined
+                  ? (
+                    <div className="resCard" style={{ backgroundImage: 'url(/chicken-logo-temp.jpg)' }}>
+                      {' '}
+                      no photo
+                      <div className="caption-div">
+                        <h2>{restaurant.name}</h2>
+                        <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
+                        <h2>
+                          out of
+                          {' '}
+                          {restaurant.user_ratings_total}
+                          {' '}
+                          reviews
+                        </h2>
+                      </div>
+                    </div>
+                  )
+                  : (
+                    <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
+                      <div className="caption-div">
+                        <h2>{restaurant.name}</h2>
+                        <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
+                        <h2>
+                          out of
+                          {' '}
+                          {restaurant.user_ratings_total}
+                          {' '}
+                          reviews
+                        </h2>
+                      </div>
+                    </div>
+                  )}
 
               </TinderCard>
             ))}
