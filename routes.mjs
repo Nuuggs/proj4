@@ -1,4 +1,3 @@
-import db from './models/index.mjs';
 import mainRouter from './routers/mainRouter.mjs';
 import userRouter from './routers/userRouter.mjs';
 import matchRouter from './routers/matchRouter.mjs';
