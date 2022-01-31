@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import {
-  TextField, Card, CardContent, Button, Box,
+  TextField, Card, CardContent, CardActions, Button, Box,
 } from '@mui/material';
+import ArrowLeftOutlinedIcon from '@mui/icons-material/ArrowLeftOutlined';
 
 const EmailField = ({
   setLoginState, setName, setEmail, email,
@@ -11,7 +12,7 @@ const EmailField = ({
   const emailChange = (e) => {
     setEmail(e.target.value);
   };
-
+  
   const submitEmail = (e) => {
     e.preventDefault();
 
@@ -65,12 +66,19 @@ const EmailField = ({
 };
 
 const LoginFunction = ({
-  email, setPassword, name, password, setAppState,
+  email, setPassword, name, password, setAppState, setLoginState, setEmail, setName
 }) => {
   const [error, setError] = useState(null);
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
+  const handleBack = (e) => {
+    e.preventDefault();
+    setLoginState('start');
+    setEmail('');
+    setName('');
+  };
+
 
   const submitLoginPassword = (e) => {
     e.preventDefault();
@@ -95,6 +103,12 @@ const LoginFunction = ({
     <div>
       <Card className="frosted-card" sx={{ minHeight: '310.8px' }}>
         <CardContent>
+          <CardActions>
+            <Button size="small" onClick={handleBack}>
+              <ArrowLeftOutlinedIcon fontSize="small" />
+              Back
+            </Button>
+          </CardActions>
           <h2>
             Hey
             {' '}
@@ -136,7 +150,7 @@ const LoginFunction = ({
 };
 
 const RegisterFunction = ({
-  email, name, setName, setPassword, password, setAppState,
+  email, name, setName, setPassword, password, setAppState, setLoginState, setEmail
 }) => {
   const [error, setError] = useState(null);
   const nameChange = (e) => {
@@ -144,6 +158,11 @@ const RegisterFunction = ({
   };
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
+  };
+  const handleBack = (e) => {
+    e.preventDefault();
+    setLoginState('start');
+    setEmail('');
   };
 
   const submitSignup = (e) => {
@@ -166,6 +185,12 @@ const RegisterFunction = ({
     <div>
       <Card className="frosted-card">
         <CardContent>
+          <CardActions>
+            <Button size="small" onClick={handleBack}>
+              <ArrowLeftOutlinedIcon fontSize="small" />
+              Back
+            </Button>
+          </CardActions>
           <h2>
             Hello Stranger, give us a name and password.
           </h2>
@@ -215,9 +240,9 @@ const UserAuth = ({ setAppState }) => {
       && <EmailField setLoginState={setLoginState} setName={setName} setEmail={setEmail} email={email} setAppState={setAppState} />}
 
       {/* login */}
-      {loginState === 'login' && <LoginFunction email={email} setPassword={setPassword} name={name} password={password} setAppState={setAppState} />}
+      {loginState === 'login' && <LoginFunction email={email} setPassword={setPassword} name={name} password={password} setAppState={setAppState} setLoginState={setLoginState} setEmail={setEmail} setName={setName} />}
       {/* register */}
-      {loginState === 'register' && <RegisterFunction email={email} setPassword={setPassword} name={name} setName={setName} password={password} setAppState={setAppState} />}
+      {loginState === 'register' && <RegisterFunction email={email} setPassword={setPassword} name={name} setName={setName} password={password} setAppState={setAppState} setLoginState={setLoginState} setEmail={setEmail} />}
 
     </div>
   );
