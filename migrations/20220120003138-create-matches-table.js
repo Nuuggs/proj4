@@ -29,6 +29,9 @@ module.exports = {
       likes_list: {
         type: Sequelize.JSONB,
       },
+      last_card: {
+        type: Sequelize.JSONB,
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,

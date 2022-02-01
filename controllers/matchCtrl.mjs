@@ -66,8 +66,19 @@ class MatchCtrl {
       // Find session in match table by pk
       const existingSession = await this.model.findByPk(sessionPk);
 
-      console.log('found exisitng session?', existingSession);
+      console.log('found existing session?', existingSession);
 
+      // Check if existing session is a completed match session
+      const { match } = existingSession.likesList;
+      console.log('check if existingSession is a match', match);
+
+      if (match === true) {
+        const { matchedRestaurant } = existingSession.likesList;
+        console.log('##### MATCH ##### this detected a match:true ');
+        console.log('<<<<<< M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
+        return res.status(200).json({ match, matchedRestaurant });
+      }
+      // Else return restaurant data for user to swipe
       res.status(200).json({ existingSession });
     } catch (err) { console.log(err); }
   }
@@ -95,7 +106,7 @@ class MatchCtrl {
     let transaction;
     try {
       transaction = await this.db.sequelize.transaction(); // Starting new transation
-      
+
       // Find current session in order to update it during each swipe
       const currentSession = await this.model.findByPk(sessionId, { transaction });
 
@@ -121,7 +132,6 @@ class MatchCtrl {
           await this.model.update({ lastCard: { outOfCardsPlayers } }, {
             where: { id: sessionId },
           }, { transaction });
-
         } else if (currentSession.lastCard) {
           // If user is second to hit last card, lastCard column would already have prior info
           const { outOfCardsPlayers: updatedOutOfCardsPlayers } = currentSession.lastCard;
@@ -131,7 +141,6 @@ class MatchCtrl {
           }, { transaction });
         }
       }
-
 
       // If restaurant is already in like list
       // For loop needs updatedLikesList.length > 0
@@ -183,7 +192,6 @@ class MatchCtrl {
       // if match: false, isLastCard: true/false
       await transaction.commit();
       return res.status(200).json({ updatedSession, isLastCard });
-     
     } catch (err) {
       console.log('error: ', err);
       if (transaction) {
