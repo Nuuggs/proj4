@@ -28,7 +28,7 @@ class MatchCtrl {
     const partnerUserId = Number(partner);
 
     // Get URL request to google for nearby places Data
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=${radius}&type=restaurant&keyword=${cuisine}`;
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=${radius}&type=restaurant&keyword=${cuisine}&rankby=prominence`;
 
     const response = await axios.get(url);
 
@@ -85,112 +85,174 @@ class MatchCtrl {
 
   async swipeUpdate(req, res) {
     console.log('POST Request: /match/swipe');
-    console.log('<------swipe update------>');
     // Request.body = {restaurant_ID: integer, playerID, player1/player2 }
     const {
-      restaurantId,
       userId,
-      p1Id,
-      p2Id,
       sessionId,
       restaurant, // current restaurant object
+      restaurantCardIndex,
     } = req.body;
 
-    const currentSession = await this.model.findByPk(sessionId);
-
-    // To check content of likesList before updating logic to either push existing restaurant data to card or update frontend it's a match
-
-    const { match } = currentSession.likesList;
-    console.log('RIGHT SWIPE: check return of session Like', match);
-
-    if (match === true) {
-      const { matchedRestaurant } = currentSession.likesList;
-      console.log('##### MATCH ##### this detected a match:true ');
-      console.log('<<<<<< M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
-      return res.status(200).json({ match, matchedRestaurant });
+    // Initiate isLastCard boolean
+    // TinderCards frontend npm reads restaurantCards array from 19 to 0, hence last card's index is 0
+    let isLastCard = false;
+    if (restaurantCardIndex === 0) {
+      isLastCard = true;
     }
 
-    const { likesList: updatedLikesList } = currentSession;
-    console.log('+++++++++++++++ current session likes list +++++++++++++++', updatedLikesList);
+    console.log(`<======= C H E C K  L A S T  C A R D ======> 
+    is this the last card? ${isLastCard} card index: ${restaurantCardIndex}`);
 
-    // >>>>>> NEW likesList format <<<<<< //
-    // [{
-    // restaurant_id: blah-blah-numbers,
-    // likes: [p1Id, p2Id],
-    // dislikes: []
-    // }]
+    let transaction;
+    try {
+      transaction = await this.db.sequelize.transaction(); // Starting new transation
+      
+      // Find current session in order to update it during each swipe
+      const currentSession = await this.model.findByPk(sessionId, { transaction });
 
-    if (updatedLikesList.length === 0) {
+      // To check content of likesList before updating logic to either push existing restaurant data to card or update frontend it's a match
+      const { match } = currentSession.likesList;
+
+      if (match === true) {
+        const { matchedRestaurant } = currentSession.likesList;
+        console.log('<<<<<< M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
+        return res.status(200).json({ match, matchedRestaurant });
+      }
+
+      // Destructure likesList from currentSession to update it according to swipe info
+      const { likesList: updatedLikesList } = currentSession;
+
+      // If this is the final card, push userId into last_card column
+      // Session Page will check this when user logs in again
+      if (isLastCard === true) {
+        // If user is first to hit last card
+        if (!currentSession.lastCard) {
+          console.log('<====== LAST CARD ======>');
+          const outOfCardsPlayers = [userId];
+          await this.model.update({ lastCard: { outOfCardsPlayers } }, {
+            where: { id: sessionId },
+          }, { transaction });
+
+        } else if (currentSession.lastCard) {
+          // If user is second to hit last card, lastCard column would already have prior info
+          const { outOfCardsPlayers: updatedOutOfCardsPlayers } = currentSession.lastCard;
+          updatedOutOfCardsPlayers.push(userId);
+          await this.model.update({ lastCard: { outOfCardsPlayers: updatedOutOfCardsPlayers } }, {
+            where: { id: sessionId },
+          }, { transaction });
+        }
+      }
+
+
+      // If restaurant is already in like list
+      // For loop needs updatedLikesList.length > 0
+      if (updatedLikesList.length !== 0) {
+        for (let i = 0; i < updatedLikesList.length; i += 1) {
+          if (
+            updatedLikesList[i].restaurant_id === restaurant.place_id) {
+            updatedLikesList[i].likes.push(userId);
+
+            // If there is a match
+            if (updatedLikesList[i].likes.length === 2) {
+              console.log('////// MATCH /////');
+
+              // Replace entire likes list of session with {match: true}
+              // so that when user opens session page in future, this session will be deleted
+              await this.model.update({
+                likesList: {
+                  match: true,
+                  matchedRestaurant: restaurant,
+                },
+              }, {
+                where: {
+                  id: sessionId,
+                },
+              }, { transaction });
+              // If match: true, isLastCard: doesn't matter
+              await transaction.commit();
+              return res.status(200).json({ match: true, matchedRestaurant: restaurant, isLastCard });
+            }
+            console.log('<=== NO MATCH ===>');
+
+            // If match: false, isLastCard: true/false
+            await transaction.commit();
+            return res.status(200).json({ match: false, isLastCard });
+          }
+        }
+      }
+
+      // else if restaurant is not yet in likes list
       updatedLikesList.push({
-        restaurant_id: restaurantId,
+        restaurant_id: restaurant.place_id,
         likes: [userId],
         dislikes: [],
       });
-      const updatedSession = await this.model.update({ likesList: updatedLikesList }, {
-        where: {
-          id: sessionId,
-        },
-      });
-      console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
-      return res.status(200).json({ updatedSession });
-    }
 
-    // If restaurant is already in like list
-    for (let i = 0; i < updatedLikesList.length; i += 1) {
-      if (updatedLikesList[i].restaurant_id === restaurantId) {
-        console.log('updatedLikesList[i]', updatedLikesList[i]);
-        console.log('updatedLikesList[i].likes', updatedLikesList[i].likes);
-        updatedLikesList[i].likes.push(userId);
-        if (updatedLikesList[i].likes.length === 2) {
-          console.log('////// MATCH /////');
+      const updatedSession = await this.model.update({ likesList: updatedLikesList },
+        { where: { id: sessionId } }, { transaction });
 
-          // Replace entire likes list of session with {match: true}
-          // so that when user opens session page in future, this session will be deleted
-          const matchedSession = await this.model.update({ likesList: { match: true, matchedRestaurant: restaurant } }, {
-            where: { id: sessionId },
-          });
-
-          // Handle success
-          console.log('matchedSession updated in db', matchedSession);
-
-          // send name instead of restaurantId
-          return res.status(200).json({ match: true, matchedRestaurant: restaurant });
-        } if (updatedLikesList[i].likes.length < 2) {
-          console.log('<=== NO MATCH ===>');
-          return res.status(200).json({ match: false });
-        }
+      // if match: false, isLastCard: true/false
+      await transaction.commit();
+      return res.status(200).json({ updatedSession, isLastCard });
+     
+    } catch (err) {
+      console.log('error: ', err);
+      if (transaction) {
+        await transaction.rollback();
       }
     }
-    // else if restaurant is not yet in likes list
-    updatedLikesList.push({
-      restaurant_id: restaurantId,
-      likes: [userId],
-      dislikes: [],
-    });
-    const updatedSession = await this.model.update({ likesList: updatedLikesList },
-      { where: { id: sessionId } });
-    console.log('OOOOOOOOOOO LIKES LIST UPDATED OOOOOOOOOO');
-    return res.status(200).json({ updatedSession });
   }
 
   async swipeLeft(req, res) {
-    const { sessionId } = req.body;
-    console.log('<---- session id ---->', sessionId);
+    const { sessionId, userId, restaurantCardIndex } = req.body;
+
+    // Initiate isLastCard boolean
+    let isLastCard = false;
+    if (restaurantCardIndex === 0) {
+      isLastCard = true;
+    }
+
+    console.log('<=== LEFT: LAST CARD ===>', isLastCard);
+
     const currentSession = await this.model.findByPk(sessionId);
 
     // Return match false if likeList is empty
     if (!currentSession.likesList) {
-      return res.status(200).json({ match: false });
+      return res.status(200).json({ match: false, isLastCard });
     }
+
     const { match } = currentSession.likesList;
-    console.log('LEFT SWIPE: check return of session Like', match);
 
     if (match === true) {
       const { matchedRestaurant } = currentSession.likesList;
-      console.log('##### MATCH ##### this detected a match:true ');
       console.log('<<<<<< L E F T  S W I P E  M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
-      return res.status(200).json({ match, matchedRestaurant });
+      return res.status(200).json({ match, matchedRestaurant, isLastCard });
     }
+
+    // If this is the final card, push userId into last_card column
+    // Session Page will check this when user logs in again
+    if (isLastCard === true) {
+      // If user is first to hit last card
+      if (!currentSession.lastCard) {
+        console.log('<====== LAST CARD ======>');
+        const outOfCardsPlayers = [userId];
+        const sessionOutOfCards = await this.model.update({ lastCard: { outOfCardsPlayers } }, {
+          where: { id: sessionId },
+        });
+        console.log('<===== UPDATED DB =====>', sessionOutOfCards);
+      } else if (currentSession.lastCard) {
+        // If user is second to hit last card, lastCard column would already have prior info
+        const { outOfCardsPlayers: updatedOutOfCardsPlayers } = currentSession.lastCard;
+
+        updatedOutOfCardsPlayers.push(userId);
+
+        await this.model.update({ lastCard: { outOfCardsPlayers: updatedOutOfCardsPlayers } }, {
+          where: { id: sessionId },
+        });
+      }
+    }
+
+    return res.status(200).json({ match: false, isLastCard });
   }
 }
 
