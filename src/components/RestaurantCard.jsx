@@ -6,8 +6,8 @@ import React, {
 import { Rating } from '@mui/material';
 import TinderCard from 'react-tinder-card';
 import axios from 'axios';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ErrorBoundary from './ErrorBoundaries.jsx';
 import Navigation from './NavBar.jsx';
 
@@ -140,16 +140,17 @@ const RestaurantPage = ({
         </ErrorBoundary>
         <div className="arrow-div">
           <div className="left-arrow">
-            <ArrowBackIcon />
+            <ArrowBackIosIcon />
             <h2>
-              This way to dislike
+              No, thanks
             </h2>
           </div>
           <div className="right-arrow">
-            <ArrowForwardIcon />
+
             <h2>
-              This way to like
+              Looks good
             </h2>
+            <ArrowForwardIosIcon />
           </div>
         </div>
         <div className="nav-box-restaurant">
