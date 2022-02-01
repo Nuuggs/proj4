@@ -167,11 +167,14 @@ const RestaurantPage = ({
       <>
         <ErrorBoundary>
           <div className="matchCardContainer">
-            <h2> It's A MATCH!!!</h2>
 
             <div className="resCard" onClick={() => googleRestaurantSearch(matchedRestaurant)} style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${matchedRestaurant.photos[0].photo_reference}&key=${apiKey})` }}>
               <div className="caption-div">
-                <h2>{matchedRestaurant.name}</h2>
+                <div>
+                  <h2>{matchedRestaurant.name}</h2>
+                  <p>{matchedRestaurant.vicinity}</p>
+                </div>
+
                 <h2>It's a Match!</h2>
                 <p>Please click on the photo to search for more restaurant details.</p>
                 {/* <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
@@ -188,6 +191,9 @@ const RestaurantPage = ({
             </div>
           </div>
         </ErrorBoundary>
+        <div className="nav-box-restaurant" id="match-nav">
+          <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
+        </div>
       </>
     );
   };
