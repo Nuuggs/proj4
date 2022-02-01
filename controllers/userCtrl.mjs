@@ -203,16 +203,20 @@ class UserCtrl {
 
       // If session exists, check likes list for {match: true}
       // If match: true, delete the session
-      if (sessionWithUser.likesList.match === true) {
+      const { match, informedUsers } = sessionWithUser.likesList;
+      if (match) {
         const { id: sessionId } = sessionWithUser;
 
-        const deleteSession = await this.db.Match.destroy(
-          { where: { id: sessionId } },
-        );
+        // Check if both users have been informed of match
+        if (informedUsers.length === 2) {
+          const deleteSession = await this.db.Match.destroy(
+            { where: { id: sessionId } },
+          );
 
-        console.log('VVVVV no. of rows deleted VVVVV', deleteSession);
-        // Send same message as if sessiionFound === false to front end
-        return res.status(200).json({ sessionFound: false });
+          console.log('VVVVV no. of rows deleted VVVVV', deleteSession);
+          // Send same message as if sessiionFound === false to front end
+          return res.status(200).json({ sessionFound: false });
+        }
       }
 
       // Check if session has ran out of cards for both players
@@ -241,7 +245,7 @@ class UserCtrl {
         // front end will recognise that user is not the host
         const partner = player1.name;
         return res.status(200).json({
-          sessionFound: true, userRole: 'p2', sessionPk, partner, p1Id, p2Id,
+          sessionFound: true, userRole: 'p2', sessionPk, partner, p1Id, p2Id, match,
         });
       } if (p1Id === Number(currentUserId)) {
         const player2 = await this.model.findByPk(p2Id);
@@ -249,7 +253,7 @@ class UserCtrl {
         // if user is p1, assign invitee to p2
         // front end will recognise that user is the host
         return res.status(200).json({
-          sessionFound: true, userRole: 'p1', sessionPk, partner, p1Id, p2Id,
+          sessionFound: true, userRole: 'p1', sessionPk, partner, p1Id, p2Id, match,
         });
       }
     } catch (err) { console.log(err); }

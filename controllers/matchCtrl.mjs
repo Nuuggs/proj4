@@ -56,25 +56,39 @@ class MatchCtrl {
   }
 
   async findSession(req, res) {
-    console.log('GET Request: /match/session/:sessionId');
+    console.log('PUT Request: /match/session/:sessionId');
     console.log('req params', req.params);
 
     try {
       // sessionId is a string
-      const sessionPk = Number(req.params.sessionId);
+      const sessionId = Number(req.params.sessionId);
+      const { userId } = req.body;
+      console.log('<=== REQ BODY ===>', req.body);
 
       // Find session in match table by pk
-      const existingSession = await this.model.findByPk(sessionPk);
+      const existingSession = await this.model.findByPk(sessionId);
 
       console.log('found existing session?', existingSession);
 
       // Check if existing session is a completed match session
-      const { match } = existingSession.likesList;
+      const { match, informedUsers: updatedInformedUsers, matchedRestaurant } = existingSession.likesList;
       console.log('check if existingSession is a match', match);
 
       if (match === true) {
-        const { matchedRestaurant } = existingSession.likesList;
-        console.log('##### MATCH ##### this detected a match:true ');
+        updatedInformedUsers.push(userId);
+
+        await this.model.update({
+          likesList: {
+            match: true,
+            matchedRestaurant,
+            informedUsers: updatedInformedUsers,
+          },
+        }, {
+          where: {
+            id: sessionId,
+          },
+        });
+
         console.log('<<<<<< M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
         return res.status(200).json({ match, matchedRestaurant });
       }
@@ -114,7 +128,24 @@ class MatchCtrl {
       const { match } = currentSession.likesList;
 
       if (match === true) {
-        const { matchedRestaurant } = currentSession.likesList;
+        const { matchedRestaurant, informedUsers: updatedInformedUsers } = currentSession.likesList;
+        updatedInformedUsers.push(userId);
+
+        // Update informedUsers
+        await this.model.update({
+          likesList: {
+            match: true,
+            matchedRestaurant: restaurant,
+            informedUsers: updatedInformedUsers,
+          },
+        }, {
+          where: {
+            id: sessionId,
+          },
+        }, { transaction });
+
+        // @Bryan, is this needed?
+        await transaction.commit();
         console.log('<<<<<< M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
         return res.status(200).json({ match, matchedRestaurant });
       }
@@ -160,6 +191,7 @@ class MatchCtrl {
                 likesList: {
                   match: true,
                   matchedRestaurant: restaurant,
+                  informedUsers: [userId],
                 },
               }, {
                 where: {
