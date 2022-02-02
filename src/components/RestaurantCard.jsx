@@ -171,6 +171,7 @@ const RestaurantPage = ({
               <div className="caption-div">
                 <h2>{matchedRestaurant.name}</h2>
                 <h2>It's a Match!</h2>
+                <p>Please click on the photo to search for more restaurant details.</p>
                 {/* <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
                 <h2>
                   out of
