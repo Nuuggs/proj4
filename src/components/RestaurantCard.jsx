@@ -152,7 +152,7 @@ const RestaurantPage = ({
             </h2>
           </div>
         </div>
-        <div className="nav-box-restaurant">
+        <div className="nav-box">
           <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
         </div>
       </>
@@ -191,7 +191,7 @@ const RestaurantPage = ({
             </div>
           </div>
         </ErrorBoundary>
-        <div className="nav-box-restaurant" id="match-nav">
+        <div className="nav-box">
           <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
         </div>
       </>
@@ -243,7 +243,7 @@ const RestaurantPage = ({
       {isLoading === false && zeroResults === true && (
       <div>
         <h2>No Results - Please create a new session </h2>
-        <div className="nav-box-restaurant">
+        <div className="nav-box">
           <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
         </div>
       </div>
@@ -262,7 +262,7 @@ const RestaurantPage = ({
           restaurants around your chosen area.
         </h2>
         <h2>Start a new session to try something else.</h2>
-        <div className="nav-box-restaurant">
+        <div className="nav-box">
           <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
         </div>
       </div>
