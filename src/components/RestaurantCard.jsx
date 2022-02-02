@@ -3,11 +3,13 @@
 import React, {
   useState, useEffect,
 } from 'react';
-import { Rating } from '@mui/material';
+import { Card, CardContent, Rating } from '@mui/material';
 import TinderCard from 'react-tinder-card';
 import axios from 'axios';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ErrorBoundary from './ErrorBoundaries.jsx';
 import Navigation from './NavBar.jsx';
 
@@ -140,17 +142,12 @@ const RestaurantPage = ({
         </ErrorBoundary>
         <div className="arrow-div">
           <div className="left-arrow">
-            <ArrowBackIosIcon />
-            <h2>
-              No, thanks
-            </h2>
+            <ArrowBackIosIcon color="secondary" />
+            <ThumbDownIcon color="secondary" />
           </div>
           <div className="right-arrow">
-
-            <h2>
-              Looks good
-            </h2>
-            <ArrowForwardIosIcon />
+            <ThumbUpIcon color="primary" />
+            <ArrowForwardIosIcon color="primary" />
           </div>
         </div>
         <div className="nav-box-restaurant">
@@ -251,11 +248,15 @@ const RestaurantPage = ({
       {isLoading === false && isMatch === true && (<ErrorBoundary><MatchCard /></ErrorBoundary>)}
       {isLoading === false && isLastCard === true && (
       <div>
-        <h2>
-          Sorry, we've ran out of suggestions for
-          restaurants around your chosen area.
-        </h2>
-        <h2>Start a new session to try something else.</h2>
+        <Card className="frosted-card">
+          <CardContent>
+            <h2>
+              We're out of suggestions for restaurants around your chosen area.
+            </h2>
+            <h2>Wait for your partner to finish swiping before starting a new session to try something else.</h2>
+          </CardContent>
+        </Card>
+
         <div className="nav-box-restaurant">
           <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
         </div>
