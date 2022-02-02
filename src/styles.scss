@@ -132,7 +132,7 @@ p {
 
 .arrow-div {
   position: fixed;
-  bottom: 20vh;
+  bottom: 30vh;
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -140,24 +140,28 @@ p {
 
 .left-arrow {
   display: flex;
-  flex-direction: column;
-  justify-content: left;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin-left: 30px;
 }
 
 .left-arrow h2 {
-  margin: 0 0 0 0;
+  margin: 0 !important;
   text-align: left;
+  padding-top: 4px;
 }
 
 .right-arrow {
   display: flex;
-  flex-direction: column;
-  justify-content: right;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-right: 30px;
 }
 
 .right-arrow h2 {
   margin: 0 !important;
   text-align: right;
+  padding-top: 4px;
 }
 
 .restaurantcontainer,
