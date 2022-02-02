@@ -17,6 +17,6 @@ router.post('/swipe', matchCtrl.swipeUpdate.bind(matchCtrl));
 router.post('/leftswipe', matchCtrl.swipeLeft.bind(matchCtrl));
 
 // Finds existing session
-router.get('/session/:sessionId', matchCtrl.findSession.bind(matchCtrl));
+router.put('/session/:sessionId', matchCtrl.findSession.bind(matchCtrl));
 
 export default router;

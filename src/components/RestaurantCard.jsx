@@ -3,11 +3,13 @@
 import React, {
   useState, useEffect,
 } from 'react';
-import { Rating } from '@mui/material';
+import { Card, CardContent, Rating } from '@mui/material';
 import TinderCard from 'react-tinder-card';
 import axios from 'axios';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ErrorBoundary from './ErrorBoundaries.jsx';
 import Navigation from './NavBar.jsx';
 
@@ -56,19 +58,31 @@ const RestaurantPage = ({
   }
   else if (sessionId) {
     // If sessionId exists
-    console.log('else if session id exists block is running, sessio id:', sessionId);
+    console.log('else if session id exists block is running, session id:', sessionId);
 
     useEffect(
       async () => {
-        const result = await axios.get(`/match/session/${sessionId}`);
-        const restaurantData = result.data.existingSession.searchResults.results;
-        console.log('<=== RESTAURANT DATA ===>', restaurantData);
-        setRestaurantCard([...restaurantData]);
-        setLoading(false);
+        const userId = localStorage.getItem('userId');
+        console.log('check user id', userId);
+        const result = await axios.put(`/match/session/${sessionId}`, userId);
+
+        // If exisitng session has already matched, set conditions for rendering matchedCard
+        if (result.data.match) {
+          console.log('<=== else if match exists ===>', result.data);
+          const restaurant = result.data.matchedRestaurant;
+          setIsMatch(true);
+          setMatchedRestaurant(restaurant);
+          setLoading(false);
+        } else if (!result.data.match) {
+          const restaurantData = result.data.existingSession.searchResults.results;
+          console.log('<=== RESTAURANT DATA ===>', restaurantData);
+          setRestaurantCard([...restaurantData]);
+          setLoading(false);
+        }
       }, [],
     );
   }
-
+  console.log('matchedRestaurant ---->', matchedRestaurant);
   console.log('restaurantCard ---->', restaurantCard);
   console.log('isLoading ---->', isLoading);
   console.log('zeroResults ---->', zeroResults);
@@ -128,16 +142,12 @@ const RestaurantPage = ({
         </ErrorBoundary>
         <div className="arrow-div">
           <div className="left-arrow">
-            <ArrowBackIcon />
-            <h2>
-              This way to dislike
-            </h2>
+            <ArrowBackIosIcon color="secondary" />
+            <ThumbDownIcon color="secondary" />
           </div>
           <div className="right-arrow">
-            <ArrowForwardIcon />
-            <h2>
-              This way to like
-            </h2>
+            <ThumbUpIcon color="primary" />
+            <ArrowForwardIosIcon color="primary" />
           </div>
         </div>
         <div className="nav-box-restaurant">
@@ -155,12 +165,16 @@ const RestaurantPage = ({
       <>
         <ErrorBoundary>
           <div className="matchCardContainer">
-            <h2> It's A MATCH!!!</h2>
 
-            <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${matchedRestaurant.photos[0].photo_reference}&key=${apiKey})` }}>
+            <div className="resCard" onClick={() => googleRestaurantSearch(matchedRestaurant)} style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${matchedRestaurant.photos[0].photo_reference}&key=${apiKey})` }}>
               <div className="caption-div">
-                <h2>{matchedRestaurant.name}</h2>
+                <div>
+                  <h2>{matchedRestaurant.name}</h2>
+                  <p>{matchedRestaurant.vicinity}</p>
+                </div>
+
                 <h2>It's a Match!</h2>
+                <p>Please click on the photo to search for more restaurant details.</p>
                 {/* <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
                 <h2>
                   out of
@@ -175,8 +189,15 @@ const RestaurantPage = ({
             </div>
           </div>
         </ErrorBoundary>
+        <div className="nav-box-restaurant" id="match-nav">
+          <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
+        </div>
       </>
     );
+  };
+  // Function to load new window when clicking on Match Restaurant card
+  const googleRestaurantSearch = (matchedRestaurant) => {
+    window.open(`http://www.google.com/search?q=${matchedRestaurant.name}`, '_blank');
   };
 
   // To build a function onclickRight & onclickleft and attach same principle
@@ -234,11 +255,15 @@ const RestaurantPage = ({
       {isLoading === false && isMatch === true && (<ErrorBoundary><MatchCard /></ErrorBoundary>)}
       {isLoading === false && isLastCard === true && (
       <div>
-        <h2>
-          Sorry, we've ran out of suggestions for
-          restaurants around your chosen area.
-        </h2>
-        <h2>Start a new session to try something else.</h2>
+        <Card className="frosted-card">
+          <CardContent>
+            <h2>
+              We're out of suggestions for restaurants around your chosen area.
+            </h2>
+            <h2>Wait for your partner to finish swiping before starting a new session to try something else.</h2>
+          </CardContent>
+        </Card>
+
         <div className="nav-box-restaurant">
           <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
         </div>
