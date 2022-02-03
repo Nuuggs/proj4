@@ -26,18 +26,10 @@ body {
 
 // center nav bar
 .nav-box {
-  display: flex;
-  justify-content: center;
-}
-
-.nav-box-restaurant {
-  display: flex;
-  justify-content: center;
-  margin-top: 450px;
-}
-
-#match-nav {
-  margin-top: 200px;
+  position: fixed;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 // buttons at bottom of form, same width as card, place in div className center-box to center

@@ -150,7 +150,7 @@ const RestaurantPage = ({
             <ArrowForwardIosIcon color="primary" />
           </div>
         </div>
-        <div className="nav-box-restaurant">
+        <div className="nav-box">
           <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
         </div>
       </>
@@ -189,7 +189,7 @@ const RestaurantPage = ({
             </div>
           </div>
         </ErrorBoundary>
-        <div className="nav-box-restaurant" id="match-nav">
+        <div className="nav-box">
           <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
         </div>
       </>
@@ -241,7 +241,7 @@ const RestaurantPage = ({
       {isLoading === false && zeroResults === true && (
       <div>
         <h2>No Results - Please create a new session </h2>
-        <div className="nav-box-restaurant">
+        <div className="nav-box">
           <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
         </div>
       </div>
@@ -255,6 +255,7 @@ const RestaurantPage = ({
       {isLoading === false && isMatch === true && (<ErrorBoundary><MatchCard /></ErrorBoundary>)}
       {isLoading === false && isLastCard === true && (
       <div>
+
         <Card className="frosted-card">
           <CardContent>
             <h2>
@@ -264,7 +265,8 @@ const RestaurantPage = ({
           </CardContent>
         </Card>
 
-        <div className="nav-box-restaurant">
+        <div className="nav-box">
+
           <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
         </div>
       </div>
