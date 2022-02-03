@@ -1,11 +1,15 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable max-len */
 import React, {
   useState, useEffect,
 } from 'react';
-import { Rating } from '@mui/material';
+import { Card, CardContent, Rating } from '@mui/material';
 import TinderCard from 'react-tinder-card';
 import axios from 'axios';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ErrorBoundary from './ErrorBoundaries.jsx';
 import Navigation from './NavBar.jsx';
 
@@ -17,7 +21,7 @@ const RestaurantPage = ({
   const [isMatch, setIsMatch] = useState(false);
   const [matchedRestaurant, setMatchedRestaurant] = useState(null);
   const [restaurantCard, setRestaurantCard] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(restaurantCard.length - 1);
+  const [isLastCard, setIsLastCard] = useState(false);
 
   const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
@@ -30,8 +34,6 @@ const RestaurantPage = ({
     useEffect(
       async () => {
         console.log('no session id detected block is running');
-        // appParams = { currentUserId, partner, coordinates, cuisine, dateTime, price, rating }
-        // setAppParams in <FormComplete /> FormPage.jsx
 
         const result = await axios.post('/match/create', appParams);
 
@@ -41,11 +43,9 @@ const RestaurantPage = ({
           setLoading(false);
           return setZeroResults(true);
         }
-        // Set session p1Id & p2Id when createSession (bug p2Id without this)
+        // Maybe can remove? No longer need p1Id, p2Id
         const p1Id = localStorage.setItem('p1Id', result.data.newSession.p1Id);
         const p2Id = localStorage.setItem('p2Id', result.data.newSession.p2Id);
-        console.log('THIS IS NEW SESSION p1Id SET:', p1Id);
-        console.log('THIS IS NEW SESSION p2Id SET:', p2Id);
 
         setSessionId(result.data.newSession.id);
 
@@ -53,27 +53,38 @@ const RestaurantPage = ({
         console.log('<=== RESTAURANT DATA ===>', restaurantData);
         setRestaurantCard([...restaurantData]);
         setLoading(false);
-        // setCurrentIndex(restaurantData.length - 1);
       }, [],
     );
   }
   else if (sessionId) {
     // If sessionId exists
-    console.log('else if session id exists block is running, sessio id:', sessionId);
+    console.log('else if session id exists block is running, session id:', sessionId);
 
     useEffect(
       async () => {
-        const result = await axios.get(`/match/session/${sessionId}`);
-        const restaurantData = result.data.existingSession.searchResults.results;
-        console.log('<=== RESTAURANT DATA ===>', restaurantData);
-        setRestaurantCard([...restaurantData]);
-        setLoading(false);
+        const userId = localStorage.getItem('userId');
+        console.log('check user id', userId);
+        const result = await axios.put(`/match/session/${sessionId}`, userId);
+
+        // If exisitng session has already matched, set conditions for rendering matchedCard
+        if (result.data.match) {
+          console.log('<=== else if match exists ===>', result.data);
+          const restaurant = result.data.matchedRestaurant;
+          setIsMatch(true);
+          setMatchedRestaurant(restaurant);
+          setLoading(false);
+        } else if (!result.data.match) {
+          const restaurantData = result.data.existingSession.searchResults.results;
+          console.log('<=== RESTAURANT DATA ===>', restaurantData);
+          setRestaurantCard([...restaurantData]);
+          setLoading(false);
+        }
       }, [],
     );
   }
-
-  console.log('...... RESTAURANT CARD ......', restaurantCard);
-  console.log('?? is loading ??', isLoading);
+  console.log('matchedRestaurant ---->', matchedRestaurant);
+  console.log('restaurantCard ---->', restaurantCard);
+  console.log('isLoading ---->', isLoading);
   console.log('zeroResults ---->', zeroResults);
 
   const TinderCards = () => {
@@ -83,46 +94,60 @@ const RestaurantPage = ({
       <>
         <ErrorBoundary>
           <div className="restaurantcontainer">
-            {restaurantCard.map((restaurant) => (
+            {restaurantCard.map((restaurant, restaurantCardIndex) => (
               <TinderCard
                 className="swipe"
                 key={restaurant.place_id}
                 id={restaurant.place_id}
                 preventSwipe={['up', 'down']}
-                onSwipe={(direction) => swiped(direction, restaurant.place_id, restaurant.name, restaurant)}
-                onCardLeftScreen={() => outOfFrame(restaurant.name)}
+                onSwipe={(direction) => swiped(direction, restaurant, restaurantCardIndex)}
               >
-                <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
-                  <div className="caption-div">
-                    <h2>{restaurant.name}</h2>
-                    <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
-                    <h2>
-                      out of
+                { restaurant.photos === undefined
+                  ? (
+                    <div className="resCard" style={{ backgroundImage: 'url(/chicken-logo-temp.jpg)' }}>
                       {' '}
-                      {restaurant.user_ratings_total}
-                      {' '}
-                      reviews
-                    </h2>
+                      no photo
+                      <div className="caption-div">
+                        <h2>{restaurant.name}</h2>
+                        <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
+                        <h2>
+                          out of
+                          {' '}
+                          {restaurant.user_ratings_total}
+                          {' '}
+                          reviews
+                        </h2>
+                      </div>
+                    </div>
+                  )
+                  : (
+                    <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${restaurant.photos[0].photo_reference}&key=${apiKey})` }}>
+                      <div className="caption-div">
+                        <h2>{restaurant.name}</h2>
+                        <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
+                        <h2>
+                          out of
+                          {' '}
+                          {restaurant.user_ratings_total}
+                          {' '}
+                          reviews
+                        </h2>
+                      </div>
+                    </div>
+                  )}
 
-                  </div>
-
-                </div>
               </TinderCard>
             ))}
           </div>
         </ErrorBoundary>
         <div className="arrow-div">
           <div className="left-arrow">
-            <ArrowBackIcon />
-            <h2>
-              This way to dislike
-            </h2>
+            <ArrowBackIosIcon color="secondary" />
+            <ThumbDownIcon color="secondary" />
           </div>
           <div className="right-arrow">
-            <ArrowForwardIcon />
-            <h2>
-              This way to like
-            </h2>
+            <ThumbUpIcon color="primary" />
+            <ArrowForwardIosIcon color="primary" />
           </div>
         </div>
         <div className="nav-box-restaurant">
@@ -140,12 +165,16 @@ const RestaurantPage = ({
       <>
         <ErrorBoundary>
           <div className="matchCardContainer">
-            <h2> It's A MATCH!!!</h2>
 
-            <div className="resCard" style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${matchedRestaurant.photos[0].photo_reference}&key=${apiKey})` }}>
+            <div className="resCard" onClick={() => googleRestaurantSearch(matchedRestaurant)} style={{ backgroundImage: `url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${matchedRestaurant.photos[0].photo_reference}&key=${apiKey})` }}>
               <div className="caption-div">
-                <h2>{matchedRestaurant.name}</h2>
+                <div>
+                  <h2>{matchedRestaurant.name}</h2>
+                  <p>{matchedRestaurant.vicinity}</p>
+                </div>
+
                 <h2>It's a Match!</h2>
+                <p>Please click on the photo to search for more restaurant details.</p>
                 {/* <Rating name="half-rating" defaultValue={restaurant.rating} precision={0.5} size="small" />
                 <h2>
                   out of
@@ -160,70 +189,86 @@ const RestaurantPage = ({
             </div>
           </div>
         </ErrorBoundary>
+        <div className="nav-box-restaurant" id="match-nav">
+          <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
+        </div>
       </>
     );
   };
+  // Function to load new window when clicking on Match Restaurant card
+  const googleRestaurantSearch = (matchedRestaurant) => {
+    window.open(`http://www.google.com/search?q=${matchedRestaurant.name}`, '_blank');
+  };
 
   // To build a function onclickRight & onclickleft and attach same principle
-  const swiped = async (direction, restaurantId, restaurantName, restaurant) => {
-    console.log('<<<<< Restaurant Object >>>>>', restaurant);
-    const p1Id = localStorage.getItem('p1Id');
-    const p2Id = localStorage.getItem('p2Id');
+  const swiped = async (direction, restaurant, restaurantCardIndex) => {
     const userId = localStorage.getItem('userId');
 
     const data = {
-      restaurantId,
       userId,
-      p1Id,
-      p2Id,
       sessionId,
       restaurant,
+      restaurantCardIndex,
     };
     if (direction === 'right') {
-      console.log('its right');
       // If swiped direction is right - do a axios.post to DB to store data
-
-      console.log('<=== RIGHT SWIPE ===> Sending data: ', data);
       const response = await axios.post('/match/swipe', data);
       if (response.data.match === true) {
-        console.log("************ IT'S A MATCH **************", response.data.matchedRestaurant);
+        console.log('<=== M A T C H ===>', response.data.matchedRestaurant);
         setMatchedRestaurant(response.data.matchedRestaurant);
         setIsMatch(true);
+      } else if (response.data.isLastCard === true) {
+        setIsLastCard(true);
+        console.log('<===== RIGHT SWIPE: L A S T  C A R D =====>');
       }
-      console.log('<<<< RIGHT SWIPE RESPONSE >>>>', response);
     } else if (direction === 'left') {
-      console.log('<=== LEFT SWIPE ===> Sending data: ', data);
-      const response = await axios.post('/match/leftswipe', { sessionId });
+      const response = await axios.post('/match/leftswipe', data);
 
       if (response.data.match === true) {
         console.log("************ IT'S A MATCH **************", response.data.matchedRestaurant);
         setMatchedRestaurant(response.data.matchedRestaurant);
         setIsMatch(true);
+      } else if (response.data.isLastCard === true) {
+        setIsLastCard(true);
+        console.log('<===== LEFT SWIPE: L A S T  C A R D =====>');
       }
     }
   };
 
-  const updateCurrentIndex = (val) => {
-    setCurrentIndex(val);
-    currentIndexRef.current = val;
-  };
-
-  const outOfFrame = (name) => {
-    console.log(`${name} left the screen`);
-  };
-  const canSwipe = currentIndex >= 0;
-
   return (
     <div>
       {isLoading === true && (<div><h2>Loading</h2></div>)}
-      {isLoading === false && zeroResults === true && (<div><h2>No Results - Please create a new session </h2></div>)}
-      {(isLoading === false && restaurantCard.length !== 0 && isMatch === false)
+      {isLoading === false && zeroResults === true && (
+      <div>
+        <h2>No Results - Please create a new session </h2>
+        <div className="nav-box-restaurant">
+          <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
+        </div>
+      </div>
+      )}
+      {(isLoading === false && restaurantCard.length !== 0 && isMatch === false && isLastCard === false)
    && (
    <ErrorBoundary>
      <TinderCards />
    </ErrorBoundary>
    )}
       {isLoading === false && isMatch === true && (<ErrorBoundary><MatchCard /></ErrorBoundary>)}
+      {isLoading === false && isLastCard === true && (
+      <div>
+        <Card className="frosted-card">
+          <CardContent>
+            <h2>
+              We're out of suggestions for restaurants around your chosen area.
+            </h2>
+            <h2>Wait for your partner to finish swiping before starting a new session to try something else.</h2>
+          </CardContent>
+        </Card>
+
+        <div className="nav-box-restaurant">
+          <Navigation appState={appState} setAppState={setAppState} setSessionId={setSessionId} />
+        </div>
+      </div>
+      )}
     </div>
 
   );

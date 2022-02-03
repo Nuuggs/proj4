@@ -33,8 +33,13 @@ body {
 .nav-box-restaurant {
   display: flex;
   justify-content: center;
-  margin-top: 400px;
+  margin-top: 450px;
 }
+
+#match-nav {
+  margin-top: 200px;
+}
+
 // buttons at bottom of form, same width as card, place in div className center-box to center
 .center-box {
   display: flex;
@@ -120,14 +125,22 @@ p {
   padding: 15px;
 }
 
-.caption-div h2 {
+.caption-div h2,
+p {
   color: white;
   margin: 0;
 }
 
+.caption-div p {
+  font-size: 14px;
+  line-height: 1;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
 .arrow-div {
   position: fixed;
-  bottom: 20vh;
+  bottom: 30vh;
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -135,27 +148,32 @@ p {
 
 .left-arrow {
   display: flex;
-  flex-direction: column;
-  justify-content: left;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin-left: 30px;
 }
 
 .left-arrow h2 {
-  margin: 0 0 0 0;
+  margin: 0 !important;
   text-align: left;
+  padding-top: 4px;
 }
 
 .right-arrow {
   display: flex;
-  flex-direction: column;
-  justify-content: right;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-right: 30px;
 }
 
 .right-arrow h2 {
   margin: 0 !important;
   text-align: right;
+  padding-top: 4px;
 }
 
-.restaurantcontainer {
+.restaurantcontainer,
+.matchCardContainer {
   display: flex;
   justify-content: center;
   margin-top: 5vh;

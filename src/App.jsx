@@ -13,7 +13,6 @@ export default function App() {
   /*
     Default app state set to landing to print landing page first
     Landing -> Match Area -> (create session)Search Params -> Restaurant Details
-
   */
 
   const [appState, setAppState] = useState('landing');

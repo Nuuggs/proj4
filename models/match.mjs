@@ -30,6 +30,9 @@ export default function initMatchModel(sequelize, DataTypes) {
     likesList: {
       type: DataTypes.JSONB,
     },
+    lastCard: {
+      type: DataTypes.JSONB,
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,

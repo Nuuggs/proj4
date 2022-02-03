@@ -5,38 +5,42 @@ import {
 } from '@mui/material';
 
 const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
+  // Set/reset as user maybe coming to session page from previous session
   const [partner, setPartner] = useState('');
   const [userRole, setUserRole] = useState(null);
+  localStorage.removeItem('p1Id');
+  localStorage.removeItem('p2Id');
 
   // GET Request on mount: Queries db for any existing session for current user
-  useEffect(() => {
+  useEffect(async () => {
     const id = localStorage.userId;
     console.log('current user id', id);
 
     // User Auth for /user/session/:id
     const token = localStorage.getItem('authToken');
-    if(!token) return alert('NO VALID TOKEN!');
-    const config = { headers: { 'authorization': `Bearer ${token}` } };
+    if (!token) return alert('NO VALID TOKEN!');
+    const config = { headers: { authorization: `Bearer ${token}` } };
 
-    axios.get(`/user/session/${id}`, config)
-      .then((res) => {
-        console.log(res);
+    const result = await axios.get(`/user/session/${id}`, config);
 
-        // If there is an existing session in db, userRole determines if user is host or not
-        // userRole === 'p1' means user is host
+    console.log('<=== result from get session ===>', result);
 
-        if (res.data.sessionFound) {
-          setSessionId(res.data.sessionPk);
-          setPartner(res.data.partner);
-          setUserRole(res.data.userRole);
+    if (!result.data.sessionFound) {
+      // sessionId might have persisted from previous session
+      setSessionId(null);
+    }
+    // If there is an existing session in db, userRole determines if user is host or not
+    // userRole === 'p1' means user is host
 
-          // Set p1Id and p2Id in local storage so that it is accessible later on
-          localStorage.setItem('p1Id', res.data.p1Id);
-          localStorage.setItem('p2Id', res.data.p2Id);
-        }
-        else if (!res.data.sessionFound) return console.log('no current session');
-      })
-      .catch((err) => console.log(err));
+    else if (result.data.sessionFound) {
+      setSessionId(result.data.sessionPk);
+      setPartner(result.data.partner);
+      setUserRole(result.data.userRole);
+
+      // Set p1Id and p2Id in local storage so that it is accessible later on
+      localStorage.setItem('p1Id', result.data.p1Id);
+      localStorage.setItem('p2Id', result.data.p2Id);
+    }
   }, []);
 
   console.log('existing session id', sessionId);
@@ -54,9 +58,8 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
 
       // User Auth for /user/delete/:sessionId
       const token = localStorage.getItem('authToken');
-      if(!token) return alert('NO VALID TOKEN!');
-      const config = { headers: { 'authorization': `Bearer ${token}` } };
-
+      if (!token) return alert('NO VALID TOKEN!');
+      const config = { headers: { authorization: `Bearer ${token}` } };
 
       axios.delete(`/user/delete/${sessionId}`, config)
         .then((res) => {
@@ -83,7 +86,6 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
   const joinSession = (e) => {
     e.preventDefault();
     setAppState('restaurant');
-    console.log('need to join some session');
   };
 
   return (

@@ -47,17 +47,6 @@ const MainForm = ({ appState, setAppState, setAppParams }) => {
   return (
 
     <div className="form-container">
-      {/* <div className="header-box">
-        <h1>
-          Tell us
-          {' '}
-          <br />
-          what you
-          <br />
-          {' '}
-          want
-        </h1>
-      </div> */}
 
       {formState === 1 && <FormOne setFormOneParams={setFormOneParams} setFormState={setFormState} />}
 
