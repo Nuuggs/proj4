@@ -64,7 +64,7 @@ const AddFriends = () => {
 
     // User Auth for /user/friends
     const token = localStorage.getItem('authToken');
-    if(!token) return alert('NO VALID TOKEN!');
+    if(!token) return alert('Login expired, please log in again!');
     const config = { headers: { Authorization: `Bearer ${token}` } };
 
     // AJAX request: send both friend email and current user id to backend

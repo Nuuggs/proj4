@@ -174,7 +174,6 @@ const RegisterFunction = ({
           setAppState('session');
           const { id } = res.data;
           localStorage.setItem('userId', id);
-          console.log('registration token');
           localStorage.setItem('authToken', res.data.token);
         }
       })

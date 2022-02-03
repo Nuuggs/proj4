@@ -104,7 +104,7 @@ const RestaurantPage = ({
               >
                 { restaurant.photos === undefined
                   ? (
-                    <div className="resCard" style={{ backgroundImage: 'url(/chicken-logo-temp.jpg)' }}>
+                    <div className="resCard" style={{ backgroundImage: 'url(/assets/demoLogo.png)' }}>
                       {' '}
                       no photo
                       <div className="caption-div">
