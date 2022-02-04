@@ -43,9 +43,6 @@ const RestaurantPage = ({
           setLoading(false);
           return setZeroResults(true);
         }
-        // Maybe can remove? No longer need p1Id, p2Id
-        const p1Id = localStorage.setItem('p1Id', result.data.newSession.p1Id);
-        const p2Id = localStorage.setItem('p2Id', result.data.newSession.p2Id);
 
         setSessionId(result.data.newSession.id);
 
@@ -63,29 +60,22 @@ const RestaurantPage = ({
     useEffect(
       async () => {
         const userId = localStorage.getItem('userId');
-        console.log('check user id', userId);
         const result = await axios.put(`/match/session/${sessionId}`, userId);
 
         // If exisitng session has already matched, set conditions for rendering matchedCard
         if (result.data.match) {
-          console.log('<=== else if match exists ===>', result.data);
           const restaurant = result.data.matchedRestaurant;
           setIsMatch(true);
           setMatchedRestaurant(restaurant);
           setLoading(false);
         } else if (!result.data.match) {
           const restaurantData = result.data.existingSession.searchResults.results;
-          console.log('<=== RESTAURANT DATA ===>', restaurantData);
           setRestaurantCard([...restaurantData]);
           setLoading(false);
         }
       }, [],
     );
   }
-  console.log('matchedRestaurant ---->', matchedRestaurant);
-  console.log('restaurantCard ---->', restaurantCard);
-  console.log('isLoading ---->', isLoading);
-  console.log('zeroResults ---->', zeroResults);
 
   const TinderCards = () => {
     console.log('<TinderCards/> running');

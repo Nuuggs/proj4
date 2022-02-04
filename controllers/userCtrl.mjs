@@ -10,7 +10,13 @@ dotenv.config();
 const { Op } = Sequelize;
 
 const { PW_SALT_ROUNDS, JWT_SALT } = process.env;
-// console.log('processenv', process.env);
+/**
+ * Controller to govern functionality regarding manipulating user data
+ * @constructor
+ * @param {string} name - the name of the controller (used to check that the controller was running during setup)
+ * @param {object} model - Match.db for ease of access to the model
+ * @param {object} db - to access other models if necessary
+ */
 class UserCtrl {
   constructor(name, model, db) {
     this.name = name;
@@ -18,12 +24,23 @@ class UserCtrl {
     this.db = db;
   }
 
+  /**
+   * Function that sends the initial html page
+   * @param {object} req - unused
+   * @param {*} res - sends the html page packaged by webpack
+   */
   getMain(req, res) {
     console.log('GET Request: /home');
     console.log(`Running ${this.name} controller`);
     res.status(200).sendFile(resolve('dist', 'main.html'));
   }
 
+  /**
+   * Function that saves the user registration data into the db; creates json web token for user authentication
+   * @param {string} req.body - takes in user's email, name, and password
+   * @param {object} res - res to return the status codes and back-end data
+   * @returns the appropriate responses from the backend
+   */
   async postRegister(req, res) {
     console.log('POST Request: /user/register');
     console.log(req.body);
@@ -38,6 +55,12 @@ class UserCtrl {
     return res.status(200).json({ success: true, token, id: newUser.id });
   }
 
+  /**
+   * Function that takes user login data to compare with the stored data in the db; creates json web token on successful login for user authentication
+   * @param {string} req.body - takes in user's email, name, and password
+   * @param {object} res - res to return the status codes and back-end data
+   * @returns the appropriate responses from the backend
+   */
   async postLogin(req, res) {
     console.log('POST Request: /user/login');
     console.log(req.body);
@@ -57,6 +80,12 @@ class UserCtrl {
     return res.status(401).json({ error: 'wrong password!' });
   }
 
+  /**
+   * Function that validates that the email is a valid one using regex
+   * @param {string} req.body.email - the user's email
+   * @param {object} res - res to return the status codes and back-end data
+   * @returns the appropriate responses from the backend
+   */
   async postEmail(req, res) {
     console.log('POST Request: /user/email');
     console.log(req.body);
@@ -83,9 +112,14 @@ class UserCtrl {
     return res.status(200).json({ found: false });
   }
 
+  /**
+   * Function that adds friends to the user's list of friends
+   * @param {object} req.body - user's email and id
+   * @param {object} res - res to return the status codes and back-end data
+   * @returns the appropriate responses from the backend
+   */
   async addFriends(req, res) {
     console.log('POST Request: /user/friends');
-    console.log(req.body);
     // Find current user
     const { email, currentUserId } = req.body;
     const currentUser = await this.model.findOne({
@@ -105,14 +139,11 @@ class UserCtrl {
       const { id, name } = chosenFriend;
       const friendData = { id, email, name };
 
-      // validate if user adding self
-      console.log('validate against self');
-      console.log(friendData.id);
-      console.log(currentUserId);
+      // Validation. Prevents user from adding self
       if (Number(friendData.id) === Number(currentUserId)) return res.status(400).send({ isValid: false });
 
       let updatedUser;
-      // if user currently has no friends
+      // If user currently has no friends
       if (!currentUser.friendsUid) {
         const friendsList = [];
         friendsList.push(friendData);
@@ -125,23 +156,18 @@ class UserCtrl {
 
         console.log(updatedUser.friendsUid);
       }
-      // if user has friends
+      // If user has friends
       else if (currentUser.friendsUid) {
-        // current user friends - array
+        // Current user friends - array
         const { friendsList } = currentUser.friendsUid;
-        console.log('FRIENDS LIST: ', friendsList);
-        /*
-        { id: 7, name: 'Doraemon', email: 'doraemon@future.com' },
-        { id: 7, name: 'Doraemon', email: 'doraemon@future.com' },
-        { id: 13, name: 'bryan', email: 'bryan@test.com' }
-        */
 
-        // valiidate if user already has specific friend
+        // Validation. Prevents user from adding the same person twice
         for (let i = 0; i < friendsList.length; i += 1) {
           if (friendsList[i].id === friendData.id) throw 'error: added person already in friend list';
         }
-
+        // Create an updated list, adding the new friend to the previous list of friends
         const updatedFriendsList = [...friendsList, friendData];
+        // Update accordingly in the db
         updatedUser = await currentUser.update({ friendsUid: { friendsList: updatedFriendsList } },
           {
             where: {
@@ -157,6 +183,12 @@ class UserCtrl {
     }
   }
 
+  /**
+   * Function to list all friends of the current user when user enters friends page or is looking for a friend to eat with
+   * @param {integer} req.params.id - current user id
+   * @param {object} res - res to return the status codes and back-end data
+   * @returns the appropriate responses from the backend
+   */
   async getFriends(req, res) {
     console.log('GET Request: /user/allFriends/:id');
     // current user id sent via req.params
@@ -177,6 +209,12 @@ class UserCtrl {
     return res.status(200).send(friendsList);
   }
 
+  /**
+   * Function that checks if the user has a current open session
+   * @param {integer} req.params.id - current user id 
+   * @param {object} res - res to return the status codes and back-end data
+   * @returns the appropriate responses from the backend
+   */
   async getSession(req, res) {
     console.log('GET Request: /user/session/:id');
 
@@ -213,7 +251,6 @@ class UserCtrl {
             { where: { id: sessionId } },
           );
 
-          console.log('VVVVV no. of rows deleted VVVVV', deleteSession);
           // Send same message as if sessiionFound === false to front end
           return res.status(200).json({ sessionFound: false });
         }
@@ -228,7 +265,6 @@ class UserCtrl {
             { where: { id: sessionId } },
           );
 
-          console.log('<=== NO. OF ROWS DELETED ===>', deleteSession);
           // Send same message as if sessiionFound === false to front end
           return res.status(200).json({ sessionFound: false });
         }
@@ -259,6 +295,12 @@ class UserCtrl {
     } catch (err) { console.log(err); }
   }
 
+  /**
+   * Function that deletes session when session is closed
+   * @param {integer} req.params.sessionId - current sesssion that is being closed
+   * @param {object} res - res to return the status codes and back-end data
+   * @returns the appropriate responses from the backend 
+   */
   async deleteSession(req, res) {
     console.log('DELETE Request: /user/delete/:sessionId');
 

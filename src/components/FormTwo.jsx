@@ -17,13 +17,10 @@ const PartnerChoice = ({ setPartner, setAppState }) => {
     axios.get(`/user/allFriends/${currentUserId}`)
       .then((result) => {
         setFriends(result.data);
-        console.log('axios get friends', result.data);
       });
   }, []);
-  console.log('friends', friends);
   const handleChange = (e, value) => {
     // sets chosen partner's uid
-    console.log('partner value', value.id);
     setPartner(`${value.id}`);
   };
 

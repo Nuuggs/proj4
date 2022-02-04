@@ -18,7 +18,6 @@ const EmailField = ({
 
     axios.post('/user/email', { email })
       .then((res) => {
-        console.log(res.data);
         if (
           res.data.found === true) {
           setLoginState('login');
@@ -85,7 +84,6 @@ const LoginFunction = ({
     const loginObj = { email, name, password };
     axios.post('/user/login', loginObj)
       .then((res) => {
-        console.log(res.data);
         if (res.data.success) {
           setAppState('session');
           const { id } = res.data;

@@ -10,18 +10,15 @@ const FriendsList = ({ friendsList, setFriendsList }) => {
 
     // User Auth for /user/allFriends/:id
     const token = localStorage.getItem('authToken');
-    console.log(token);
     if(!token) return alert('NO VALID TOKEN!');
     const config = { headers: { 'authorization': `Bearer ${token}` } };
 
     axios.get(`/user/allFriends/${currentUserId}`, config)
       .then((result) => {
         setFriendsList(result.data);
-        console.log('result.data', result.data);
       });
+      
   }, []);
-
-  console.log('friends list in component FriendsList', friendsList);
 
   return (
     <div>

@@ -14,7 +14,6 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
   // GET Request on mount: Queries db for any existing session for current user
   useEffect(async () => {
     const id = localStorage.userId;
-    console.log('current user id', id);
 
     // User Auth for /user/session/:id
     const token = localStorage.getItem('authToken');
@@ -22,8 +21,6 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
     const config = { headers: { authorization: `Bearer ${token}` } };
 
     const result = await axios.get(`/user/session/${id}`, config);
-
-    console.log('<=== result from get session ===>', result);
 
     if (!result.data.sessionFound) {
       // sessionId might have persisted from previous session
@@ -42,9 +39,6 @@ const SessionPage = ({ setAppState, setSessionId, sessionId }) => {
       localStorage.setItem('p2Id', result.data.p2Id);
     }
   }, []);
-
-  console.log('existing session id', sessionId);
-  console.log('user role', userRole);
 
   // Event listener for "New Session" button
   const createNewSession = (e) => {

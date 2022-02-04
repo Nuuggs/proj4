@@ -1,11 +1,17 @@
 /* eslint-disable class-methods-use-this */
 import dotenv from 'dotenv';
-import { resolve } from 'path';
 import axios from 'axios';
 
 // Initialize dotenv to pull secrets for salting process
 dotenv.config();
 
+/**
+ * Controller used for match functionality in the app
+ * @constructor
+ * @param {string} name - the name of the controller (used to check that the controller was running during setup)
+ * @param {object} model - Match.db for ease of access to the model
+ * @param {object} db - to access other models if necessary
+ */
 class MatchCtrl {
   constructor(name, model, db) {
     this.name = name;
@@ -13,9 +19,14 @@ class MatchCtrl {
     this.db = db;
   }
 
+  /**
+   * function to create a new matching session between two users when a user submits the search form
+   * @param {*} req.body to get user and search parameters from the front-end
+   * @param {*} res to return the status codes and back-end data
+   * @returns the appropriate responses from the backend
+   */
   async createSession(req, res) {
     console.log('POST Request: /match');
-    console.log('req.body', req.body);
     const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
     // Destructure params from front end
@@ -30,17 +41,16 @@ class MatchCtrl {
     // Get URL request to google for nearby places Data
     const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=${radius}&type=restaurant&keyword=${cuisine}&rankby=prominence`;
 
-    const response = await axios.get(url);
-
+    const response = await axios.get(url); // this is the response of the search query using the url
     const searchResults = response.data;
 
-    // Check if search results = zero. Then do not store item in DB and render text at front end. No results
-    console.log('SeARCH results from new api call', searchResults);
+    // Verification. Check if search results = zero. Then do not store item in DB and render text at front end. No results
     const searchResultsCheck = response.data.status;
     if (searchResultsCheck === 'ZERO_RESULTS') return res.status(200).send('ZERO RESULTS');
 
+    // Initialize an array to be stored as part of the new session
     const likesList = [];
-
+    // Create a new session in the database
     const newSession = await this.model.create({
       p1Id: userId,
       p2Id: partnerUserId,
@@ -52,31 +62,33 @@ class MatchCtrl {
       likesList,
     });
 
+    // Sends the new session to the front-end as a response
     res.status(200).send({ newSession });
   }
 
+  /**
+   * Function to find an existing matching session between two users when user logs in
+   * @param {*} req.body to get user data from the front-end
+   * @param {*} res to return the status codes and back-end data
+   * @returns the appropriate responses from the backend
+   */
   async findSession(req, res) {
     console.log('PUT Request: /match/session/:sessionId');
-    console.log('req params', req.params);
 
     try {
-      // sessionId is a string
+      // sessionId from params is a string, store as a number
       const sessionId = Number(req.params.sessionId);
       const { userId } = req.body;
-      console.log('<=== REQ BODY ===>', req.body);
-
+      
       // Find session in match table by pk
       const existingSession = await this.model.findByPk(sessionId);
-
-      console.log('found existing session?', existingSession);
+      console.log('Existing session found!');
 
       // Check if existing session is a completed match session
       const { match, informedUsers: updatedInformedUsers, matchedRestaurant } = existingSession.likesList;
-      console.log('check if existingSession is a match', match);
-
       if (match === true) {
         updatedInformedUsers.push(userId);
-
+        // When match is true, update the db accordingly
         await this.model.update({
           likesList: {
             match: true,
@@ -88,8 +100,7 @@ class MatchCtrl {
             id: sessionId,
           },
         });
-
-        console.log('<<<<<< M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
+        // Send the matched restaurant back to the front-end
         return res.status(200).json({ match, matchedRestaurant });
       }
       // Else return restaurant data for user to swipe
@@ -97,9 +108,14 @@ class MatchCtrl {
     } catch (err) { console.log(err); }
   }
 
+  /**
+   * Function to update the database with each right swipe (user likes a specific restaurant)
+   * @param {*} req.body to get user and search parameters from the front-end
+   * @param {*} res to return the status codes and back-end data, updating front-end accordingly
+   * @returns the appropriate responses from the backend
+   */
   async swipeUpdate(req, res) {
     console.log('POST Request: /match/swipe');
-    // Request.body = {restaurant_ID: integer, playerID, player1/player2 }
     const {
       userId,
       sessionId,
@@ -113,20 +129,17 @@ class MatchCtrl {
     if (restaurantCardIndex === 0) {
       isLastCard = true;
     }
-
-    console.log(`<======= C H E C K  L A S T  C A R D ======> 
-    is this the last card? ${isLastCard} card index: ${restaurantCardIndex}`);
-
+    // Initialize transaction outside the try catch block to store sequelize transaction
     let transaction;
     try {
-      transaction = await this.db.sequelize.transaction(); // Starting new transation
+      // sequelize transaction to ensure that data from the front-end does not clash and overwrite each other when there are multiple users
+      transaction = await this.db.sequelize.transaction();
 
       // Find current session in order to update it during each swipe
       const currentSession = await this.model.findByPk(sessionId, { transaction });
 
       // To check content of likesList before updating logic to either push existing restaurant data to card or update frontend it's a match
       const { match } = currentSession.likesList;
-
       if (match === true) {
         const { matchedRestaurant, informedUsers: updatedInformedUsers } = currentSession.likesList;
         updatedInformedUsers.push(userId);
@@ -144,9 +157,8 @@ class MatchCtrl {
           },
         }, { transaction });
 
-        // @Bryan, is this needed?
         await transaction.commit();
-        console.log('<<<<<< M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
+        // Sends the matched restaurant back to the front-end
         return res.status(200).json({ match, matchedRestaurant });
       }
 
@@ -224,7 +236,9 @@ class MatchCtrl {
       // if match: false, isLastCard: true/false
       await transaction.commit();
       return res.status(200).json({ updatedSession, isLastCard });
+
     } catch (err) {
+      // Within the catch block, log whatever error comes up and rollback the transaction beccause the process is not completed
       console.log('error: ', err);
       if (transaction) {
         await transaction.rollback();
@@ -232,7 +246,15 @@ class MatchCtrl {
     }
   }
 
+  /**
+   * Function to update the database with each left swipe (user passes a specific restaurant)
+   * Used to check for the last card on a left swipe.
+   * @param {*} req.body to get user and session data from the front-end
+   * @param {*} res to return the status codes and back-end data, updating front-end accordingly
+   * @returns the appropriate responses from the backend
+   */
   async swipeLeft(req, res) {
+    console.log('POST request: /match/leftswipe');
     const { sessionId, userId, restaurantCardIndex } = req.body;
 
     // Initiate isLastCard boolean
@@ -241,20 +263,15 @@ class MatchCtrl {
       isLastCard = true;
     }
 
-    console.log('<=== LEFT: LAST CARD ===>', isLastCard);
-
     const currentSession = await this.model.findByPk(sessionId);
-
     // Return match false if likeList is empty
     if (!currentSession.likesList) {
       return res.status(200).json({ match: false, isLastCard });
     }
 
     const { match } = currentSession.likesList;
-
     if (match === true) {
       const { matchedRestaurant } = currentSession.likesList;
-      console.log('<<<<<< L E F T  S W I P E  M A T C H E D  R E S T O >>>>>>', matchedRestaurant);
       return res.status(200).json({ match, matchedRestaurant, isLastCard });
     }
 
