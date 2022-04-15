@@ -13,7 +13,15 @@ const db = {};
 let sequelize;
 
 if (process.env.DATABASE_URL) {
-  sequelize = new Sequelize(process.env.DATABASE_URL);
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+    dialect: process.env.DB_DIALECT,
+  });
 } else {
   sequelize = new Sequelize(
     config.database,
@@ -23,25 +31,25 @@ if (process.env.DATABASE_URL) {
   );
 }
 
-if (env === 'production') {
-  // break apart the Heroku database url and rebuild the configs we need
+// if (env === 'production') {
+//   // break apart the Heroku database url and rebuild the configs we need
 
-  const { DATABASE_URL } = process.env;
-  const dbUrl = url.parse(DATABASE_URL);
-  const username = dbUrl.auth.substr(0, dbUrl.auth.indexOf(':'));
-  const password = dbUrl.auth.substr(dbUrl.auth.indexOf(':') + 1, dbUrl.auth.length);
-  const dbName = dbUrl.path.slice(1);
+//   const { DATABASE_URL } = process.env;
+//   const dbUrl = url.parse(DATABASE_URL);
+//   const username = dbUrl.auth.substr(0, dbUrl.auth.indexOf(':'));
+//   const password = dbUrl.auth.substr(dbUrl.auth.indexOf(':') + 1, dbUrl.auth.length);
+//   const dbName = dbUrl.path.slice(1);
 
-  const host = dbUrl.hostname;
-  const { port } = dbUrl;
+//   const host = dbUrl.hostname;
+//   const { port } = dbUrl;
 
-  config.host = host;
-  config.port = port;
+//   config.host = host;
+//   config.port = port;
 
-  sequelize = new Sequelize(dbName, username, password, config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
+//   sequelize = new Sequelize(dbName, username, password, config);
+// } else {
+//   sequelize = new Sequelize(config.database, config.username, config.password, config);
+// }
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
