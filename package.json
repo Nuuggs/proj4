@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node index.mjs",
     "build": "webpack --config webpack_conf/webpack.prod.js",
     "start": "node index.mjs",
     "watch": "nodemon index.mjs"
