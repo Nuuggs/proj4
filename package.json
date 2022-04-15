@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node index.mjs",
     "build": "webpack --config webpack_conf/webpack.prod.js",
-    "start": "serve -s build",
+    "start": "node index.mjs",
     "watch": "node index.mjs"
   },
   "repository": {
@@ -72,7 +72,6 @@
     "method-override": "^3.0.0",
     "pg": "^8.5.1",
     "react-tinder-card": "^1.4.5",
-    "sequelize": "^6.14.0",
-    "serve": "^13.0.2"
+    "sequelize": "^6.14.0"
   }
 }
