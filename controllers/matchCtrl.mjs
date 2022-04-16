@@ -39,7 +39,7 @@ class MatchCtrl {
     const partnerUserId = Number(partner);
 
     // Get URL request to google for nearby places Data
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=${radius}&type=restaurant&keyword=${cuisine}&rankby=prominence`;
+    const url = `http://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${apiKey}&location=${lat},${lng}&radius=${radius}&type=restaurant&keyword=${cuisine}&rankby=prominence`;
 
     const response = await axios.get(url); // this is the response of the search query using the url
     const searchResults = response.data;
@@ -79,7 +79,7 @@ class MatchCtrl {
       // sessionId from params is a string, store as a number
       const sessionId = Number(req.params.sessionId);
       const { userId } = req.body;
-      
+
       // Find session in match table by pk
       const existingSession = await this.model.findByPk(sessionId);
       console.log('Existing session found!');
@@ -236,7 +236,6 @@ class MatchCtrl {
       // if match: false, isLastCard: true/false
       await transaction.commit();
       return res.status(200).json({ updatedSession, isLastCard });
-
     } catch (err) {
       // Within the catch block, log whatever error comes up and rollback the transaction beccause the process is not completed
       console.log('error: ', err);
