@@ -38,6 +38,9 @@ module.exports = merge(common, {
       },
     }),
     new HtmlWebpackPlugin({
+      // trying to stringify code for loading code debugging
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.MY_ENV': JSON.stringify(process.env.MY_ENV),
       // name this file main, so that it does not get automatically requested as a static file
       filename: './main.html',
       template: path.resolve(__dirname, '..', 'src', 'index.html'),
